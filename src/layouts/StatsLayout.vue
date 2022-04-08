@@ -84,4 +84,11 @@ const releaseTime = process.env.releaseTime
 </template>
 
 <style lang="scss" scoped>
+.active-item {
+  background-color: #DBF0FC; // $grey-4;
+
+  .active-text {
+    color: $primary;
+  }
+}
 </style>
