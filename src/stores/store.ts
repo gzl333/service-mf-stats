@@ -2,14 +2,11 @@ import { defineStore } from 'pinia'
 
 export const useStore = defineStore('stats', {
   state: () => ({
-    counter: 0
+    items: {
+      currentPath: '' as string // 左侧导航栏当前位置
+    },
+    tables: {}
   }),
-  getters: {
-    doubleCount: (state) => state.counter * 2
-  },
-  actions: {
-    increment () {
-      this.counter++
-    }
-  }
+  getters: {},
+  actions: {}
 })
