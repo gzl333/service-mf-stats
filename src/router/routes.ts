@@ -8,7 +8,18 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: 'service1',
-        component: () => import('pages/Service1Page.vue')
+        component: () => import('pages/ServiceIndex.vue'),
+        // redirect: '/my/stats/service1/list',
+        children: [
+          {
+            path: 'list',
+            component: () => import('pages/ServiceList.vue')
+          }
+        ]
+      },
+      {
+        path: 'userUsage/:userId',
+        component: () => import('pages/UserUsageList.vue')
       },
       {
         path: 'service2',

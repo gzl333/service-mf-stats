@@ -48,8 +48,8 @@ const releaseTime = process.env.releaseTime
               active-class="active-item"
             >
               <q-item-section class="column items-center">
-                <q-icon name="las la-video" size="lg"/>
-                <div class="active-text text-center">{{ tc('服务1') }}</div>
+                <q-icon name="las la-cloud" size="lg"/>
+                <div class="active-text text-center">{{ tc('云主机') }}</div>
               </q-item-section>
             </q-item>
 
@@ -74,7 +74,7 @@ const releaseTime = process.env.releaseTime
     </q-drawer>
 
     <q-page-container>
-      <q-scroll-area style="height: 100vh;">
+      <q-scroll-area style="height: 92vh;">
         <router-view/>
       </q-scroll-area>
     </q-page-container>

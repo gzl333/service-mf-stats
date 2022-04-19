@@ -18,16 +18,18 @@
 // const route = useRoute()
 // const router = useRouter()
 // const tc = i18n.global.tc
-
 </script>
 
 <template>
-  <div class="Service1Page">
-    this is Service1Page
+  <div class="UserUsageList">
+    <q-btn-group push>
+      <q-btn color="primary" label="Primary" />
+      <q-btn color="primary" label="Primary" />
+    </q-btn-group>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.Service1Page {
+.UserUsageList {
 }
 </style>
