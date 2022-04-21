@@ -4,7 +4,7 @@ import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
 import { i18n } from 'boot/i18n'
-
+import Breadcrumb from '../components/layout/Breadcrumb.vue'
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -43,8 +43,8 @@ const releaseTime = process.env.releaseTime
 
             <q-item
               clickable
-              :active="activeItem === 'service1'"
-              @click="activeItem = 'service1'; navigateToUrl('/my/stats/service1')"
+              :active="activeItem === 'cloud'"
+              @click="activeItem = 'cloud'; navigateToUrl('/my/stats/cloud')"
               active-class="active-item"
             >
               <q-item-section class="column items-center">
@@ -74,7 +74,8 @@ const releaseTime = process.env.releaseTime
     </q-drawer>
 
     <q-page-container>
-      <q-scroll-area style="height: 92vh;">
+      <breadcrumb/>
+      <q-scroll-area style="height: 100vh;">
         <router-view/>
       </q-scroll-area>
     </q-page-container>

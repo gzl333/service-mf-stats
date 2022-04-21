@@ -4,7 +4,7 @@
 // import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
-import ServiceListById from '../components/service/ServiceListById.vue'
+import ServiceTable from 'components/cloud/ServiceTable.vue'
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -23,7 +23,7 @@ import ServiceListById from '../components/service/ServiceListById.vue'
 
 <template>
   <div>
-    <service-list-by-id/>
+    <service-table/>
   </div>
 </template>
 

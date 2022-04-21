@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// import { ref, computed } from "vue"
+// import { ref } from 'vue'
 // import { navigateToUrl } from 'single-spa'
 // import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
@@ -18,18 +18,17 @@
 // const route = useRoute()
 // const router = useRouter()
 // const tc = i18n.global.tc
-</script>
 
+</script>
 <template>
-  <div class="UserUsageList">
-    <q-btn-group push>
-      <q-btn color="primary" label="Primary" />
-      <q-btn color="primary" label="Primary" />
-    </q-btn-group>
+  <div class="ServiceIndex">
+    <div>
+      <router-view></router-view>
+    </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.UserUsageList {
+.ServiceIndex {
 }
 </style>
