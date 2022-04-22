@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-
+import stats from 'src/api/index'
 export const useStore = defineStore('stats', {
   state: () => ({
     items: {
@@ -10,5 +10,11 @@ export const useStore = defineStore('stats', {
     tables: {}
   }),
   getters: {},
-  actions: {}
+  actions: {
+    async getUser () {
+      const respDataCenter = await stats.stats.api.getUserPermissionPolicy()
+      console.log(respDataCenter)
+      return respDataCenter
+    }
+  }
 })

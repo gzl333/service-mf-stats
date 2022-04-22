@@ -26,9 +26,7 @@ const breadList: any = ref([])
 // }
 
 const getBreadcrumb = () => {
-  console.log(route)
   const matched = route.matched
-  console.log(matched)
   // 如果不是首页
   // if (!isHome(matched[0])) {
   //   matched = [{ path: '/home', meta: { title: '首页' } }].concat(matched)

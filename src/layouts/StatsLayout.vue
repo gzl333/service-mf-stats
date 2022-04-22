@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { /* ref, */ computed } from 'vue'
+import { /* ref, */ computed, onMounted, ref } from 'vue'
 import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
@@ -20,9 +20,21 @@ const tc = i18n.global.tc
 
 // const route = useRoute()
 const activeItem = computed(() => store.items.currentPath[0])
-
+const user = ref(null)
+const isAdmin = ref(false)
 const releaseTime = process.env.releaseTime
-
+onMounted(async () => {
+  const res = await store.getUser()
+  user.value = res.data.role
+  console.log(res)
+  console.log(user.value)
+  if (res.data.role === 'federal-admin') {
+    isAdmin.value = true
+  } else {
+    isAdmin.value = false
+  }
+  console.log(isAdmin.value)
+})
 </script>
 
 <template>
@@ -43,8 +55,20 @@ const releaseTime = process.env.releaseTime
 
             <q-item
               clickable
+              :active="activeItem === 'home'"
+              @click="activeItem = 'home'; navigateToUrl('/my/stats/home')"
+              active-class="active-item"
+            >
+              <q-item-section class="column items-center">
+                <q-icon name="las la-home" size="lg"/>
+                <div class="active-text text-center">{{ tc('首页') }}</div>
+              </q-item-section>
+            </q-item>
+
+            <q-item
+              clickable
               :active="activeItem === 'cloud'"
-              @click="activeItem = 'cloud'; navigateToUrl('/my/stats/cloud')"
+              @click="activeItem = 'cloud'; navigateToUrl(isAdmin === true ? '/my/stats/cloud' : '/my/stats/cloud1')"
               active-class="active-item"
             >
               <q-item-section class="column items-center">
@@ -74,7 +98,7 @@ const releaseTime = process.env.releaseTime
     </q-drawer>
 
     <q-page-container>
-      <breadcrumb/>
+      <breadcrumb v-if="activeItem !== 'home'"/>
       <q-scroll-area style="height: 100vh;">
         <router-view/>
       </q-scroll-area>

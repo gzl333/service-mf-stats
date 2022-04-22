@@ -4,12 +4,20 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/my/stats',
     component: () => import('layouts/StatsLayout.vue'),
-    redirect: '/my/stats/cloud',
+    redirect: '/my/stats/home',
     name: '用费计量',
     meta: {
       icon: 'las la-home'
     },
     children: [
+      {
+        path: 'home',
+        name: '首页',
+        meta: {
+          icon: 'las la-home'
+        },
+        component: () => import('pages/Home.vue')
+      },
       {
         path: 'cloud',
         name: '云主机用量列表',
