@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { /* ref, */ computed, onMounted, ref } from 'vue'
+import { /* ref, */ computed, onMounted } from 'vue'
 import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
@@ -16,24 +16,12 @@ import Breadcrumb from '../components/layout/Breadcrumb.vue'
 
 const store = useStore()
 // const router = useRouter()
-const tc = i18n.global.tc
-
 // const route = useRoute()
+const tc = i18n.global.tc
 const activeItem = computed(() => store.items.currentPath[0])
-const user = ref(null)
-const isAdmin = ref(false)
 const releaseTime = process.env.releaseTime
 onMounted(async () => {
-  const res = await store.getUser()
-  user.value = res.data.role
-  console.log(res)
-  console.log(user.value)
-  if (res.data.role === 'federal-admin') {
-    isAdmin.value = true
-  } else {
-    isAdmin.value = false
-  }
-  console.log(isAdmin.value)
+  await store.getUser()
 })
 </script>
 
@@ -68,7 +56,7 @@ onMounted(async () => {
             <q-item
               clickable
               :active="activeItem === 'cloud'"
-              @click="activeItem = 'cloud'; navigateToUrl(isAdmin === true ? '/my/stats/cloud' : '/my/stats/cloud1')"
+              @click="activeItem = 'cloud'; navigateToUrl(store.items?.fedRole === 'federal-admin' ? '/my/stats/cloud' : '/my/stats/cloud1')"
               active-class="active-item"
             >
               <q-item-section class="column items-center">
@@ -98,7 +86,7 @@ onMounted(async () => {
     </q-drawer>
 
     <q-page-container>
-      <breadcrumb v-if="activeItem !== 'home'"/>
+      <breadcrumb v-show="activeItem !== 'home'"/>
       <q-scroll-area style="height: 100vh;">
         <router-view/>
       </q-scroll-area>
