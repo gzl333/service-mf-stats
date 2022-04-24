@@ -5,16 +5,13 @@ const routes: RouteRecordRaw[] = [
     path: '/my/stats',
     component: () => import('layouts/StatsLayout.vue'),
     redirect: '/my/stats/home',
-    name: '用量计量',
+    name: '首页',
     meta: {
-      icon: 'las la-home'
+      icon: 'las la-house-damage'
     },
     children: [
       {
         path: 'home',
-        meta: {
-          icon: 'las la-home'
-        },
         component: () => import('pages/Home.vue')
       },
       {

@@ -27,11 +27,17 @@ const breadList: any = ref([])
 
 const getBreadcrumb = () => {
   const matched = route.matched
+  console.log(route.matched)
   // 如果不是首页
   // if (!isHome(matched[0])) {
   //   matched = [{ path: '/home', meta: { title: '首页' } }].concat(matched)
   // }
   breadList.value = matched.filter(item => item.name !== undefined)
+}
+const changeRouter = (path: string, index: number) => {
+  if (index + 1 !== breadList.value.length) {
+    navigateToUrl(path)
+  }
 }
 onMounted(() => {
   getBreadcrumb()
@@ -52,7 +58,7 @@ watch(route, () => {
       />
     </template>
       <q-breadcrumbs-el v-for="(item, index) in breadList" :key="index">
-        <div class="row items-center" @click="navigateToUrl(item.path)">
+        <div class="row items-center" @click="changeRouter(item.path, index)">
           <q-icon class="col-auto" size="sm" color="green" :name="item.meta.icon"></q-icon>
           <div class="col-auto text-dark text-subtitle1 text-bold">{{item.name}}</div>
         </div>

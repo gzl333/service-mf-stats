@@ -22,9 +22,7 @@ import ServiceTable from 'components/cloud/ServiceTable.vue'
 </script>
 
 <template>
-  <div>
-    <service-table/>
-  </div>
+  <service-table/>
 </template>
 
 <style lang="scss" scoped>

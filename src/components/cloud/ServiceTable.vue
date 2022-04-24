@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { navigateToUrl } from 'single-spa'
 // import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
@@ -18,25 +18,8 @@ import { navigateToUrl } from 'single-spa'
 // const route = useRoute()
 // const router = useRouter()
 // const tc = i18n.global.tc
-const searchDate = ref('')
-const getNowFormatDate = (): string => {
-  const date = new Date()
-  const seperator = '/'
-  const year = date.getFullYear()
-  let month: any = date.getMonth() + 1
-  let strDate: any = date.getDate()
-  if (month >= 1 && month <= 9) {
-    month = '0' + month
-  }
-  if (strDate >= 0 && strDate <= 9) {
-    strDate = '0' + strDate
-  }
-  const currentDate = year + seperator + month + seperator + strDate
-  return currentDate
-}
-searchDate.value = getNowFormatDate()
-const tab = ref('mails')
-const columns1 = [
+const tab = ref('id')
+const idColumns = [
   {
     name: 'id',
     required: true,
@@ -51,7 +34,7 @@ const columns1 = [
   { name: 'totalvirtualMachines', label: '云主机数量合计', align: 'center' },
   { name: 'operation', label: '操作', align: 'center' }
 ]
-const rows1 = [
+const idRows = [
   {
     id: 159,
     user: 'Frozen Yogurt',
@@ -153,7 +136,7 @@ const rows1 = [
     operation: '1%'
   }
 ]
-const columns2 = [
+const groupColumns = [
   { name: 'id', required: true, label: 'ID', align: 'center' },
   { name: 'teamName', align: 'center', label: '项目组名称' },
   { name: 'company', label: '单位', style: 'width: 10px', align: 'center' },
@@ -163,7 +146,7 @@ const columns2 = [
   { name: 'totalvirtualMachines', label: '云主机数量合计', align: 'center' },
   { name: 'operation', label: '操作', align: 'center' }
 ]
-const rows2 = [
+const groupRows = [
   {
     id: 159,
     teamName: 'Frozen',
@@ -265,7 +248,7 @@ const rows2 = [
     operation: '1%'
   }
 ]
-const columns3 = [
+const uuidColumns = [
   {
     name: 'uuid',
     required: true,
@@ -287,7 +270,7 @@ const columns3 = [
   { name: 'billAmount', label: '计费金额(总)', align: 'center' },
   { name: 'totalActualDeductionAmount', label: '实际扣费金额合计(总)', align: 'center' }
 ]
-const rows3 = [
+const uuidRows = [
   {
     uuid: 'Frozen Yogurt',
     ip: 159,
@@ -459,7 +442,7 @@ const rows3 = [
     totalActualDeductionAmount: '1%'
   }
 ]
-const columns4 = [
+const nodeColumns = [
   {
     name: 'id',
     required: true,
@@ -474,7 +457,7 @@ const columns4 = [
   { name: 'totalvirtualMachines', label: '云主机数量合计', align: 'center' },
   { name: 'operation', label: '操作', align: 'center' }
 ]
-const rows4 = [
+const nodeRows = [
   {
     id: 'Frozen Yogurt',
     service: 159,
@@ -576,337 +559,370 @@ const rows4 = [
     operation: '1%'
   }
 ]
+const options = [
+  '用户', 'IP地址'
+]
 const paginationTable = ref({
   page: 1,
   count: 0,
   rowsPerPage: 10
 })
 const current = ref(3)
-const isShow1 = ref(true)
-const isShow2 = ref(false)
-const isShow3 = ref(false)
-const isShow4 = ref(false)
-const fun1 = () => {
-  isShow2.value = false
-  isShow3.value = false
-  isShow4.value = false
-  isShow1.value = true
+const idShow = ref(true)
+const groupShow = ref(false)
+const uuidShow = ref(false)
+const nodeShow = ref(false)
+
+const myDate = new Date()
+const year = myDate.getFullYear()
+const month = myDate.getMonth()
+const searchQuery: any = ref({
+  year: {
+    label: year,
+    value: year
+  },
+  month: {
+    label: '全年',
+    value: 0
+  },
+  userName: '',
+  company: ''
+})
+const monthOptions: any = ref([])
+const yearOptions: any = ref([])
+const initSelectYear = () => {
+  monthOptions.value.push({ value: 0, label: '全年' })
+  for (let i = 2021; i <= year; i++) {
+    yearOptions.value.push({ value: i, label: i })
+  }
+  for (let i = 1; i <= month; i++) {
+    monthOptions.value.push({ value: i, label: i + '月' })
+  }
 }
-const fun2 = () => {
-  isShow1.value = false
-  isShow3.value = false
-  isShow4.value = false
-  isShow2.value = true
+const changeYear = (val: any) => {
+  monthOptions.value = []
+  searchQuery.value.month = { label: '全年', value: 0 }
+  monthOptions.value.push({ value: 0, label: '全年' })
+  if (val.value === myDate.getFullYear()) {
+    for (let i = 1; i <= month; i++) {
+      monthOptions.value.push({ value: i, label: i + '月' })
+    }
+  } else {
+    for (let i = 1; i <= 12; i++) {
+      monthOptions.value.push({ value: i, label: i + '月' })
+    }
+  }
 }
-const fun3 = () => {
-  isShow1.value = false
-  isShow2.value = false
-  isShow4.value = false
-  isShow3.value = true
+const idFun = () => {
+  groupShow.value = false
+  uuidShow.value = false
+  nodeShow.value = false
+  idShow.value = true
 }
-const fun4 = () => {
-  isShow1.value = false
-  isShow2.value = false
-  isShow3.value = false
-  isShow4.value = true
+const groupFun = () => {
+  idShow.value = false
+  uuidShow.value = false
+  nodeShow.value = false
+  groupShow.value = true
 }
-const text = ref('')
-const model = ref(null)
-const options = [
-  '用户', 'IP地址'
-]
+const uuidFun = () => {
+  idShow.value = false
+  groupShow.value = false
+  nodeShow.value = false
+  uuidShow.value = true
+}
+const nodeFun = () => {
+  idShow.value = false
+  groupShow.value = false
+  uuidShow.value = false
+  nodeShow.value = true
+}
+onMounted(() => {
+  initSelectYear()
+})
 </script>
 
 <template>
   <div>
-      <div class="row q-px-lg q-mt-md q-gutter-x-md">
-        <div class="col-2">
-          <q-input filled v-model="searchDate" mask="date" :rules="['searchDate']">
-            <template v-slot:append>
-              <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
-                  <q-date v-model="searchDate">
-                    <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="确定" color="primary" flat/>
-                    </div>
-                  </q-date>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input>
-        </div>
-        <div class="col-2">
-          <q-input outlined v-model="text" label="请输入"/>
-        </div>
-        <div class="col-2" v-show="isShow3">
-          <q-select square outlined v-model="model" :options="options" label="请选择"/>
-        </div>
+    <div class="row q-px-lg q-mt-md q-gutter-x-sm">
+      <div class="col-1">
+        <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" label="请选择" @update:model-value="changeYear"/>
       </div>
-      <div class="row q-px-lg items-center">
-        <div class="col-6">
-          <q-tabs
-            v-model="tab"
-            inline-label
-            :breakpoint="0"
-            align="justify"
-            class="bg-grey-3 text-black text-bold"
-          >
-            <q-tab name="mails" @click="fun1">按用户id显示</q-tab>
-            <q-tab name="alarms" @click="fun2">按项目组id显示</q-tab>
-            <q-tab name="movies" @click="fun3">按云主机uuid显示</q-tab>
-            <q-tab name="photos" @click="fun4">按服务节点显示</q-tab>
-          </q-tabs>
-        </div>
-        <div class="col-4 row q-gutter-x-lg q-ml-xs">
-          <q-btn color="white" text-color="black" label="搜索"/>
-          <q-btn color="white" text-color="black" label="导出Excel"/>
-        </div>
+      <div class="col-1">
+        <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" label="请选择" />
       </div>
-      <div class="q-px-lg q-mt-md">
-        <div v-show="isShow1">
-          <q-table
-            flat
-            table-header-class="bg-grey-1 text-grey"
-            :rows="rows1"
-            :columns="columns1"
-            row-key="name"
-            color="primary"
-            loading-label="网络请求中，请稍候..."
-            no-data-label="暂无数据"
-            hide-pagination
-            :pagination="{ rowsPerPage: 0 }"
-          >
-            <template v-slot:body="props">
-              <q-tr :props="props">
-                <q-td key="id" :props="props">
-                  <q-btn
-                    @click="navigateToUrl(`/my/stats/cloud/userUsage/${props.row.id}`)"
-                    class="q-ma-none" :label="props.row.id" color="primary" padding="xs" flat dense unelevated>
-                  </q-btn>
-                </q-td>
-                <q-td key="user" :props="props">
-                  {{ props.row.user }}
-                </q-td>
-                <q-td key="company" :props="props">
-                  <div class="text-pre-wrap">{{ props.row.company }}</div>
-                </q-td>
-                <q-td key="department" :props="props">
-                  {{ props.row.department }}
-                </q-td>
-                <q-td key="totalBillAount" :props="props">{{ props.row.totalBillAount }}</q-td>
-                <q-td key="totalActualDeductionAmount" :props="props">{{ props.row.totalActualDeductionAmount }}</q-td>
-                <q-td key="totalvirtualMachines" :props="props">{{ props.row.totalvirtualMachines }}</q-td>
-                <q-td key="operation" :props="props">{{ props.row.operation }}</q-td>
-              </q-tr>
-            </template>
-          </q-table>
-          <div class="row q-pa-sm text-grey justify-between items-center">
-            <div class="row items-center">
-              <span class="q-pr-md">共{{ paginationTable.count }}台云主机</span>
-              <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[5,10,15,20,25,30]" dense
-                        options-dense
-                        borderless @update:model-value="changePageSize">
-              </q-select>
-              <span>/页</span>
-            </div>
-            <div class="q-pa-lg flex flex-center">
-              <q-pagination
-                v-model="current"
-                :max="5"
-                direction-links
-                boundary-links
-                icon-first="skip_previous"
-                icon-last="skip_next"
-                icon-prev="fast_rewind"
-                icon-next="fast_forward"
-              />
-            </div>
+      <div class="col-2">
+        <q-input dense outlined v-model="searchQuery.userName" label="请输入用户名"/>
+      </div>
+      <div class="col-2" v-show="uuidShow">
+        <q-select dense outlined clearable v-model="searchQuery.company" :options="options" label="请选择"/>
+      </div>
+    </div>
+    <div class="row q-px-lg q-mt-md items-center">
+      <div class="col-6">
+        <q-tabs
+          v-model="tab"
+          inline-label
+          :breakpoint="0"
+          align="justify"
+          class="bg-blue-8 text-white shadow-2 text-bold"
+        >
+          <q-tab name="id" @click="idFun">按用户id显示</q-tab>
+          <q-tab name="group" @click="groupFun">按项目组id显示</q-tab>
+          <q-tab name="uuid" @click="uuidFun">按云主机uuid显示</q-tab>
+          <q-tab name="node" @click="nodeFun">按服务节点显示</q-tab>
+        </q-tabs>
+      </div>
+      <div class="col-4 row q-gutter-x-lg q-ml-md">
+        <q-btn outline text-color="black" label="搜索" class="q-px-xl" />
+        <q-btn outline text-color="black" label="导出Excel" class="q-px-lg" />
+      </div>
+    </div>
+    <div class="q-px-lg q-mt-md">
+      <div v-show="idShow">
+        <q-table
+          flat
+          table-header-class="bg-grey-1 text-grey"
+          :rows="idRows"
+          :columns="idColumns"
+          row-key="name"
+          color="primary"
+          loading-label="网络请求中，请稍候..."
+          no-data-label="暂无数据"
+          hide-pagination
+          :pagination="{ rowsPerPage: 0 }"
+        >
+          <template v-slot:body="props">
+            <q-tr :props="props">
+              <q-td key="id" :props="props">
+                {{ props.row.id }}
+              </q-td>
+              <q-td key="user" :props="props">
+                <q-btn
+                  @click="navigateToUrl(`/my/stats/cloud/userUsage/${props.row.id}`)"
+                  class="q-ma-none" :label="props.row.user" color="primary" padding="xs" flat dense unelevated>
+                </q-btn>
+              </q-td>
+              <q-td key="company" :props="props">
+                <div class="text-pre-wrap">{{ props.row.company }}</div>
+              </q-td>
+              <q-td key="department" :props="props">
+                {{ props.row.department }}
+              </q-td>
+              <q-td key="totalBillAount" :props="props">{{ props.row.totalBillAount }}</q-td>
+              <q-td key="totalActualDeductionAmount" :props="props">{{ props.row.totalActualDeductionAmount }}</q-td>
+              <q-td key="totalvirtualMachines" :props="props">{{ props.row.totalvirtualMachines }}</q-td>
+              <q-td key="operation" :props="props">{{ props.row.operation }}</q-td>
+            </q-tr>
+          </template>
+        </q-table>
+        <div class="row q-pa-sm text-grey justify-between items-center">
+          <div class="row items-center">
+            <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>
+            <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense
+                      options-dense
+                      borderless @update:model-value="changePageSize">
+            </q-select>
+            <span>/页</span>
           </div>
-        </div>
-        <div v-show="isShow2">
-          <q-table
-            flat
-            table-header-class="bg-grey-1 text-grey"
-            :rows="rows2"
-            :columns="columns2"
-            row-key="name"
-            color="primary"
-            loading-label="网络请求中，请稍候..."
-            no-data-label="暂无数据"
-            hide-pagination
-            :pagination="{ rowsPerPage: 0 }"
-          >
-            <template v-slot:body="props">
-              <q-tr :props="props">
-                <q-td key="id" :props="props">
-                  {{ props.row.id }}
-                </q-td>
-                <q-td key="teamName" :props="props">
-                  <q-btn
-                    @click="navigateToUrl(`/my/stats/cloud/groupUsage/${props.row.teamName}`)"
-                    class="q-ma-none" :label="props.row.teamName" color="primary" padding="xs" flat dense unelevated>
-                  </q-btn>
-                </q-td>
-                <q-td key="company" :props="props">
-                  <div class="text-pre-wrap">{{ props.row.company }}</div>
-                </q-td>
-                <q-td key="department" :props="props">
-                  {{ props.row.department }}
-                </q-td>
-                <q-td key="totalBillAount" :props="props">{{ props.row.totalBillAount }}</q-td>
-                <q-td key="totalActualDeductionAmount" :props="props">{{ props.row.totalActualDeductionAmount }}</q-td>
-                <q-td key="totalvirtualMachines" :props="props">{{ props.row.totalvirtualMachines }}</q-td>
-                <q-td key="operation" :props="props">{{ props.row.operation }}</q-td>
-              </q-tr>
-            </template>
-          </q-table>
-          <div class="row q-pa-sm text-grey justify-between items-center">
-            <div class="row items-center">
-              <span class="q-pr-md">共{{ paginationTable.count }}台云主机</span>
-              <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[5,10,15,20,25,30]" dense
-                        options-dense
-                        borderless @update:model-value="changePageSize">
-              </q-select>
-              <span>/页</span>
-            </div>
-            <div class="q-pa-lg flex flex-center">
-              <q-pagination
-                v-model="current"
-                :max="5"
-                direction-links
-                boundary-links
-                icon-first="skip_previous"
-                icon-last="skip_next"
-                icon-prev="fast_rewind"
-                icon-next="fast_forward"
-              />
-            </div>
-          </div>
-        </div>
-        <div v-show="isShow3">
-          <q-table
-            flat
-            table-header-class="bg-grey-1 text-grey"
-            :rows="rows3"
-            :columns="columns3"
-            row-key="name"
-            color="primary"
-            loading-label="网络请求中，请稍候..."
-            no-data-label="暂无数据"
-            hide-pagination
-            :pagination="{ rowsPerPage: 0 }"
-          >
-            <template v-slot:body="props">
-              <q-tr :props="props">
-                <q-td key="uuid" :props="props">
-                  <q-btn
-                    @click="navigateToUrl(`/my/stats/cloud/uuUsage/${props.row.uuid}`)"
-                    class="q-ma-none" :label="props.row.uuid" color="primary" padding="xs" flat dense unelevated>
-                  </q-btn>
-                </q-td>
-                <q-td key="ip" :props="props">{{ props.row.ip }}</q-td>
-                <q-td key="service" :props="props">
-                  <div class="text-pre-wrap">{{ props.row.service }}</div>
-                </q-td>
-                <q-td key="configuration" :props="props">{{ props.row.configuration }}</q-td>
-                <q-td key="state" :props="props">{{ props.row.state }}</q-td>
-                <q-td key="settlementType" :props="props">{{ props.row.settlementType }}</q-td>
-                <q-td key="user" :props="props">{{ props.row.user }}</q-td>
-                <q-td key="totalUseTime" :props="props">{{ props.row.totalUseTime }}</q-td>
-                <q-td key="publicIP" :props="props">{{ props.row.publicIP }}</q-td>
-                <q-td key="vCPU" :props="props">{{ props.row.vCPU }}</q-td>
-                <q-td key="memory" :props="props">{{ props.row.memory }}</q-td>
-                <q-td key="disk" :props="props">{{ props.row.disk }}</q-td>
-                <q-td key="flow" :props="props">{{ props.row.flow }}</q-td>
-                <q-td key="billAmount" :props="props">{{ props.row.billAmount }}</q-td>
-                <q-td key="totalActualDeductionAmount" :props="props">{{ props.row.totalActualDeductionAmount }}</q-td>
-              </q-tr>
-            </template>
-          </q-table>
-          <div class="row q-pa-sm text-grey justify-between items-center">
-            <div class="row items-center">
-              <span class="q-pr-md">共{{ paginationTable.count }}台云主机</span>
-              <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[5,10,15,20,25,30]" dense
-                        options-dense
-                        borderless @update:model-value="changePageSize">
-              </q-select>
-              <span>/页</span>
-            </div>
-            <div class="q-pa-lg flex flex-center">
-              <q-pagination
-                v-model="current"
-                :max="5"
-                direction-links
-                boundary-links
-                icon-first="skip_previous"
-                icon-last="skip_next"
-                icon-prev="fast_rewind"
-                icon-next="fast_forward"
-              />
-            </div>
-          </div>
-        </div>
-        <div v-show="isShow4">
-          <q-table
-            flat
-            table-header-class="bg-grey-1 text-grey"
-            :rows="rows4"
-            :columns="columns4"
-            row-key="name"
-            color="primary"
-            loading-label="网络请求中，请稍候..."
-            no-data-label="暂无数据"
-            hide-pagination
-            :pagination="{ rowsPerPage: 0 }"
-          >
-            <template v-slot:body="props">
-              <q-tr :props="props">
-                <q-td key="id" :props="props">
-                  {{ props.row.id }}
-                </q-td>
-                <q-td key="service" :props="props">
-                  <q-btn
-                    @click="navigateToUrl(`/my/stats/cloud/nodeUsage/${props.row.service}`)"
-                    class="q-ma-none" :label="props.row.service" color="primary" padding="xs" flat dense unelevated>
-                  </q-btn>
-                </q-td>
-                <q-td key="company" :props="props">
-                  <div class="text-pre-wrap">{{ props.row.company }}</div>
-                </q-td>
-                <q-td key="totalBillAount" :props="props">{{ props.row.totalBillAount }}</q-td>
-                <q-td key="totalActualDeductionAmount" :props="props">{{ props.row.totalActualDeductionAmount }}</q-td>
-                <q-td key="userNumber" :props="props">
-                  {{ props.row.userNumber }}
-                </q-td>
-                <q-td key="totalvirtualMachines" :props="props">{{ props.row.totalvirtualMachines }}</q-td>
-                <q-td key="operation" :props="props">{{ props.row.operation }}</q-td>
-              </q-tr>
-            </template>
-          </q-table>
-          <div class="row q-pa-sm text-grey justify-between items-center">
-            <div class="row items-center">
-              <span class="q-pr-md">共{{ paginationTable.count }}台云主机</span>
-              <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[5,10,15,20,25,30]" dense
-                        options-dense
-                        borderless @update:model-value="changePageSize">
-              </q-select>
-              <span>/页</span>
-            </div>
-            <div class="q-pa-lg flex flex-center">
-              <q-pagination
-                v-model="current"
-                :max="5"
-                direction-links
-                boundary-links
-                icon-first="skip_previous"
-                icon-last="skip_next"
-                icon-prev="fast_rewind"
-                icon-next="fast_forward"
-              />
-            </div>
+          <div class="q-pa-lg flex flex-center">
+            <q-pagination
+              v-model="current"
+              :max="5"
+              direction-links
+              boundary-links
+              icon-first="skip_previous"
+              icon-last="skip_next"
+              icon-prev="fast_rewind"
+              icon-next="fast_forward"
+            />
           </div>
         </div>
       </div>
+      <div v-show="groupShow">
+        <q-table
+          flat
+          table-header-class="bg-grey-1 text-grey"
+          :rows="groupRows"
+          :columns="groupColumns"
+          row-key="name"
+          color="primary"
+          loading-label="网络请求中，请稍候..."
+          no-data-label="暂无数据"
+          hide-pagination
+          :pagination="{ rowsPerPage: 0 }"
+        >
+          <template v-slot:body="props">
+            <q-tr :props="props">
+              <q-td key="id" :props="props">
+                {{ props.row.id }}
+              </q-td>
+              <q-td key="teamName" :props="props">
+                <q-btn
+                  @click="navigateToUrl(`/my/stats/cloud/groupUsage/${props.row.teamName}`)"
+                  class="q-ma-none" :label="props.row.teamName" color="primary" padding="xs" flat dense unelevated>
+                </q-btn>
+              </q-td>
+              <q-td key="company" :props="props">
+                <div class="text-pre-wrap">{{ props.row.company }}</div>
+              </q-td>
+              <q-td key="department" :props="props">
+                {{ props.row.department }}
+              </q-td>
+              <q-td key="totalBillAount" :props="props">{{ props.row.totalBillAount }}</q-td>
+              <q-td key="totalActualDeductionAmount" :props="props">{{ props.row.totalActualDeductionAmount }}</q-td>
+              <q-td key="totalvirtualMachines" :props="props">{{ props.row.totalvirtualMachines }}</q-td>
+              <q-td key="operation" :props="props">{{ props.row.operation }}</q-td>
+            </q-tr>
+          </template>
+        </q-table>
+        <div class="row q-pa-sm text-grey justify-between items-center">
+          <div class="row items-center">
+            <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>
+            <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[5,10,15,20,25,30]" dense
+                      options-dense
+                      borderless @update:model-value="changePageSize">
+            </q-select>
+            <span>/页</span>
+          </div>
+          <div class="q-pa-lg flex flex-center">
+            <q-pagination
+              v-model="current"
+              :max="5"
+              direction-links
+              boundary-links
+              icon-first="skip_previous"
+              icon-last="skip_next"
+              icon-prev="fast_rewind"
+              icon-next="fast_forward"
+            />
+          </div>
+        </div>
+      </div>
+      <div v-show="uuidShow">
+        <q-table
+          flat
+          table-header-class="bg-grey-1 text-grey"
+          :rows="uuidRows"
+          :columns="uuidColumns"
+          row-key="name"
+          color="primary"
+          loading-label="网络请求中，请稍候..."
+          no-data-label="暂无数据"
+          hide-pagination
+          :pagination="{ rowsPerPage: 0 }"
+        >
+          <template v-slot:body="props">
+            <q-tr :props="props">
+              <q-td key="uuid" :props="props">
+                <q-btn
+                  @click="navigateToUrl(`/my/stats/cloud/uuUsage/${props.row.uuid}`)"
+                  class="q-ma-none" :label="props.row.uuid" color="primary" padding="xs" flat dense unelevated>
+                </q-btn>
+              </q-td>
+              <q-td key="ip" :props="props">{{ props.row.ip }}</q-td>
+              <q-td key="service" :props="props">
+                <div class="text-pre-wrap">{{ props.row.service }}</div>
+              </q-td>
+              <q-td key="configuration" :props="props">{{ props.row.configuration }}</q-td>
+              <q-td key="state" :props="props">{{ props.row.state }}</q-td>
+              <q-td key="settlementType" :props="props">{{ props.row.settlementType }}</q-td>
+              <q-td key="user" :props="props">{{ props.row.user }}</q-td>
+              <q-td key="totalUseTime" :props="props">{{ props.row.totalUseTime }}</q-td>
+              <q-td key="publicIP" :props="props">{{ props.row.publicIP }}</q-td>
+              <q-td key="vCPU" :props="props">{{ props.row.vCPU }}</q-td>
+              <q-td key="memory" :props="props">{{ props.row.memory }}</q-td>
+              <q-td key="disk" :props="props">{{ props.row.disk }}</q-td>
+              <q-td key="flow" :props="props">{{ props.row.flow }}</q-td>
+              <q-td key="billAmount" :props="props">{{ props.row.billAmount }}</q-td>
+              <q-td key="totalActualDeductionAmount" :props="props">{{ props.row.totalActualDeductionAmount }}</q-td>
+            </q-tr>
+          </template>
+        </q-table>
+        <div class="row q-pa-sm text-grey justify-between items-center">
+          <div class="row items-center">
+            <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>
+            <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[5,10,15,20,25,30]" dense
+                      options-dense
+                      borderless @update:model-value="changePageSize">
+            </q-select>
+            <span>/页</span>
+          </div>
+          <div class="q-pa-lg flex flex-center">
+            <q-pagination
+              v-model="current"
+              :max="5"
+              direction-links
+              boundary-links
+              icon-first="skip_previous"
+              icon-last="skip_next"
+              icon-prev="fast_rewind"
+              icon-next="fast_forward"
+            />
+          </div>
+        </div>
+      </div>
+      <div v-show="nodeShow">
+        <q-table
+          flat
+          table-header-class="bg-grey-1 text-grey"
+          :rows="nodeRows"
+          :columns="nodeColumns"
+          row-key="name"
+          color="primary"
+          loading-label="网络请求中，请稍候..."
+          no-data-label="暂无数据"
+          hide-pagination
+          :pagination="{ rowsPerPage: 0 }"
+        >
+          <template v-slot:body="props">
+            <q-tr :props="props">
+              <q-td key="id" :props="props">
+                {{ props.row.id }}
+              </q-td>
+              <q-td key="service" :props="props">
+                <q-btn
+                  @click="navigateToUrl(`/my/stats/cloud/nodeUsage/${props.row.service}`)"
+                  class="q-ma-none" :label="props.row.service" color="primary" padding="xs" flat dense unelevated>
+                </q-btn>
+              </q-td>
+              <q-td key="company" :props="props">
+                <div class="text-pre-wrap">{{ props.row.company }}</div>
+              </q-td>
+              <q-td key="totalBillAount" :props="props">{{ props.row.totalBillAount }}</q-td>
+              <q-td key="totalActualDeductionAmount" :props="props">{{ props.row.totalActualDeductionAmount }}</q-td>
+              <q-td key="userNumber" :props="props">
+                {{ props.row.userNumber }}
+              </q-td>
+              <q-td key="totalvirtualMachines" :props="props">{{ props.row.totalvirtualMachines }}</q-td>
+              <q-td key="operation" :props="props">{{ props.row.operation }}</q-td>
+            </q-tr>
+          </template>
+        </q-table>
+        <div class="row q-pa-sm text-grey justify-between items-center">
+          <div class="row items-center">
+            <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>
+            <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense
+                      options-dense
+                      borderless @update:model-value="changePageSize">
+            </q-select>
+            <span>/页</span>
+          </div>
+          <div class="q-pa-lg flex flex-center">
+            <q-pagination
+              v-model="current"
+              :max="5"
+              direction-links
+              boundary-links
+              icon-first="skip_previous"
+              icon-last="skip_next"
+              icon-prev="fast_rewind"
+              icon-next="fast_forward"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 

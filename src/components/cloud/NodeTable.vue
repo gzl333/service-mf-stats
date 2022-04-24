@@ -222,8 +222,8 @@ const paginationTable = ref({
       </q-table>
       <div class="row q-pa-sm text-grey justify-between items-center">
         <div class="row items-center">
-          <span class="q-pr-md">共{{ paginationTable.count }}台云主机</span>
-          <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[5,10,15,20,25,30]" dense
+          <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>
+          <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense
                     options-dense
                     borderless @update:model-value="changePageSize">
           </q-select>
