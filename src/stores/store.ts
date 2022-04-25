@@ -20,6 +20,8 @@ export const useStore = defineStore('stats', {
     },
     // 保存用户角色
     storeUserRole (payload: { fedRole: 'ordinary' | 'federal-admin', vmsAdmin: string[] }) {
+      // this.items.fedRole = 'ordinary'
+      // this.items.fedRole = 'federal-admin'
       this.items.fedRole = payload.fedRole
       this.items.vmsAdmin = payload.vmsAdmin
     }

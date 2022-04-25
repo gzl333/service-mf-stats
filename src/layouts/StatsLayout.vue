@@ -86,7 +86,7 @@ onMounted(async () => {
     </q-drawer>
 
     <q-page-container>
-      <breadcrumb v-show="activeItem !== 'home'"/>
+      <breadcrumb v-show="activeItem !== 'home'" v-cloak/>
       <q-scroll-area style="height: 100vh;">
         <router-view/>
       </q-scroll-area>
@@ -102,5 +102,8 @@ onMounted(async () => {
   .active-text {
     color: $primary;
   }
+}
+[v-cloak] {
+  display: none !important;
 }
 </style>
