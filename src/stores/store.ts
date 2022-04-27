@@ -13,10 +13,14 @@ export const useStore = defineStore('stats', {
   }),
   getters: {},
   actions: {
+    loadAllTables () {
+      this.getUser()
+    },
     async getUser () {
       const respDataCenter = await stats.stats.api.getUserPermissionPolicy()
-      this.storeUserRole({ fedRole: respDataCenter.data.role, vmsAdmin: respDataCenter.data.vms.service_ids })
-      return respDataCenter
+      if (respDataCenter.status === 200) {
+        this.storeUserRole({ fedRole: respDataCenter.data.role, vmsAdmin: respDataCenter.data.vms.service_ids })
+      }
     },
     // 保存用户角色
     storeUserRole (payload: { fedRole: 'ordinary' | 'federal-admin', vmsAdmin: string[] }) {

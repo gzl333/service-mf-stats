@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { /* ref, */ computed, onMounted } from 'vue'
+import { /* ref, */ computed } from 'vue'
 import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
@@ -20,9 +20,7 @@ const store = useStore()
 const tc = i18n.global.tc
 const activeItem = computed(() => store.items.currentPath[0])
 const releaseTime = process.env.releaseTime
-onMounted(async () => {
-  await store.getUser()
-})
+store.loadAllTables()
 </script>
 
 <template>
@@ -55,8 +53,8 @@ onMounted(async () => {
 
             <q-item
               clickable
-              :active="activeItem === 'cloud'"
-              @click="activeItem = 'cloud'; navigateToUrl(store.items?.fedRole === 'federal-admin' ? '/my/stats/cloud' : '/my/stats/cloud1')"
+              :active="activeItem === 'cloud' || activeItem === 'cloudUser'"
+              @click="store.items?.fedRole === 'federal-admin' ? activeItem = 'cloud' : activeItem = 'cloudUser'; navigateToUrl(store.items?.fedRole === 'federal-admin' ? '/my/stats/cloud' : '/my/stats/cloud/uuUsage/159')"
               active-class="active-item"
             >
               <q-item-section class="column items-center">

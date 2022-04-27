@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import GroupTable from '../../components/cloud/GroupTable.vue'
+import GroupTable from 'components/admin/cloud/GroupTable.vue'
 // import { navigateToUrl } from 'single-spa'
 // import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'

@@ -572,7 +572,7 @@ const idShow = ref(true)
 const groupShow = ref(false)
 const uuidShow = ref(false)
 const nodeShow = ref(false)
-
+const activeItem = ref('id')
 const myDate = new Date()
 const year = myDate.getFullYear()
 const month = myDate.getMonth()
@@ -614,24 +614,28 @@ const changeYear = (val: any) => {
   }
 }
 const idFun = () => {
+  activeItem.value = 'id'
   groupShow.value = false
   uuidShow.value = false
   nodeShow.value = false
   idShow.value = true
 }
 const groupFun = () => {
+  activeItem.value = 'group'
   idShow.value = false
   uuidShow.value = false
   nodeShow.value = false
   groupShow.value = true
 }
 const uuidFun = () => {
+  activeItem.value = 'uuid'
   idShow.value = false
   groupShow.value = false
   nodeShow.value = false
   uuidShow.value = true
 }
 const nodeFun = () => {
+  activeItem.value = 'node'
   idShow.value = false
   groupShow.value = false
   uuidShow.value = false
@@ -665,12 +669,13 @@ onMounted(() => {
           inline-label
           :breakpoint="0"
           align="justify"
-          class="bg-blue-8 text-white shadow-2 text-bold"
+          indicator-color="blue-grey"
+          class="shadow-2"
         >
-          <q-tab name="id" @click="idFun">按用户id显示</q-tab>
-          <q-tab name="group" @click="groupFun">按项目组id显示</q-tab>
-          <q-tab name="uuid" @click="uuidFun">按云主机uuid显示</q-tab>
-          <q-tab name="node" @click="nodeFun">按服务节点显示</q-tab>
+          <q-tab name="id" @click="idFun" :class="activeItem === 'id' ? 'bg-blue-4' : 'bg-grey-4'">按用户id显示</q-tab>
+          <q-tab name="group" @click="groupFun" :class="activeItem === 'group' ? 'bg-blue-4' : 'bg-grey-4'">按项目组id显示</q-tab>
+          <q-tab name="uuid" @click="uuidFun" :class="activeItem === 'uuid' ? 'bg-blue-4' : 'bg-grey-4'">按云主机uuid显示</q-tab>
+          <q-tab name="node" @click="nodeFun" :class="activeItem === 'node' ? 'bg-blue-4' : 'bg-grey-4'">按服务节点显示</q-tab>
         </q-tabs>
       </div>
       <div class="col-4 row q-gutter-x-lg q-ml-md">

@@ -4,7 +4,7 @@
 // import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
-import ServiceTable from 'components/cloud/ServiceTable.vue'
+import ServiceTable from 'components/admin/cloud/ServiceTable.vue'
 // const props = defineProps({
 //   foo: {
 //     type: String,

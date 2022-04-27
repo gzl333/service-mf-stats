@@ -31,6 +31,7 @@ const getBreadcrumb = () => {
   // if (!isHome(matched[0])) {
   //   matched = [{ path: '/home', meta: { title: '首页' } }].concat(matched)
   // }
+  console.log(matched)
   breadList.value = matched.filter(item => item.name !== undefined)
 }
 const changeRouter = (path: string, index: number) => {

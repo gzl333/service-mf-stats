@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import UUTable from '../../components/cloud/UUTable.vue'
+import UUTable from 'components/admin/cloud/UUTable.vue'
 // import { navigateToUrl } from 'single-spa'
 // import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
@@ -28,7 +28,7 @@ const changeMonth = () => {
 
 <template>
   <div class="UUUsageList">
-    <div class="row q-pa-lg">
+    <div class="row q-px-lg q-pt-lg q-pb-xs">
       <div class="col-2">
         <q-btn-group>
           <q-btn :color="isLastMonth ? 'white' : 'blue-5'" label="本月" class="text-subtitle1 q-px-xl text-black"

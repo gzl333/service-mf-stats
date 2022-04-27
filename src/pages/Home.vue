@@ -22,7 +22,7 @@ const store = useStore()
 </script>
 
 <template>
-  <div class="Home" v-cloak>
+  <div class="Home">
     <div class="q-py-md q-px-xl row items-center">
       <q-separator vertical inset color="blue" size="0.3rem" style="height: 22px"/>
       <div class="text-h5 text-weight-bold q-ml-sm">用量记账</div>
@@ -30,15 +30,15 @@ const store = useStore()
     <div>
       <div class="text-h6 q-py-md q-px-xl text-weight-bold">用量计费</div>
       <div class="q-pt-lg q-pb-xl q-px-xl row q-gutter-md">
-        <div class="col-2" @click="navigateToUrl('/my/stats/cloud')">
+        <div class="col-2" @click="navigateToUrl(store.items?.fedRole === 'federal-admin' ? '/my/stats/cloud' : '/my/stats/cloud/uuUsage/159')">
           <q-card
             class="my-card text-white q-py-md"
             style="background-color: #FFF0F3"
           >
             <q-card-section>
               <div class="row items-center justify-center q-gutter-x-sm">
-                <q-icon name="las la-laptop-code" color="orange" size="lg"/>
-                <div class="text-h6 text-black">云主机</div>
+                <q-icon name="las la-laptop-code" color="orange" size="md"/>
+                <div class="text-subtitle1 text-black">云主机</div>
               </div>
             </q-card-section>
           </q-card>
@@ -50,8 +50,8 @@ const store = useStore()
           >
             <q-card-section>
               <div class="row items-center justify-center q-gutter-x-sm">
-                <q-icon name="las la-cloud-upload-alt" color="orange" size="lg"/>
-                <div class="text-h6 text-black">对象存储</div>
+                <q-icon name="las la-cloud-upload-alt" color="orange" size="md"/>
+                <div class="text-subtitle1 text-black">对象存储</div>
               </div>
             </q-card-section>
           </q-card>
@@ -63,8 +63,8 @@ const store = useStore()
           >
             <q-card-section>
               <div class="row items-center justify-center q-gutter-x-sm">
-                <q-icon name="las la-save" color="orange" size="lg"/>
-                <div class="text-h6 text-black">云硬盘</div>
+                <q-icon name="las la-save" color="orange" size="md"/>
+                <div class="text-subtitle1 text-black">云硬盘</div>
               </div>
             </q-card-section>
           </q-card>
@@ -76,8 +76,8 @@ const store = useStore()
           >
             <q-card-section>
               <div class="row items-center justify-center q-gutter-x-sm">
-                <q-icon name="las la-file-medical-alt" color="orange" size="lg"/>
-                <div class="text-h6 text-black">快照</div>
+                <q-icon name="las la-file-medical-alt" color="orange" size="md"/>
+                <div class="text-subtitle1 text-black">快照</div>
               </div>
             </q-card-section>
           </q-card>
@@ -94,8 +94,8 @@ const store = useStore()
           >
             <q-card-section>
               <div class="row items-center justify-center q-gutter-x-sm">
-                <q-icon name="payment" color="green-5" size="lg"/>
-                <div class="text-h6 text-black">账单管理</div>
+                <q-icon name="payment" color="green-5" size="md"/>
+                <div class="text-subtitle1 text-black">账单管理</div>
               </div>
             </q-card-section>
           </q-card>
@@ -107,8 +107,8 @@ const store = useStore()
           >
             <q-card-section>
               <div class="row items-center justify-center q-gutter-x-sm">
-                <q-icon name="personal_injury" color="green-5" size="lg"/>
-                <div class="text-h6 text-black">个人帐单</div>
+                <q-icon name="personal_injury" color="green-5" size="md"/>
+                <div class="text-subtitle1 text-black">个人帐单</div>
               </div>
             </q-card-section>
           </q-card>
@@ -120,8 +120,8 @@ const store = useStore()
           >
             <q-card-section>
               <div class="row items-center justify-center q-gutter-x-sm">
-                <q-icon name="groups" color="green-5" size="lg"/>
-                <div class="text-h6 text-black">项目组账单</div>
+                <q-icon name="groups" color="green-5" size="md"/>
+                <div class="text-subtitle1 text-black">项目组账单</div>
               </div>
             </q-card-section>
           </q-card>
@@ -138,8 +138,8 @@ const store = useStore()
           >
             <q-card-section>
               <div class="row items-center justify-center q-gutter-x-sm">
-                <q-icon name="group" color="blue-5" size="lg"/>
-                <div class="text-h6 text-black">账户管理</div>
+                <q-icon name="group" color="blue-5" size="md"/>
+                <div class="text-subtitle1 text-black">账户管理</div>
               </div>
             </q-card-section>
           </q-card>
@@ -151,8 +151,8 @@ const store = useStore()
           >
             <q-card-section>
               <div class="row items-center justify-center q-gutter-x-sm">
-                <q-icon name="shopping_bag" color="blue-5" size="lg"/>
-                <div class="text-h6 text-black">账户充值记录</div>
+                <q-icon name="shopping_bag" color="blue-5" size="md"/>
+                <div class="text-subtitle1 text-black">账户充值记录</div>
               </div>
             </q-card-section>
           </q-card>
@@ -164,8 +164,8 @@ const store = useStore()
           >
             <q-card-section>
               <div class="row items-center justify-center q-gutter-x-sm">
-                <q-icon name="las la-clipboard" color="blue-5" size="lg"/>
-                <div class="text-h6 text-black">科技云券发放记录</div>
+                <q-icon name="las la-clipboard" color="blue-5" size="md"/>
+                <div class="text-subtitle1 text-black">科技云券发放记录</div>
               </div>
             </q-card-section>
           </q-card>
@@ -177,8 +177,8 @@ const store = useStore()
           >
             <q-card-section>
               <div class="row items-center justify-center q-gutter-x-sm">
-                <q-icon name="las la-exchange-alt" color="blue-5" size="lg"/>
-                <div class="text-h6 text-black">科技云券兑换入口</div>
+                <q-icon name="las la-exchange-alt" color="blue-5" size="md"/>
+                <div class="text-subtitle1 text-black">科技云券兑换入口</div>
               </div>
             </q-card-section>
           </q-card>
@@ -192,6 +192,10 @@ const store = useStore()
 .Home {
   [v-cloak] {
     display: none !important;
+  }
+  .my-card{
+    width: 100%;
+    max-width: 250px
   }
 }
 </style>

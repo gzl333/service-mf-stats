@@ -171,6 +171,7 @@ const paginationTable = ref({
   <div class="UUTable">
     <div class="q-px-lg">
       <q-table
+        flat
         table-header-class="bg-grey-1 text-grey"
         :rows="rows"
         :columns="columns"
@@ -178,7 +179,7 @@ const paginationTable = ref({
         color="primary"
         loading-label="网络请求中，请稍候..."
         no-data-label="暂无数据"
-        hide-bottom
+        hide-pagination
       >
         <template v-slot:body="props">
           <q-tr :props="props">
@@ -191,9 +192,11 @@ const paginationTable = ref({
           </q-tr>
         </template>
       </q-table>
+      <q-separator/>
     </div>
-    <div class="q-px-lg q-mt-md">
+    <div class="q-px-lg q-mt-xl">
       <q-table
+        flat
         table-header-class="bg-grey-1 text-grey"
         :rows="rows3"
         :columns="columns3"
