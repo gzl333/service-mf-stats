@@ -194,7 +194,8 @@ const paginationTable = ref({
       </q-table>
       <q-separator/>
     </div>
-    <div class="q-px-lg q-mt-xl">
+    <div class="row">
+    <div class="col-12 q-px-lg q-mt-xl">
       <q-table
         flat
         table-header-class="bg-grey-1 text-grey"
@@ -243,6 +244,7 @@ const paginationTable = ref({
           />
         </div>
       </div>
+    </div>
     </div>
   </div>
 </template>

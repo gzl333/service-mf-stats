@@ -15,6 +15,7 @@ import Breadcrumb from '../components/layout/Breadcrumb.vue'
 // const emits = defineEmits(['change', 'delete'])
 
 const store = useStore()
+console.log(store.items)
 // const router = useRouter()
 // const route = useRoute()
 const tc = i18n.global.tc

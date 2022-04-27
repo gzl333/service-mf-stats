@@ -24,10 +24,21 @@ export const useStore = defineStore('stats', {
     },
     // 保存用户角色
     storeUserRole (payload: { fedRole: 'ordinary' | 'federal-admin', vmsAdmin: string[] }) {
+      // 方式1
       // this.items.fedRole = 'ordinary'
       // this.items.fedRole = 'federal-admin'
-      this.items.fedRole = payload.fedRole
-      this.items.vmsAdmin = payload.vmsAdmin
+      // 方式2
+      // this.$patch({
+      //   items: {
+      //     fedRole: payload.fedRole,
+      //     vmsAdmin: payload.vmsAdmin
+      //   }
+      // })
+      // 方式3
+      this.$patch(state => {
+        state.items.fedRole = payload.fedRole
+        state.items.vmsAdmin = payload.vmsAdmin
+      })
     }
   }
 })

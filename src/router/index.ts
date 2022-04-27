@@ -39,7 +39,6 @@ export default route(function (/* { store, ssrContext } */) {
   Router.beforeEach((to, from, next) => {
     // console.log('@cnic/stats ', 'from:', from.fullPath, ' to:', to.fullPath)
     const store = useStore()
-
     // 根据当前path更新store.items.currentPath
     store.items.currentPath = to.path.split('/').slice(3)
 

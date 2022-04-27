@@ -30,7 +30,6 @@ const routes: RouteRecordRaw[] = [
         children: [
           {
             path: 'list',
-            name: '云主机用量列表',
             meta: {
               icon: 'las la-user',
               roles: ['federal-admin']
