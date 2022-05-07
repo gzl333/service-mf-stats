@@ -248,198 +248,198 @@ const groupRows = [
     operation: '1%'
   }
 ]
-const uuidColumns = [
-  {
-    name: 'uuid',
-    required: true,
-    label: '云主机uuid',
-    align: 'center'
-  },
-  { name: 'ip', align: 'center', label: 'ip地址' },
-  { name: 'service', label: '服务节点', style: 'width: 10px', align: 'center' },
-  { name: 'configuration', label: '初始配置', align: 'center' },
-  { name: 'state', label: '状态', align: 'center' },
-  { name: 'settlementType', label: '结算类型', align: 'center' },
-  { name: 'user', label: '用户', align: 'center' },
-  { name: 'totalUseTime', label: '使用总时长(天)', align: 'center' },
-  { name: 'publicIP', label: '公网IP(个)', align: 'center' },
-  { name: 'vCPU', label: 'vCPU(核*天）', align: 'center' },
-  { name: 'memory', label: '内存(GB*天)', align: 'center' },
-  { name: 'disk', label: '本地硬盘(GB*天)', align: 'center' },
-  { name: 'flow', label: '流量(GB*天)', align: 'center' },
-  { name: 'billAmount', label: '计费金额(总)', align: 'center' },
-  { name: 'totalActualDeductionAmount', label: '实际扣费金额合计(总)', align: 'center' }
-]
+// const uuidColumns = [
+//   {
+//     name: 'uuid',
+//     required: true,
+//     label: '云主机uuid',
+//     align: 'center'
+//   },
+//   { name: 'ip', align: 'center', label: 'ip地址' },
+//   { name: 'service', label: '服务节点', style: 'width: 10px', align: 'center' },
+//   { name: 'configuration', label: '初始配置', align: 'center' },
+//   { name: 'state', label: '状态', align: 'center' },
+//   { name: 'settlementType', label: '结算类型', align: 'center' },
+//   { name: 'user', label: '用户', align: 'center' },
+//   { name: 'totalUseTime', label: '使用总时长(天)', align: 'center' },
+//   { name: 'publicIP', label: '公网IP(个)', align: 'center' },
+//   { name: 'vCPU', label: 'vCPU(核*天）', align: 'center' },
+//   { name: 'memory', label: '内存(GB*天)', align: 'center' },
+//   { name: 'disk', label: '本地硬盘(GB*天)', align: 'center' },
+//   { name: 'flow', label: '流量(GB*天)', align: 'center' },
+//   { name: 'billAmount', label: '计费金额(总)', align: 'center' },
+//   { name: 'totalActualDeductionAmount', label: '实际扣费金额合计(总)', align: 'center' }
+// ]
 const uuidRows = [
   {
-    uuid: 'Frozen Yogurt',
-    ip: 159,
-    service: 6.0,
-    configuration: 24,
-    state: 4.0,
-    settlementType: 87,
-    user: '1%',
-    totalUseTime: '14%',
-    publicIP: '1%',
-    vCPU: '1%',
-    memory: '1%',
-    disk: '1%',
-    flow: '1%',
-    billAmount: '1%',
-    totalActualDeductionAmount: '1%'
+    uuid: '123456',
+    ip: '159.126.111.222',
+    service: '云联邦',
+    configuration: '4核8GB内存200GB本地硬盘公网ip:1.11.1.11',
+    state: '正常',
+    settlementType: '在线',
+    user: 'duyukuan@cnic.cn',
+    totalUseTime: '10天',
+    publicIP: '10个',
+    vCPU: '10核',
+    memory: '8G',
+    disk: '20G',
+    flow: '2G',
+    billAmount: '1000',
+    totalActualDeductionAmount: '500'
   },
   {
-    uuid: 'Frozen Yogurt',
-    ip: 159,
-    service: 6.0,
-    configuration: 24,
-    state: 4.0,
-    settlementType: 87,
-    user: '1%',
-    totalUseTime: '14%',
-    publicIP: '1%',
-    vCPU: '1%',
-    memory: '1%',
-    disk: '1%',
-    flow: '1%',
-    billAmount: '1%',
-    totalActualDeductionAmount: '1%'
+    uuid: '123456',
+    ip: '159.126.111.222',
+    service: '云联邦',
+    configuration: '4核8GB内存200GB本地硬盘公网ip:1.11.1.11',
+    state: '正常',
+    settlementType: '在线',
+    user: 'duyukuan@cnic.cn',
+    totalUseTime: '10天',
+    publicIP: '10个',
+    vCPU: '10核',
+    memory: '8G',
+    disk: '20G',
+    flow: '2G',
+    billAmount: '1000',
+    totalActualDeductionAmount: '500'
   },
   {
-    uuid: 'Frozen Yogurt',
-    ip: 159,
-    service: 6.0,
-    configuration: 24,
-    state: 4.0,
-    settlementType: 87,
-    user: '1%',
-    totalUseTime: '14%',
-    publicIP: '1%',
-    vCPU: '1%',
-    memory: '1%',
-    disk: '1%',
-    flow: '1%',
-    billAmount: '1%',
-    totalActualDeductionAmount: '1%'
+    uuid: '123456',
+    ip: '159.126.111.222',
+    service: '云联邦',
+    configuration: '4核8GB内存200GB本地硬盘公网ip:1.11.1.11',
+    state: '正常',
+    settlementType: '在线',
+    user: 'duyukuan@cnic.cn',
+    totalUseTime: '10天',
+    publicIP: '10个',
+    vCPU: '10核',
+    memory: '8G',
+    disk: '20G',
+    flow: '2G',
+    billAmount: '1000',
+    totalActualDeductionAmount: '500'
   },
   {
-    uuid: 'Frozen Yogurt',
-    ip: 159,
-    service: 6.0,
-    configuration: 24,
-    state: 4.0,
-    settlementType: 87,
-    user: '1%',
-    totalUseTime: '14%',
-    publicIP: '1%',
-    vCPU: '1%',
-    memory: '1%',
-    disk: '1%',
-    flow: '1%',
-    billAmount: '1%',
-    totalActualDeductionAmount: '1%'
+    uuid: '123456',
+    ip: '159.126.111.222',
+    service: '云联邦',
+    configuration: '4核8GB内存200GB本地硬盘公网ip:1.11.1.11',
+    state: '正常',
+    settlementType: '在线',
+    user: 'duyukuan@cnic.cn',
+    totalUseTime: '10天',
+    publicIP: '10个',
+    vCPU: '10核',
+    memory: '8G',
+    disk: '20G',
+    flow: '2G',
+    billAmount: '1000',
+    totalActualDeductionAmount: '500'
   },
   {
-    uuid: 'Frozen Yogurt',
-    ip: 159,
-    service: 6.0,
-    configuration: 24,
-    state: 4.0,
-    settlementType: 87,
-    user: '1%',
-    totalUseTime: '14%',
-    publicIP: '1%',
-    vCPU: '1%',
-    memory: '1%',
-    disk: '1%',
-    flow: '1%',
-    billAmount: '1%',
-    totalActualDeductionAmount: '1%'
+    uuid: '123456',
+    ip: '159.126.111.222',
+    service: '云联邦',
+    configuration: '4核8GB内存200GB本地硬盘公网ip:1.11.1.11',
+    state: '正常',
+    settlementType: '在线',
+    user: 'duyukuan@cnic.cn',
+    totalUseTime: '10天',
+    publicIP: '10个',
+    vCPU: '10核',
+    memory: '8G',
+    disk: '20G',
+    flow: '2G',
+    billAmount: '1000',
+    totalActualDeductionAmount: '500'
   },
   {
-    uuid: 'Frozen Yogurt',
-    ip: 159,
-    service: 6.0,
-    configuration: 24,
-    state: 4.0,
-    settlementType: 87,
-    user: '1%',
-    totalUseTime: '14%',
-    publicIP: '1%',
-    vCPU: '1%',
-    memory: '1%',
-    disk: '1%',
-    flow: '1%',
-    billAmount: '1%',
-    totalActualDeductionAmount: '1%'
+    uuid: '123456',
+    ip: '159.126.111.222',
+    service: '云联邦',
+    configuration: '4核8GB内存200GB本地硬盘公网ip:1.11.1.11',
+    state: '正常',
+    settlementType: '在线',
+    user: 'duyukuan@cnic.cn',
+    totalUseTime: '10天',
+    publicIP: '10个',
+    vCPU: '10核',
+    memory: '8G',
+    disk: '20G',
+    flow: '2G',
+    billAmount: '1000',
+    totalActualDeductionAmount: '500'
   },
   {
-    uuid: 'Frozen Yogurt',
-    ip: 159,
-    service: 6.0,
-    configuration: 24,
-    state: 4.0,
-    settlementType: 87,
-    user: '1%',
-    totalUseTime: '14%',
-    publicIP: '1%',
-    vCPU: '1%',
-    memory: '1%',
-    disk: '1%',
-    flow: '1%',
-    billAmount: '1%',
-    totalActualDeductionAmount: '1%'
+    uuid: '123456',
+    ip: '159.126.111.222',
+    service: '云联邦',
+    configuration: '4核8GB内存200GB本地硬盘公网ip:1.11.1.11',
+    state: '正常',
+    settlementType: '在线',
+    user: 'duyukuan@cnic.cn',
+    totalUseTime: '10天',
+    publicIP: '10个',
+    vCPU: '10核',
+    memory: '8G',
+    disk: '20G',
+    flow: '2G',
+    billAmount: '1000',
+    totalActualDeductionAmount: '500'
   },
   {
-    uuid: 'Frozen Yogurt',
-    ip: 159,
-    service: 6.0,
-    configuration: 24,
-    state: 4.0,
-    settlementType: 87,
-    user: '1%',
-    totalUseTime: '14%',
-    publicIP: '1%',
-    vCPU: '1%',
-    memory: '1%',
-    disk: '1%',
-    flow: '1%',
-    billAmount: '1%',
-    totalActualDeductionAmount: '1%'
+    uuid: '123456',
+    ip: '159.126.111.222',
+    service: '云联邦',
+    configuration: '4核8GB内存200GB本地硬盘公网ip:1.11.1.11',
+    state: '正常',
+    settlementType: '在线',
+    user: 'duyukuan@cnic.cn',
+    totalUseTime: '10天',
+    publicIP: '10个',
+    vCPU: '10核',
+    memory: '8G',
+    disk: '20G',
+    flow: '2G',
+    billAmount: '1000',
+    totalActualDeductionAmount: '500'
   },
   {
-    uuid: 'Frozen Yogurt',
-    ip: 159,
-    service: 6.0,
-    configuration: 24,
-    state: 4.0,
-    settlementType: 87,
-    user: '1%',
-    totalUseTime: '14%',
-    publicIP: '1%',
-    vCPU: '1%',
-    memory: '1%',
-    disk: '1%',
-    flow: '1%',
-    billAmount: '1%',
-    totalActualDeductionAmount: '1%'
+    uuid: '123456',
+    ip: '159.126.111.222',
+    service: '云联邦',
+    configuration: '4核8GB内存200GB本地硬盘公网ip:1.11.1.11',
+    state: '正常',
+    settlementType: '在线',
+    user: 'duyukuan@cnic.cn',
+    totalUseTime: '10天',
+    publicIP: '10个',
+    vCPU: '10核',
+    memory: '8G',
+    disk: '20G',
+    flow: '2G',
+    billAmount: '1000',
+    totalActualDeductionAmount: '500'
   },
   {
-    uuid: 'Frozen Yogurt',
-    ip: 159,
-    service: 6.0,
-    configuration: 24,
-    state: 4.0,
-    settlementType: 87,
-    user: '1%',
-    totalUseTime: '14%',
-    publicIP: '1%',
-    vCPU: '1%',
-    memory: '1%',
-    disk: '1%',
-    flow: '1%',
-    billAmount: '1%',
-    totalActualDeductionAmount: '1%'
+    uuid: '123456',
+    ip: '159.126.111.222',
+    service: '云联邦',
+    configuration: '4核8GB内存200GB本地硬盘公网ip:1.11.1.11',
+    state: '正常',
+    settlementType: '在线',
+    user: 'duyukuan@cnic.cn',
+    totalUseTime: '10天',
+    publicIP: '10个',
+    vCPU: '10核',
+    memory: '8G',
+    disk: '20G',
+    flow: '2G',
+    billAmount: '1000',
+    totalActualDeductionAmount: '500'
   }
 ]
 const nodeColumns = [
@@ -650,10 +650,11 @@ onMounted(() => {
   <div>
     <div class="row q-px-lg q-mt-md q-gutter-x-sm">
       <div class="col-1">
-        <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" label="请选择" @update:model-value="changeYear"/>
+        <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" label="请选择"
+                  @update:model-value="changeYear"/>
       </div>
       <div class="col-1">
-        <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" label="请选择" />
+        <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" label="请选择"/>
       </div>
       <div class="col-2">
         <q-input dense outlined v-model="searchQuery.userName" label="请输入用户名"/>
@@ -673,14 +674,16 @@ onMounted(() => {
           class="shadow-2"
         >
           <q-tab name="id" @click="idFun" :class="activeItem === 'id' ? 'bg-blue-4' : 'bg-grey-4'">按用户id显示</q-tab>
-          <q-tab name="group" @click="groupFun" :class="activeItem === 'group' ? 'bg-blue-4' : 'bg-grey-4'">按项目组id显示</q-tab>
-          <q-tab name="uuid" @click="uuidFun" :class="activeItem === 'uuid' ? 'bg-blue-4' : 'bg-grey-4'">按云主机uuid显示</q-tab>
+          <q-tab name="group" @click="groupFun" :class="activeItem === 'group' ? 'bg-blue-4' : 'bg-grey-4'">按项目组id显示
+          </q-tab>
+          <q-tab name="uuid" @click="uuidFun" :class="activeItem === 'uuid' ? 'bg-blue-4' : 'bg-grey-4'">按云主机uuid显示
+          </q-tab>
           <q-tab name="node" @click="nodeFun" :class="activeItem === 'node' ? 'bg-blue-4' : 'bg-grey-4'">按服务节点显示</q-tab>
         </q-tabs>
       </div>
       <div class="col-4 row q-gutter-x-lg q-ml-md">
-        <q-btn outline text-color="black" label="搜索" class="q-px-xl" />
-        <q-btn outline text-color="black" label="导出Excel" class="q-px-lg" />
+        <q-btn outline text-color="black" label="搜索" class="q-px-xl"/>
+        <q-btn outline text-color="black" label="导出Excel" class="q-px-lg"/>
       </div>
     </div>
     <div class="q-px-lg q-mt-md">
@@ -809,38 +812,88 @@ onMounted(() => {
           flat
           table-header-class="bg-grey-1 text-grey"
           :rows="uuidRows"
-          :columns="uuidColumns"
           row-key="name"
           color="primary"
           loading-label="网络请求中，请稍候..."
           no-data-label="暂无数据"
           hide-pagination
+          hide-header
           :pagination="{ rowsPerPage: 0 }"
         >
+          <template v-slot:top-row>
+            <q-tr>
+              <q-th rowspan="2">云主机uuid</q-th>
+              <q-th rowspan="2">ip地址</q-th>
+              <q-th rowspan="2">服务节点</q-th>
+              <q-th rowspan="2">初始配置</q-th>
+              <q-th rowspan="2">状态</q-th>
+              <q-th rowspan="2">结算类型</q-th>
+              <q-th rowspan="2">用户</q-th>
+              <q-th colspan="6">计量项</q-th>
+              <q-th rowspan="2">计费金额(总)</q-th>
+              <q-th rowspan="2">实际扣费金额合计(总)</q-th>
+            </q-tr>
+            <q-tr>
+              <q-th>使用总时长(天)</q-th>
+              <q-th>公网IP(个)</q-th>
+              <q-th>vCPU(核*天）</q-th>
+              <q-th>内存(GB*天)</q-th>
+              <q-th>本地硬盘(GB*天)</q-th>
+              <q-th>流量(GB*天)</q-th>
+            </q-tr>
+          </template>
           <template v-slot:body="props">
             <q-tr :props="props">
               <q-td key="uuid" :props="props">
-                <q-btn
-                  @click="navigateToUrl(`/my/stats/cloud/uuUsage/${props.row.uuid}`)"
-                  class="q-ma-none" :label="props.row.uuid" color="primary" padding="xs" flat dense unelevated>
-                </q-btn>
+                <div class="text-center">
+                  <q-btn
+                    @click="navigateToUrl(`/my/stats/cloud/uuUsage/${props.row.uuid}`)"
+                    class="q-ma-none" :label="props.row.uuid" color="primary" padding="xs" flat dense unelevated>
+                  </q-btn>
+                </div>
               </q-td>
-              <q-td key="ip" :props="props">{{ props.row.ip }}</q-td>
+              <q-td key="ip" :props="props">
+                <div class="text-center">{{ props.row.ip }}</div>
+              </q-td>
               <q-td key="service" :props="props">
-                <div class="text-pre-wrap">{{ props.row.service }}</div>
+                <div class="text-center">{{ props.row.service }}</div>
               </q-td>
-              <q-td key="configuration" :props="props">{{ props.row.configuration }}</q-td>
-              <q-td key="state" :props="props">{{ props.row.state }}</q-td>
-              <q-td key="settlementType" :props="props">{{ props.row.settlementType }}</q-td>
-              <q-td key="user" :props="props">{{ props.row.user }}</q-td>
-              <q-td key="totalUseTime" :props="props">{{ props.row.totalUseTime }}</q-td>
-              <q-td key="publicIP" :props="props">{{ props.row.publicIP }}</q-td>
-              <q-td key="vCPU" :props="props">{{ props.row.vCPU }}</q-td>
-              <q-td key="memory" :props="props">{{ props.row.memory }}</q-td>
-              <q-td key="disk" :props="props">{{ props.row.disk }}</q-td>
-              <q-td key="flow" :props="props">{{ props.row.flow }}</q-td>
-              <q-td key="billAmount" :props="props">{{ props.row.billAmount }}</q-td>
-              <q-td key="totalActualDeductionAmount" :props="props">{{ props.row.totalActualDeductionAmount }}</q-td>
+              <q-td key="configuration" :props="props">
+                <div class="text-center">{{ props.row.configuration }}</div>
+              </q-td>
+              <q-td key="state" :props="props">
+                <div class="text-center">{{ props.row.state }}</div>
+              </q-td>
+              <q-td key="settlementType" :props="props">
+                <div class="text-center">{{ props.row.settlementType }}</div>
+              </q-td>
+              <q-td key="user" :props="props">
+                <div class="text-center">{{ props.row.user }}</div>
+              </q-td>
+              <q-td class="text-left text-justify" key="totalUseTime" :props="props">
+                <div class="text-center">{{ props.row.totalUseTime }}</div>
+              </q-td>
+              <q-td class="text-right" key="publicIP" :props="props">
+                <div class="text-center">{{ props.row.publicIP }}</div>
+              </q-td>
+              <q-td class="text-left" key="vCPU" :props="props">
+                <div class="text-center">{{ props.row.vCPU }}</div>
+              </q-td>
+              <q-td key="memory" :props="props">
+                <div class="text-center">{{ props.row.memory }}</div>
+              </q-td>
+              <q-td key="disk" :props="props">
+                <div class="text-center">{{ props.row.disk }}</div>
+              </q-td>
+              <q-td key="flow" :props="props">
+                <div class="text-center">{{ props.row.flow }}</div>
+              </q-td>
+              <q-td key="billAmount" :props="props">
+                <div class="text-center">{{ props.row.billAmount }}</div>
+              </q-td>
+              <q-td key="totalActualDeductionAmount" :props="props">
+                <div class="text-center">{{ props.row.totalActualDeductionAmount }}</div>
+              </q-td>
             </q-tr>
           </template>
         </q-table>

@@ -31,10 +31,7 @@ const store = useStore()
       <div class="text-h6 q-py-md q-px-xl text-weight-bold">用量计费</div>
       <div class="q-pt-lg q-pb-xl q-px-xl row q-gutter-md">
         <div class="col-2" @click="navigateToUrl(store.items?.fedRole === 'federal-admin' ? '/my/stats/cloud' : '/my/stats/cloud/uuUsage/159')">
-          <q-card
-            class="my-card text-white q-py-md"
-            style="background-color: #FFF0F3"
-          >
+          <q-card class="my-card text-white q-py-md">
             <q-card-section>
               <div class="row items-center justify-center q-gutter-x-sm">
                 <q-icon name="las la-laptop-code" color="orange" size="md"/>
@@ -44,10 +41,7 @@ const store = useStore()
           </q-card>
         </div>
         <div class="col-2">
-          <q-card
-            class="my-card text-white q-py-md"
-            style="background-color: #FFF0F3"
-          >
+          <q-card class="my-card text-white q-py-md">
             <q-card-section>
               <div class="row items-center justify-center q-gutter-x-sm">
                 <q-icon name="las la-cloud-upload-alt" color="orange" size="md"/>
@@ -57,10 +51,7 @@ const store = useStore()
           </q-card>
         </div>
         <div class="col-2">
-          <q-card
-            class="my-card text-white q-py-md"
-            style="background-color: #FFF0F3"
-          >
+          <q-card class="my-card text-white q-py-md">
             <q-card-section>
               <div class="row items-center justify-center q-gutter-x-sm">
                 <q-icon name="las la-save" color="orange" size="md"/>
@@ -70,10 +61,7 @@ const store = useStore()
           </q-card>
         </div>
         <div class="col-2">
-          <q-card
-            class="my-card text-white q-py-md"
-            style="background-color: #FFF0F3"
-          >
+          <q-card class="my-card text-white q-py-md">
             <q-card-section>
               <div class="row items-center justify-center q-gutter-x-sm">
                 <q-icon name="las la-file-medical-alt" color="orange" size="md"/>
@@ -88,10 +76,7 @@ const store = useStore()
       <div class="text-h6 q-py-md q-px-xl text-weight-bold">账单管理</div>
       <div class="q-pt-lg q-pb-xl q-px-xl row items-start q-gutter-md">
         <div class="col-2" v-cloak v-if="store.items?.fedRole === 'federal-admin'">
-          <q-card
-            class="my-card text-white q-py-md"
-            style="background-color: #FFF0F3"
-          >
+          <q-card class="my-card text-white q-py-md">
             <q-card-section>
               <div class="row items-center justify-center q-gutter-x-sm">
                 <q-icon name="payment" color="green-5" size="md"/>
@@ -101,10 +86,7 @@ const store = useStore()
           </q-card>
         </div>
         <div class="col-2" v-cloak v-if="store.items?.fedRole === 'ordinary'">
-          <q-card
-            class="my-card text-white q-py-md"
-            style="background-color: #FFF0F3"
-          >
+          <q-card class="my-card text-white q-py-md">
             <q-card-section>
               <div class="row items-center justify-center q-gutter-x-sm">
                 <q-icon name="personal_injury" color="green-5" size="md"/>
@@ -114,10 +96,7 @@ const store = useStore()
           </q-card>
         </div>
         <div class="col-2" v-cloak v-if="store.items?.fedRole === 'ordinary'">
-          <q-card
-            class="my-card text-white q-py-md"
-            style="background-color: #FFF0F3"
-          >
+          <q-card class="my-card text-white q-py-md">
             <q-card-section>
               <div class="row items-center justify-center q-gutter-x-sm">
                 <q-icon name="groups" color="green-5" size="md"/>
@@ -132,10 +111,7 @@ const store = useStore()
       <div class="text-h6 q-py-md q-px-xl text-weight-bold">账户管理</div>
       <div class="q-pt-lg q-px-xl row items-start q-gutter-md">
         <div class="col-2" v-cloak>
-          <q-card
-            class="my-card text-white q-py-md"
-            style="background-color: #FFF0F3"
-          >
+          <q-card class="my-card text-white q-py-md">
             <q-card-section>
               <div class="row items-center justify-center q-gutter-x-sm">
                 <q-icon name="group" color="blue-5" size="md"/>
@@ -145,10 +121,7 @@ const store = useStore()
           </q-card>
         </div>
         <div class="col-2" v-cloak v-if="store.items?.fedRole === 'federal-admin'">
-          <q-card
-            class="my-card text-white q-py-md"
-            style="background-color: #FFF0F3"
-          >
+          <q-card class="my-card text-white q-py-md">
             <q-card-section>
               <div class="row items-center justify-center q-gutter-x-sm">
                 <q-icon name="shopping_bag" color="blue-5" size="md"/>
@@ -158,10 +131,7 @@ const store = useStore()
           </q-card>
         </div>
         <div class="col-2" v-cloak v-if="store.items?.fedRole === 'federal-admin'">
-          <q-card
-            class="my-card text-white q-py-md"
-            style="background-color: #FFF0F3"
-          >
+          <q-card class="my-card text-white q-py-md">
             <q-card-section>
               <div class="row items-center justify-center q-gutter-x-sm">
                 <q-icon name="las la-clipboard" color="blue-5" size="md"/>
@@ -171,10 +141,7 @@ const store = useStore()
           </q-card>
         </div>
         <div class="col-2" v-cloak v-if="store.items?.fedRole === 'ordinary'">
-          <q-card
-            class="my-card text-white q-py-md"
-            style="background-color: #FFF0F3"
-          >
+          <q-card class="my-card text-white q-py-md">
             <q-card-section>
               <div class="row items-center justify-center q-gutter-x-sm">
                 <q-icon name="las la-exchange-alt" color="blue-5" size="md"/>

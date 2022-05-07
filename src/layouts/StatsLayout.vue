@@ -25,7 +25,7 @@ store.loadAllTables()
 </script>
 
 <template>
-  <q-layout view="hHh LpR fFf">
+  <q-layout view="hHh LpR fFf" style="min-width: 1000px;">
 
     <q-drawer :model-value="true" style="padding-top: 60px;" :breakpoint="0" side="left" width="120" bordered>
 

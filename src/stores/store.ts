@@ -15,6 +15,7 @@ export const useStore = defineStore('stats', {
   actions: {
     loadAllTables () {
       this.getUser()
+      this.getData()
     },
     async getUser () {
       const respDataCenter = await stats.stats.api.getUserPermissionPolicy()
@@ -39,6 +40,10 @@ export const useStore = defineStore('stats', {
         state.items.fedRole = payload.fedRole
         state.items.vmsAdmin = payload.vmsAdmin
       })
+    },
+    async getData () {
+      const respDataCenter = await stats.stats.api.getMeteringServerAggregation({ query: { 'as-admin': true } })
+      console.log(respDataCenter)
     }
   }
 })

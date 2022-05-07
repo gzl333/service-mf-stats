@@ -17,6 +17,40 @@ export default {
         params: payload?.query
       }
       return axiosStats.get('/user/permission-policy', config)
+    },
+    getMeteringServerAggregation (payload: {
+      query: {
+        page?: number;
+        page_size?: number;
+        date_start?: string;
+        date_end?: string;
+        user_id?: string;
+        service_id?: string;
+        'as-admin': boolean
+      }
+    }) {
+      const config = {
+        params: payload.query
+      }
+      return axiosStats.get('/metering/server/aggregation', config)
+    },
+    getMeteringServer (payload: {
+      query: {
+        page?: number;
+        page_size?: number;
+        service_id?: string;
+        server_id?: string;
+        date_start?: string;
+        date_end?: string;
+        vo_id?: string;
+        user_id?: string;
+        'as-admin': boolean
+      }
+    }) {
+      const config = {
+        params: payload.query
+      }
+      return axiosStats.get('/metering/server', config)
     }
   }
 }

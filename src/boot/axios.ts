@@ -20,7 +20,10 @@ declare module '@vue/runtime-core' {
 // const api = axios.create({ baseURL: 'https://api.example.com' })
 
 // axios instance with base url configured
-export const baseURLStats = window.location.protocol + '//vms.cstcloud.cn/api' // todo 改成该服务的后端api地址
+// export const baseURLStats = window.location.protocol + '//vms.cstcloud.cn/api' // todo 改成该服务的后端api地址
+// console.log(window.location.protocol)
+export const baseURLStats = '//159.226.235.4:2000/api'
+// export const baseURLStats = process.env.DEV ? '//159.226.235.78:88/api' : '//159.226.235.4:2000/api'
 const axiosStats = axios.create({
   baseURL: baseURLStats,
   // 序列化器，没有这个无法在query里发送数组参数。body里的数组不需要序列化器。
