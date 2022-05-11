@@ -61,8 +61,7 @@ export const useStore = defineStore('stats', {
         state.items.vmsAdmin = payload.vmsAdmin
       })
     },
-    async getUUMachineData (payload: { page?: number, page_size?: number, date_start?: string, date_end?: string, vo_id: string, user_id?: string, service_id: string, 'as-admin': boolean }) {
-      // console.log('payload', payload)
+    async getUUMachineData (payload: { page: number, page_size: number, date_start: string, date_end: string, vo_id: string, user_id: string, service_id: string, 'as-admin': boolean }) {
       const respDataCenter = await stats.stats.api.getAggregationServer({ query: payload })
       return respDataCenter
     }
