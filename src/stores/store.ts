@@ -1,5 +1,20 @@
 import { defineStore } from 'pinia'
 import stats from 'src/api/index'
+
+export interface UUVirtualMachineInterface {
+  server_id: string
+  total_cpu_hours: number
+  total_ram_hours: number
+  total_disk_hours: number
+  total_public_ip_hours: number
+  total_original_amount_hours: number
+  ipv4: never
+  archive_ipv4: string
+  vcpus: number
+  ram: number
+  disk_size: number
+  pay_type: string
+}
 export const useStore = defineStore('stats', {
   state: () => ({
     items: {
@@ -9,13 +24,18 @@ export const useStore = defineStore('stats', {
       fedRole: 'ordinary' as string,
       vmsAdmin: [] as string[]
     },
-    tables: {}
+    tables: {
+      UUVirtualMachineTable: {
+        byId: {} as Record<string, UUVirtualMachineInterface>,
+        allIds: [],
+        isLoaded: false
+      }
+    }
   }),
   getters: {},
   actions: {
     loadAllTables () {
       this.getUser()
-      this.getData()
     },
     async getUser () {
       const respDataCenter = await stats.stats.api.getUserPermissionPolicy()
@@ -41,9 +61,10 @@ export const useStore = defineStore('stats', {
         state.items.vmsAdmin = payload.vmsAdmin
       })
     },
-    async getData () {
-      const respDataCenter = await stats.stats.api.getMeteringServerAggregation({ query: { 'as-admin': true } })
-      console.log(respDataCenter)
+    async getUUMachineData (payload: { page?: number, page_size?: number, date_start?: string, date_end?: string, vo_id: string, user_id?: string, service_id: string, 'as-admin': boolean }) {
+      // console.log('payload', payload)
+      const respDataCenter = await stats.stats.api.getAggregationServer({ query: payload })
+      return respDataCenter
     }
   }
 })

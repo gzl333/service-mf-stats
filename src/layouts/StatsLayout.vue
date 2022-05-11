@@ -15,7 +15,6 @@ import Breadcrumb from '../components/layout/Breadcrumb.vue'
 // const emits = defineEmits(['change', 'delete'])
 
 const store = useStore()
-console.log(store.items)
 // const router = useRouter()
 // const route = useRoute()
 const tc = i18n.global.tc
@@ -25,7 +24,7 @@ store.loadAllTables()
 </script>
 
 <template>
-  <q-layout view="hHh LpR fFf" style="min-width: 1000px;">
+  <q-layout view="hHh LpR fFf" style="min-width: 1300px;">
 
     <q-drawer :model-value="true" style="padding-top: 60px;" :breakpoint="0" side="left" width="120" bordered>
 
