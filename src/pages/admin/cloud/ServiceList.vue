@@ -2,6 +2,8 @@
 import { ref, onMounted } from 'vue'
 import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
+import FileSaver from 'file-saver'
+import XLSX from 'xlsx'
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
 // const props = defineProps({
@@ -540,9 +542,23 @@ const changePagination = async (val: number) => {
   const data = await store.getUUMachineData(query.value)
   tableRow.value = data.data.results
 }
+const exportExcel = (name: string) => {
+  // name表示生成excel的文件名     tableName表示表格的id
+  const sel = XLSX.utils.table_to_book(document.querySelector('#uuTable'))
+  const selIn = XLSX.write(sel, {
+    bookType: 'xlsx',
+    bookSST: true,
+    type: 'array'
+  })
+  try {
+    FileSaver.saveAs(new Blob([selIn], { type: 'application/octet-stream' }), name)
+  } catch (e) {
+    if (typeof console !== 'undefined') console.log(e, selIn)
+  }
+  return selIn
+}
 onMounted(async () => {
   initSelectYear()
-  console.log(111)
   // const data = await store.getUUMachineData(query.value)
   // tableRow.value = data.data.results
   // paginationTable.value.count = data.data.count
@@ -563,7 +579,7 @@ onMounted(async () => {
       </div>
       <div class="col-3 row q-gutter-x-xs">
         <q-btn outline text-color="black" label="搜索" class="q-px-xl" @click="search"/>
-        <q-btn outline text-color="black" label="导出Excel" class="q-px-lg" @click="exportExcel"/>
+        <q-btn outline text-color="black" label="导出Excel" class="q-px-lg" @click="exportExcel('云主机用量列表.xlsx')"/>
       </div>
     </div>
     <div class="q-px-lg q-mt-md items-center">
@@ -708,7 +724,7 @@ onMounted(async () => {
             <q-separator/>
             <q-table
                 flat
-                id="exportTab"
+                id="uuTable"
                 table-header-class="bg-grey-1 text-grey"
                 :rows="tableRow"
                 :columns="uuidColumns"
