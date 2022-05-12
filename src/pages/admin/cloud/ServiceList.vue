@@ -409,6 +409,7 @@ const getNowFormatDate = () => {
   return year + seperator1 + month1 + seperator1 + strDate
 }
 const currentDate = getNowFormatDate()
+const searchName = ref('')
 const searchQuery: any = ref({
   year: {
     label: year,
@@ -417,8 +418,7 @@ const searchQuery: any = ref({
   month: {
     label: '全年',
     value: 0
-  },
-  userName: ''
+  }
 })
 const tableRow = ref([])
 const query: any = ref({
@@ -465,6 +465,7 @@ const idFun = async (name: string) => {
       value: 0
     }
   }
+  searchName.value = ''
   query.value.date_start = searchQuery.value.year.value + '-' + month1 + '-' + '01'
   query.value.date_end = currentDate
   changeYear(searchQuery.value.year)
@@ -518,6 +519,9 @@ const search = async () => {
     }
     query.value.date_start = dateStart
     query.value.date_end = dateEnd
+    if (searchName.value !== '' && searchName.value !== null) {
+      query.value.service_id = searchName.value
+    }
     const data = await store.getUUMachineData(query.value)
     tableRow.value = data.data.results
     paginationTable.value.page = 1
@@ -583,9 +587,9 @@ const exportTable = () => {
 }
 onMounted(async () => {
   initSelectYear()
-  const data = await store.getUUMachineData(query.value)
-  tableRow.value = data.data.results
-  paginationTable.value.count = data.data.count
+  // const data = await store.getUUMachineData(query.value)
+  // tableRow.value = data.data.results
+  // paginationTable.value.count = data.data.count
 })
 </script>
 
@@ -598,9 +602,9 @@ onMounted(async () => {
       <div class="col-1">
         <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" label="请选择"/>
       </div>
-<!--      <div class="col-2">-->
-<!--        <q-input dense outlined clearable v-model="searchQuery.userName" label="请输入用户名"/>-->
-<!--      </div>-->
+      <div class="col-2">
+        <q-input outlined v-model="searchName" label="Outlined" />
+      </div>
 <!--      <div class="col-2">-->
 <!--        <q-input dense outlined clearable v-model="searchQuery.userName" label="请输入用户名"/>-->
 <!--      </div>-->
