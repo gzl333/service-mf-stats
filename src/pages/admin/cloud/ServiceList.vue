@@ -477,10 +477,10 @@ const idFun = async (name: string) => {
 const search = async () => {
   query.value.page = 1
   if (tab.value === 'id') {
-    console.log('1111')
+    console.log('id')
   }
   if (tab.value === 'group') {
-    console.log('2222')
+    console.log('group')
   }
   if (tab.value === 'uuid') {
     let dateStart = ''
@@ -521,6 +521,8 @@ const search = async () => {
     query.value.date_end = dateEnd
     if (searchName.value !== '' && searchName.value !== null) {
       query.value.service_id = searchName.value
+    } else {
+      delete query.value.service_id
     }
     const data = await store.getUUMachineData(query.value)
     tableRow.value = data.data.results
@@ -528,7 +530,7 @@ const search = async () => {
     paginationTable.value.count = data.data.count
   }
   if (tab.value === 'node') {
-    console.log('4444')
+    console.log('node')
   }
 }
 const changePageSize = async () => {
@@ -603,7 +605,7 @@ onMounted(async () => {
         <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" label="请选择"/>
       </div>
       <div class="col-2">
-        <q-input outlined v-model="searchName" label="Outlined" />
+        <q-input outlined dense clearable v-model="searchName" label="请输入" />
       </div>
 <!--      <div class="col-2">-->
 <!--        <q-input dense outlined clearable v-model="searchQuery.userName" label="请输入用户名"/>-->
