@@ -2,7 +2,6 @@
 import { ref, onMounted } from 'vue'
 import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
-import { exportFile, useQuasar } from 'quasar'
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
 // const props = defineProps({
@@ -383,10 +382,6 @@ const nodeRows = [
     operation: '1%'
   }
 ]
-// const options = [
-//   '用户', 'IP地址'
-// ]
-const $q = useQuasar()
 const paginationTable = ref({
   page: 1,
   count: 0,
@@ -545,50 +540,9 @@ const changePagination = async (val: number) => {
   const data = await store.getUUMachineData(query.value)
   tableRow.value = data.data.results
 }
-const wrapCsvValue = (val?: any, formatFn?: any, row?: any) => {
-  let formatted = formatFn !== void 0
-    ? formatFn(val, row)
-    : val
-
-  formatted = formatted === void 0 || formatted === null
-    ? ''
-    : String(formatted)
-
-  formatted = formatted.split('"').join('""')
-  /**
-   * Excel accepts \n and \r in strings, but some other CSV parsers do not
-   * Uncomment the next two lines to escape new lines
-   */
-  // .split('\n').join('\\n')
-  // .split('\r').join('\\r')
-
-  return `"${formatted}"`
-}
-const exportTable = () => {
-  const content = [uuidColumns.map((col: any) => wrapCsvValue(col.label))].concat(
-    tableRow.value.map((row: any) => uuidColumns.map((col: any) => wrapCsvValue(
-      typeof col.field === 'function'
-        ? col.field(row)
-        : row[col.field === void 0 ? col.name : col.field],
-      col.format,
-      row
-    )).join(','))
-  ).join('\r\n')
-  const status = exportFile(
-    'table-export.csv',
-    content,
-    'text/csv'
-  )
-  if (status !== true) {
-    $q.notify({
-      message: 'Browser denied file download...',
-      color: 'negative',
-      icon: 'warning'
-    })
-  }
-}
 onMounted(async () => {
   initSelectYear()
+  console.log(111)
   // const data = await store.getUUMachineData(query.value)
   // tableRow.value = data.data.results
   // paginationTable.value.count = data.data.count
@@ -607,15 +561,9 @@ onMounted(async () => {
       <div class="col-2">
         <q-input outlined dense clearable v-model="searchName" label="请输入" />
       </div>
-<!--      <div class="col-2">-->
-<!--        <q-input dense outlined clearable v-model="searchQuery.userName" label="请输入用户名"/>-->
-<!--      </div>-->
-<!--      <div class="col-2">-->
-<!--        <q-input dense outlined clearable v-model="searchQuery.userName" label="请输入用户名"/>-->
-<!--      </div>-->
       <div class="col-3 row q-gutter-x-xs">
         <q-btn outline text-color="black" label="搜索" class="q-px-xl" @click="search"/>
-        <q-btn outline text-color="black" label="导出Excel" class="q-px-lg" @click="exportTable"/>
+        <q-btn outline text-color="black" label="导出Excel" class="q-px-lg" @click="exportExcel"/>
       </div>
     </div>
     <div class="q-px-lg q-mt-md items-center">
@@ -760,6 +708,7 @@ onMounted(async () => {
             <q-separator/>
             <q-table
                 flat
+                id="exportTab"
                 table-header-class="bg-grey-1 text-grey"
                 :rows="tableRow"
                 :columns="uuidColumns"
