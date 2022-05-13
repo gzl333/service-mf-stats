@@ -7,6 +7,22 @@ export const apiBaseHarbor = axiosStats.defaults.baseURL
 export default {
   // stats apis
   api: {
+    getRegistry () {
+      return axiosStats.get('/registry')
+    },
+    getService (payload?: {
+      query?: {
+        page?: number;
+        page_size?: number;
+        center_id?: string;
+        available_only?: boolean;
+      }
+    }) {
+      const config = {
+        params: payload?.query
+      }
+      return axiosStats.get('/service', config)
+    },
     getUserPermissionPolicy (payload?: {
       query?: {
         page?: number;
@@ -36,7 +52,7 @@ export default {
       return axiosStats.get('/metering/server/aggregation/server', config)
     },
     getMeteringServer (payload: {
-      query: {
+      query?: {
         page?: number;
         page_size?: number;
         service_id?: string;
@@ -45,7 +61,7 @@ export default {
         date_end?: string;
         vo_id?: string;
         user_id?: string;
-        'as-admin': boolean
+        'as-admin'?: boolean
       }
     }) {
       const config = {

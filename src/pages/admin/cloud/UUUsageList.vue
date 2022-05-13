@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import UUTable from 'components/admin/cloud/UUTable.vue'
 // import { navigateToUrl } from 'single-spa'
-// import { useStore } from 'stores/store'
-// import { useRoute, useRouter } from 'vue-router'
+import { useStore } from 'stores/store'
+import { useRoute } from 'vue-router'
 // import { i18n } from 'boot/i18n'
 // const props = defineProps({
 //   foo: {
@@ -14,16 +14,46 @@ import UUTable from 'components/admin/cloud/UUTable.vue'
 // })
 // const emits = defineEmits(['change', 'delete'])
 
-// const store = useStore()
-// const route = useRoute()
+const store = useStore()
+const route = useRoute()
 // const router = useRouter()
 // const tc = i18n.global.tc
 const dateFrom = ref('')
 const dateTo = ref('')
 const isLastMonth = ref(false)
+const topRow: any = ref([])
+const bottomRow: any = ref([])
+const query: any = ref({
+  server_id: '',
+  'as-admin': true
+})
 const changeMonth = () => {
   isLastMonth.value = !isLastMonth.value
 }
+onMounted(async () => {
+  let obj: any = {}
+  let objTwo: any = {}
+  query.value.server_id = route.params.uuId
+  const data = await store.getMachineDetail(query.value)
+  for (const elem of data.data.results) {
+    obj = {}
+    objTwo = {}
+    obj.server_id = elem.server_id
+    obj.service_id = elem.service_id
+    obj.pay_type = elem.pay_type
+    obj.payment_status = elem.payment_status
+    obj.owner_type = elem.owner_type
+    topRow.value.push(obj)
+    objTwo.creation_time = elem.creation_time
+    objTwo.public_ip_hours = elem.public_ip_hours
+    objTwo.cpu_hours = elem.cpu_hours
+    objTwo.ram_hours = elem.ram_hours
+    objTwo.disk_hours = elem.disk_hours
+    objTwo.original_amount = elem.original_amount
+    objTwo.trade_amount = elem.trade_amount
+    bottomRow.value.push(objTwo)
+  }
+})
 </script>
 
 <template>
@@ -75,7 +105,7 @@ const changeMonth = () => {
         <q-btn outline color="primary" label="导出" class="q-px-xl q-ml-sm"/>
       </div>
     </div>
-    <u-u-table/>
+    <u-u-table :topRow="topRow" :bottomRow="bottomRow"/>
   </div>
 </template>
 

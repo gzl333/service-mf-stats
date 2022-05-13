@@ -1,163 +1,43 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 // import { navigateToUrl } from 'single-spa'
-// import { useStore } from 'stores/store'
+import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
-
-// const props = defineProps({
-//   foo: {
-//     type: String,
-//     required: false,
-//     default: ''
-//   }
-// })
+const props = defineProps({
+  topRow: {
+    type: Array,
+    required: false
+  },
+  bottomRow: {
+    type: Array,
+    required: false
+  }
+})
+// console.log(props.bottomRow)
 // const emits = defineEmits(['change', 'delete'])
 
-// const store = useStore()
+const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
 // const tc = i18n.global.tc
 const columns = [
-  { name: 'uuid', align: 'center', label: 'UUID' },
-  { name: 'service', label: '服务节点', align: 'center' },
-  { name: 'user', label: '用户', align: 'center' },
-  { name: 'settlementType', label: '结算类型', align: 'center' },
-  { name: 'state', label: '状态', align: 'center' },
-  { name: 'time', label: '到期时间', align: 'center' }
+  { name: 'server_id', align: 'center', label: 'UUID' },
+  { name: 'service_id', label: '服务节点', align: 'center' },
+  { name: 'owner_type', label: '用户类型', align: 'center' },
+  { name: 'pay_type', label: '结算类型', align: 'center' },
+  { name: 'payment_status', label: '状态', align: 'center' }
+  // { name: 'user', label: '用户', align: 'center' },
+  // { name: 'time', label: '到期时间', align: 'center' }
 ]
-const rows = [
-  {
-    uuid: 159,
-    service: 24,
-    user: '14%',
-    settlementType: 87,
-    state: 4.0,
-    time: '1%'
-  }
-]
-const columns3 = [
-  { name: 'dailyTime', align: 'center', label: '每日统计时间' },
-  { name: 'useTime', label: '使用时长(天)', align: 'center' },
-  { name: 'publicIP', label: '公网IP(个)', align: 'center' },
-  { name: 'vCPU', label: 'vCPU(核*天）', align: 'center' },
-  { name: 'memory', label: '内存(GB*天)', align: 'center' },
-  { name: 'disk', label: '本地硬盘(GB*天)', align: 'center' },
-  { name: 'flow', label: '流量(GB*天)', align: 'center' },
-  { name: 'billAmount', label: '计费金额合计', align: 'center' },
-  { name: 'totalActualDeductionAmount', label: '实际扣费金额合计', align: 'center' }
-]
-const rows3 = [
-  {
-    dailyTime: 159,
-    useTime: 24,
-    publicIP: '1%',
-    vCPU: '1%',
-    memory: '1%',
-    disk: '1%',
-    flow: '1%',
-    billAmount: '1%',
-    totalActualDeductionAmount: '1%'
-  },
-  {
-    dailyTime: 159,
-    useTime: 24,
-    publicIP: '1%',
-    vCPU: '1%',
-    memory: '1%',
-    disk: '1%',
-    flow: '1%',
-    billAmount: '1%',
-    totalActualDeductionAmount: '1%'
-  },
-  {
-    dailyTime: 159,
-    useTime: 24,
-    publicIP: '1%',
-    vCPU: '1%',
-    memory: '1%',
-    disk: '1%',
-    flow: '1%',
-    billAmount: '1%',
-    totalActualDeductionAmount: '1%'
-  },
-  {
-    dailyTime: 159,
-    useTime: 24,
-    publicIP: '1%',
-    vCPU: '1%',
-    memory: '1%',
-    disk: '1%',
-    flow: '1%',
-    billAmount: '1%',
-    totalActualDeductionAmount: '1%'
-  },
-  {
-    dailyTime: 159,
-    useTime: 24,
-    publicIP: '1%',
-    vCPU: '1%',
-    memory: '1%',
-    disk: '1%',
-    flow: '1%',
-    billAmount: '1%',
-    totalActualDeductionAmount: '1%'
-  },
-  {
-    dailyTime: 159,
-    useTime: '14%',
-    publicIP: '1%',
-    vCPU: '1%',
-    memory: '1%',
-    disk: '1%',
-    flow: '1%',
-    billAmount: '1%',
-    totalActualDeductionAmount: '1%'
-  },
-  {
-    dailyTime: 159,
-    useTime: 24,
-    publicIP: '1%',
-    vCPU: '1%',
-    memory: '1%',
-    disk: '1%',
-    flow: '1%',
-    billAmount: '1%',
-    totalActualDeductionAmount: '1%'
-  },
-  {
-    dailyTime: 159,
-    useTime: 24,
-    publicIP: '1%',
-    vCPU: '1%',
-    memory: '1%',
-    disk: '1%',
-    flow: '1%',
-    billAmount: '1%',
-    totalActualDeductionAmount: '1%'
-  },
-  {
-    dailyTime: 159,
-    useTime: 24,
-    publicIP: '1%',
-    vCPU: '1%',
-    memory: '1%',
-    disk: '1%',
-    flow: '1%',
-    billAmount: '1%',
-    totalActualDeductionAmount: '1%'
-  },
-  {
-    dailyTime: 159,
-    useTime: 24,
-    publicIP: '1%',
-    vCPU: '1%',
-    memory: '1%',
-    disk: '1%',
-    flow: '1%',
-    billAmount: '1%',
-    totalActualDeductionAmount: '1%'
-  }
+const columnsTwo = [
+  { name: 'creation_time', align: 'center', label: '每日统计时间' },
+  { name: 'public_ip_hours', label: '公网IP(个)', align: 'center' },
+  { name: 'cpu_hours', label: 'vCPU(核*天）', align: 'center' },
+  { name: 'ram_hours', label: '内存(GB*天)', align: 'center' },
+  { name: 'disk_hours', label: '本地硬盘(GB*天)', align: 'center' },
+  { name: 'original_amount', label: '计费金额合计', align: 'center' },
+  { name: 'trade_amount', label: '实际扣费金额合计', align: 'center' }
 ]
 const current = ref(3)
 const paginationTable = ref({
@@ -173,7 +53,7 @@ const paginationTable = ref({
       <q-table
         flat
         table-header-class="bg-grey-1 text-grey"
-        :rows="rows"
+        :rows="props.topRow"
         :columns="columns"
         row-key="name"
         color="primary"
@@ -183,12 +63,11 @@ const paginationTable = ref({
       >
         <template v-slot:body="props">
           <q-tr :props="props">
-            <q-td key="uuid" :props="props">{{ props.row.uuid }}</q-td>
-            <q-td key="service" :props="props">{{ props.row.service }}</q-td>
-            <q-td key="user" :props="props">{{ props.row.user }}</q-td>
-            <q-td key="settlementType" :props="props">{{ props.row.settlementType }}</q-td>
-            <q-td key="state" :props="props">{{ props.row.state }}</q-td>
-            <q-td key="time" :props="props">{{ props.row.time }}</q-td>
+            <q-td key="server_id" :props="props">{{ props.row.server_id }}</q-td>
+            <q-td key="service_id" :props="props">{{ store.tables.serviceTable.byId[props.row.service_id]?.name }}</q-td>
+            <q-td key="owner_type" :props="props">{{ props.row.owner_type === 'user' ? '普通用户' : '管理员' }}</q-td>
+            <q-td key="pay_type" :props="props">{{ props.row.pay_type === 'postpaid' ? '后付费' : '先付费' }}</q-td>
+            <q-td key="payment_status" :props="props">{{ props.row.payment_status === 'paid' ? '已付款' : '未付款' }}</q-td>
           </q-tr>
         </template>
       </q-table>
@@ -199,8 +78,8 @@ const paginationTable = ref({
       <q-table
         flat
         table-header-class="bg-grey-1 text-grey"
-        :rows="rows3"
-        :columns="columns3"
+        :rows="props.bottomRow"
+        :columns="columnsTwo"
         row-key="name"
         color="primary"
         loading-label="网络请求中，请稍候..."
@@ -210,15 +89,13 @@ const paginationTable = ref({
       >
         <template v-slot:body="props">
           <q-tr :props="props">
-            <q-td key="dailyTime" :props="props">{{ props.row.dailyTime }}</q-td>
-            <q-td key="useTime" :props="props">{{ props.row.useTime }}</q-td>
-            <q-td key="publicIP" :props="props">{{ props.row.publicIP }}</q-td>
-            <q-td key="vCPU" :props="props">{{ props.row.vCPU }}</q-td>
-            <q-td key="memory" :props="props">{{ props.row.memory }}</q-td>
-            <q-td key="disk" :props="props">{{ props.row.disk }}</q-td>
-            <q-td key="flow" :props="props">{{ props.row.flow }}</q-td>
-            <q-td key="billAmount" :props="props">{{ props.row.billAmount }}</q-td>
-            <q-td key="totalActualDeductionAmount" :props="props">{{ props.row.totalActualDeductionAmount }}</q-td>
+            <q-td key="creation_time" :props="props">{{ props.row.creation_time }}</q-td>
+            <q-td key="public_ip_hours" :props="props">{{ props.row.public_ip_hours }}</q-td>
+            <q-td key="cpu_hours" :props="props">{{ props.row.cpu_hours }}</q-td>
+            <q-td key="ram_hours" :props="props">{{ props.row.ram_hours }}</q-td>
+            <q-td key="disk_hours" :props="props">{{ props.row.disk_hours }}</q-td>
+            <q-td key="original_amount" :props="props">{{ props.row.original_amount }}</q-td>
+            <q-td key="trade_amount" :props="props">{{ props.row.trade_amount }}</q-td>
           </q-tr>
         </template>
       </q-table>
