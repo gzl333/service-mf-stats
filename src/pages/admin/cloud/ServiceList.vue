@@ -450,7 +450,7 @@ const changeYear = (val: any) => {
     }
   }
 }
-const idFun = async (name: string) => {
+const changeTab = async (name: string) => {
   activeItem.value = name
   searchQuery.value = {
     year: {
@@ -466,10 +466,12 @@ const idFun = async (name: string) => {
   query.value.date_start = searchQuery.value.year.value + '-' + month1 + '-' + '01'
   query.value.date_end = currentDate
   changeYear(searchQuery.value.year)
-  const data = await store.getUUMachineData(query.value)
-  tableRow.value = data.data.results
-  paginationTable.value.page = 1
-  paginationTable.value.count = data.data.count
+  if (name === 'uuid') {
+    const data = await store.getUUMachineData(query.value)
+    tableRow.value = data.data.results
+    paginationTable.value.page = 1
+    paginationTable.value.count = data.data.count
+  }
 }
 const search = async () => {
   query.value.page = 1
@@ -592,12 +594,12 @@ onMounted(async () => {
           class="shadow-2"
           style="width: 60%"
         >
-          <q-tab name="id" @click="idFun('id')" :class="activeItem === 'id' ? 'bg-blue-4' : 'bg-grey-4'">按用户id显示</q-tab>
-          <q-tab name="group" @click="idFun('group')" :class="activeItem === 'group' ? 'bg-blue-4' : 'bg-grey-4'">按项目组id显示
+          <q-tab name="id" @click="changeTab('id')" :class="activeItem === 'id' ? 'bg-blue-4' : 'bg-grey-4'">按用户id显示</q-tab>
+          <q-tab name="group" @click="changeTab('group')" :class="activeItem === 'group' ? 'bg-blue-4' : 'bg-grey-4'">按项目组id显示
           </q-tab>
-          <q-tab name="uuid" @click="idFun('uuid')" :class="activeItem === 'uuid' ? 'bg-blue-4' : 'bg-grey-4'">按云主机uuid显示
+          <q-tab name="uuid" @click="changeTab('uuid')" :class="activeItem === 'uuid' ? 'bg-blue-4' : 'bg-grey-4'">按云主机uuid显示
           </q-tab>
-          <q-tab name="node" @click="idFun('node')" :class="activeItem === 'node' ? 'bg-blue-4' : 'bg-grey-4'">按服务节点显示</q-tab>
+          <q-tab name="node" @click="changeTab('node')" :class="activeItem === 'node' ? 'bg-blue-4' : 'bg-grey-4'">按服务节点显示</q-tab>
         </q-tabs>
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="id">

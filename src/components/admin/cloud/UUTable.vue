@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+// import { ref } from 'vue'
+// import { navigateToUrl } from 'single-spa'
 // import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
@@ -14,7 +15,6 @@ const props = defineProps({
     required: false
   }
 })
-// console.log(props.bottomRow)
 // const emits = defineEmits(['change', 'delete'])
 
 const store = useStore()
@@ -39,12 +39,6 @@ const columnsTwo = [
   { name: 'original_amount', label: '计费金额合计', align: 'center' },
   { name: 'trade_amount', label: '实际扣费金额合计', align: 'center' }
 ]
-const current = ref(3)
-const paginationTable = ref({
-  page: 1,
-  count: 0,
-  rowsPerPage: 10
-})
 </script>
 
 <template>
@@ -99,28 +93,6 @@ const paginationTable = ref({
           </q-tr>
         </template>
       </q-table>
-      <div class="row q-pa-sm text-grey justify-between items-center">
-        <div class="row items-center">
-          <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>
-          <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense
-                    options-dense
-                    borderless @update:model-value="changePageSize">
-          </q-select>
-          <span>/页</span>
-        </div>
-        <div class="q-pa-lg flex flex-center">
-          <q-pagination
-            v-model="current"
-            :max="5"
-            direction-links
-            boundary-links
-            icon-first="skip_previous"
-            icon-last="skip_next"
-            icon-prev="fast_rewind"
-            icon-next="fast_forward"
-          />
-        </div>
-      </div>
     </div>
     </div>
   </div>
