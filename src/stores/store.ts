@@ -154,12 +154,16 @@ export const useStore = defineStore('stats', {
         state.items.vmsAdmin = payload.vmsAdmin
       })
     },
+    async getMachineDetail (payload: { page?: number, page_size?: number, date_start?: string, date_end?: string, vo_id?: string, user_id?: string, server_id?: string, service_id?: string, 'as-admin': boolean }) {
+      const respDataCenter = await stats.stats.api.getMeteringServer({ query: payload })
+      return respDataCenter
+    },
     async getUUMachineData (payload: { page: number, page_size: number, date_start: string, date_end: string, vo_id: string, user_id: string, service_id: string, 'as-admin': boolean }) {
       const respDataCenter = await stats.stats.api.getAggregationServer({ query: payload })
       return respDataCenter
     },
-    async getMachineDetail (payload: { page?: number, page_size?: number, date_start?: string, date_end?: string, vo_id?: string, user_id?: string, server_id?: string, service_id?: string, 'as-admin': boolean }) {
-      const respDataCenter = await stats.stats.api.getMeteringServer({ query: payload })
+    async getUserMachineData (payload: { page: number, page_size: number, date_start: string, date_end: string, service_id: string, 'as-admin': boolean }) {
+      const respDataCenter = await stats.stats.api.getAggregationUser({ query: payload })
       return respDataCenter
     }
   }

@@ -34,23 +34,6 @@ export default {
       }
       return axiosStats.get('/user/permission-policy', config)
     },
-    getAggregationServer (payload: {
-      query: {
-        page?: number;
-        page_size?: number;
-        date_start?: string;
-        date_end?: string;
-        vo_id?: string;
-        user_id?: string;
-        service_id?: string;
-        'as-admin': boolean
-      }
-    }) {
-      const config = {
-        params: payload.query
-      }
-      return axiosStats.get('/metering/server/aggregation/server', config)
-    },
     getMeteringServer (payload: {
       query?: {
         page?: number;
@@ -68,6 +51,38 @@ export default {
         params: payload.query
       }
       return axiosStats.get('/metering/server', config)
+    },
+    getAggregationServer (payload: {
+      query: {
+        page?: number;
+        page_size?: number;
+        date_start?: string;
+        date_end?: string;
+        vo_id?: string;
+        user_id?: string;
+        service_id?: string;
+        'as-admin': boolean
+      }
+    }) {
+      const config = {
+        params: payload.query
+      }
+      return axiosStats.get('/metering/server/aggregation/server', config)
+    },
+    getAggregationUser (payload: {
+      query?: {
+        page: number;
+        page_size: number;
+        date_start: string;
+        date_end: string;
+        service_id: string;
+        'as-admin': boolean
+      }
+    }) {
+      const config = {
+        params: payload.query
+      }
+      return axiosStats.get('/metering/server/aggregation/user', config)
     }
   }
 }

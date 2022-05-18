@@ -5,6 +5,7 @@
 import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
+import dateFormat from 'src/utils'
 const props = defineProps({
   topRow: {
     type: Array,
@@ -39,6 +40,7 @@ const columnsTwo = [
   { name: 'original_amount', label: '计费金额合计', align: 'center' },
   { name: 'trade_amount', label: '实际扣费金额合计', align: 'center' }
 ]
+
 </script>
 
 <template>
@@ -83,7 +85,7 @@ const columnsTwo = [
       >
         <template v-slot:body="props">
           <q-tr :props="props">
-            <q-td key="creation_time" :props="props">{{ props.row.creation_time }}</q-td>
+            <q-td key="creation_time" :props="props">{{ dateFormat(props.row.creation_time) }}</q-td>
             <q-td key="public_ip_hours" :props="props">{{ props.row.public_ip_hours }}</q-td>
             <q-td key="cpu_hours" :props="props">{{ props.row.cpu_hours }}</q-td>
             <q-td key="ram_hours" :props="props">{{ props.row.ram_hours }}</q-td>
