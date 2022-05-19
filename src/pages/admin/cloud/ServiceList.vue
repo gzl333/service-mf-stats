@@ -20,7 +20,7 @@ const store = useStore()
 // const router = useRouter()
 // const tc = i18n.global.tc
 const activeItem = ref('id')
-const idColumns = [
+const userColumns = [
   { name: 'user_id', label: 'ID', align: 'center' },
   { name: 'username', align: 'center', label: '用户' },
   { name: 'company', label: '单位', align: 'center' },
@@ -28,314 +28,31 @@ const idColumns = [
   { name: 'total_trade_amount', label: '实际扣费金额合计', align: 'center' },
   { name: 'total_server', label: '云主机数量合计', align: 'center' }
 ]
-const uuidColumns = [
+const groupColumns = [
+  { name: 'vo_id', label: 'ID', align: 'center' },
+  { name: 'name', align: 'center', label: '项目组名称' },
+  { name: 'company', label: '单位', align: 'center' },
+  { name: 'total_original_amount', label: '计费金额合计', align: 'center' },
+  { name: 'total_trade_amount', label: '实际扣费金额合计', align: 'center' },
+  { name: 'total_server', label: '云主机数量合计', align: 'center' }
+]
+const serverColumns = [
   { name: 'server_id', label: '云主机uuid', align: 'center' },
   { name: 'ipv4', align: 'center', label: 'ip地址' },
   { name: 'service_name', label: '服务节点', align: 'center' },
   { name: 'configuration', label: '初始配置', align: 'center' },
-  // { name: 'state', label: '状态', align: 'center' },
-  // { name: 'settlementType', label: '结算类型', align: 'center' },
-  // { name: 'user', label: '用户', align: 'center' },
-  // { name: 'totalUseTime', label: '使用总时长(天)', align: 'center' },
   { name: 'total_public_ip_hours', label: '公网IP(个)', align: 'center' },
   { name: 'total_cpu_hours', label: 'vCPU(核*天）', align: 'center' },
   { name: 'total_ram_hours', label: '内存(GB*天)', align: 'center' },
   { name: 'total_disk_hours', label: '本地硬盘(GB*天)', align: 'center' },
-  // { name: 'total_original_amount', label: '流量(GB*天)', align: 'center' }
   { name: 'total_original_amount', label: '计费金额(总)', align: 'center' }
-  // { name: 'totalActualDeductionAmount', label: '实际扣费金额合计(总)', align: 'center' }
 ]
-const groupColumns = [
-  {
-    name: 'id',
-    required: true,
-    label: 'ID',
-    align: 'center'
-  },
-  {
-    name: 'teamName',
-    align: 'center',
-    label: '项目组名称'
-  },
-  {
-    name: 'company',
-    label: '单位',
-    style: 'width: 10px',
-    align: 'center'
-  },
-  {
-    name: 'department',
-    label: '部门',
-    align: 'center'
-  },
-  {
-    name: 'totalBillAount',
-    label: '计费金额合计',
-    align: 'center'
-  },
-  {
-    name: 'totalActualDeductionAmount',
-    label: '实际扣费金额合计',
-    align: 'center'
-  },
-  {
-    name: 'totalvirtualMachines',
-    label: '云主机数量合计',
-    align: 'center'
-  },
-  {
-    name: 'operation',
-    label: '操作',
-    align: 'center'
-  }
-]
-const groupRows = [
-  {
-    id: 159,
-    teamName: 'Frozen',
-    company: 6.0,
-    department: 24,
-    totalBillAount: 4.0,
-    totalActualDeductionAmount: 87,
-    totalvirtualMachines: '14%',
-    operation: '1%'
-  },
-  {
-    id: 157,
-    teamName: 'Frozen',
-    company: 9.0,
-    department: 37,
-    totalBillAount: 4.3,
-    totalActualDeductionAmount: 129,
-    totalvirtualMachines: '8%',
-    operation: '1%'
-  },
-  {
-    id: 157,
-    teamName: 'Frozen',
-    company: 16.0,
-    department: 23,
-    totalBillAount: 6.0,
-    totalActualDeductionAmount: 337,
-    totalvirtualMachines: '6%',
-    operation: '7%'
-  },
-  {
-    id: 157,
-    teamName: 'Frozen',
-    company: 3.7,
-    department: 67,
-    totalBillAount: 4.3,
-    totalActualDeductionAmount: 413,
-    totalvirtualMachines: '3%',
-    operation: '8%'
-  },
-  {
-    id: 157,
-    teamName: 'Frozen',
-    company: 16.0,
-    department: 49,
-    totalBillAount: 3.9,
-    totalActualDeductionAmount: 327,
-    totalvirtualMachines: '7%',
-    operation: '16%'
-  },
-  {
-    id: 157,
-    teamName: 'Frozen',
-    company: 6.0,
-    department: 24,
-    totalBillAount: 4.0,
-    totalActualDeductionAmount: 87,
-    totalvirtualMachines: '14%',
-    operation: '1%'
-  },
-  {
-    id: 157,
-    teamName: 'Frozen',
-    company: 6.0,
-    department: 24,
-    totalBillAount: 4.0,
-    totalActualDeductionAmount: 87,
-    totalvirtualMachines: '14%',
-    operation: '1%'
-  },
-  {
-    id: 157,
-    teamName: 'Frozen',
-    company: 6.0,
-    department: 24,
-    totalBillAount: 4.0,
-    totalActualDeductionAmount: 87,
-    totalvirtualMachines: '14%',
-    operation: '1%'
-  },
-  {
-    id: 157,
-    teamName: 'Frozen',
-    company: 6.0,
-    department: 24,
-    totalBillAount: 4.0,
-    totalActualDeductionAmount: 87,
-    totalvirtualMachines: '14%',
-    operation: '1%'
-  },
-  {
-    id: 157,
-    teamName: 'Frozen',
-    company: 6.0,
-    department: 24,
-    totalBillAount: 4.0,
-    totalActualDeductionAmount: 87,
-    totalvirtualMachines: '14%',
-    operation: '1%'
-  }
-]
-const nodeColumns = [
-  {
-    name: 'id',
-    required: true,
-    label: 'ID',
-    align: 'center'
-  },
-  {
-    name: 'service',
-    align: 'center',
-    label: '服务节点'
-  },
-  {
-    name: 'company',
-    label: '所属单位',
-    style: 'width: 10px',
-    align: 'center'
-  },
-  {
-    name: 'totalBillAount',
-    label: '计费金额合计',
-    align: 'center'
-  },
-  {
-    name: 'totalActualDeductionAmount',
-    label: '实际扣费金额合计',
-    align: 'center'
-  },
-  {
-    name: 'userNumber',
-    label: '用户数量',
-    align: 'center'
-  },
-  {
-    name: 'totalvirtualMachines',
-    label: '云主机数量合计',
-    align: 'center'
-  },
-  {
-    name: 'operation',
-    label: '操作',
-    align: 'center'
-  }
-]
-const nodeRows = [
-  {
-    id: 'Frozen Yogurt',
-    service: 159,
-    company: 6.0,
-    totalBillAount: 4.0,
-    totalActualDeductionAmount: 87,
-    userNumber: 24,
-    totalvirtualMachines: '14%',
-    operation: '1%'
-  },
-  {
-    id: 'Ice cream sandwich',
-    service: 237,
-    company: 9.0,
-    totalBillAount: 4.3,
-    totalActualDeductionAmount: 129,
-    userNumber: 37,
-    totalvirtualMachines: '8%',
-    operation: '1%'
-  },
-  {
-    id: 'Eclair',
-    service: 262,
-    company: 16.0,
-    totalBillAount: 6.0,
-    totalActualDeductionAmount: 337,
-    userNumber: 23,
-    totalvirtualMachines: '6%',
-    operation: '7%'
-  },
-  {
-    id: 'Cupcake',
-    service: 305,
-    company: 3.7,
-    totalBillAount: 4.3,
-    totalActualDeductionAmount: 413,
-    userNumber: 67,
-    totalvirtualMachines: '3%',
-    operation: '8%'
-  },
-  {
-    id: 'Gingerbread',
-    service: 356,
-    company: 16.0,
-    totalBillAount: 3.9,
-    totalActualDeductionAmount: 327,
-    userNumber: 49,
-    totalvirtualMachines: '7%',
-    operation: '16%'
-  },
-  {
-    id: 'Frozen Yogurt',
-    service: 159,
-    company: 6.0,
-    totalBillAount: 4.0,
-    totalActualDeductionAmount: 87,
-    userNumber: 24,
-    totalvirtualMachines: '14%',
-    operation: '1%'
-  },
-  {
-    id: 'Frozen Yogurt',
-    service: 159,
-    company: 6.0,
-    totalBillAount: 4.0,
-    totalActualDeductionAmount: 87,
-    userNumber: 24,
-    totalvirtualMachines: '14%',
-    operation: '1%'
-  },
-  {
-    id: 'Frozen Yogurt',
-    service: 159,
-    company: 6.0,
-    totalBillAount: 4.0,
-    totalActualDeductionAmount: 87,
-    userNumber: 24,
-    totalvirtualMachines: '14%',
-    operation: '1%'
-  },
-  {
-    id: 'Frozen Yogurt',
-    service: 159,
-    company: 6.0,
-    totalBillAount: 4.0,
-    totalActualDeductionAmount: 87,
-    userNumber: 24,
-    totalvirtualMachines: '14%',
-    operation: '1%'
-  },
-  {
-    id: 'Frozen Yogurt',
-    service: 159,
-    company: 6.0,
-    totalBillAount: 4.0,
-    totalActualDeductionAmount: 87,
-    userNumber: 24,
-    totalvirtualMachines: '14%',
-    operation: '1%'
-  }
+const serviceColumns = [
+  { name: 'service_id', label: 'ID', align: 'center' },
+  { name: 'name', align: 'center', label: '服务节点' },
+  { name: 'total_original_amount', label: '计费金额合计', align: 'center' },
+  { name: 'total_trade_amount', label: '实际扣费金额合计', align: 'center' },
+  { name: 'total_server', label: '云主机数量合计', align: 'center' }
 ]
 const paginationTable = ref({
   page: 1,
@@ -345,21 +62,14 @@ const paginationTable = ref({
 const myDate = new Date()
 const year = myDate.getFullYear()
 const month = myDate.getMonth() + 1
-let month1: any = myDate.getMonth() + 1
-let strDate: any = myDate.getDate()
-const getNowFormatDate = () => {
-  const seperator1 = '-'
-  if (month1 >= 1 && month1 <= 9) {
-    month1 = '0' + month1
-  }
-  if (strDate >= 0 && strDate <= 9) {
-    strDate = '0' + strDate
-  }
-  return year + seperator1 + month1 + seperator1 + strDate
-}
-const currentDate = getNowFormatDate()
+let monthNew: number | string = myDate.getMonth() + 1
+let strDate: number | string = myDate.getDate()
 const searchName = ref('')
-const searchQuery: any = ref({
+const serverTableRow = ref([])
+const userTableRow = ref([])
+const groupTableRow = ref([])
+const serviceTableRow = ref([])
+const searchQuery = ref({
   year: {
     label: year,
     value: year
@@ -369,24 +79,26 @@ const searchQuery: any = ref({
     value: 0
   }
 })
-const UUTableRow = ref([])
-const userTableRow = ref([])
-const query: any = ref({
-  page: 1,
-  page_size: 10,
-  date_start: year + '-' + '01-01',
-  date_end: currentDate,
-  'as-admin': true
-})
-const defaultQuery: any = ref({
-  page: 1,
-  page_size: 10,
-  date_start: year + '-' + '01-01',
-  date_end: currentDate,
-  'as-admin': true
-})
 const monthOptions: any = ref([])
 const yearOptions: any = ref([])
+const getNowFormatDate = () => {
+  const seperator1 = '-'
+  if (monthNew >= 1 && monthNew <= 9) {
+    monthNew = '0' + monthNew
+  }
+  if (strDate >= 0 && strDate <= 9) {
+    strDate = '0' + strDate
+  }
+  return year + seperator1 + monthNew + seperator1 + strDate
+}
+const currentDate = getNowFormatDate()
+const query: Record<string, any> = ref({
+  page: 1,
+  page_size: 10,
+  date_start: year + '-' + '01-01',
+  date_end: currentDate,
+  'as-admin': true
+})
 const initSelectYear = () => {
   monthOptions.value.push({
     value: 0,
@@ -431,34 +143,6 @@ const changeYear = (val: any) => {
     }
   }
 }
-const changeTab = async (name: string) => {
-  activeItem.value = name
-  searchQuery.value = {
-    year: {
-      label: year,
-      value: year
-    },
-    month: {
-      label: '全年',
-      value: 0
-    }
-  }
-  searchName.value = ''
-  query.value.date_start = searchQuery.value.year.value + '-' + month1 + '-' + '01'
-  query.value.date_end = currentDate
-  changeYear(searchQuery.value.year)
-  if (name === 'uuid') {
-    const data = await store.getUUMachineData(query.value)
-    UUTableRow.value = data.data.results
-    paginationTable.value.page = 1
-    paginationTable.value.count = data.data.count
-  } else if (name === 'id') {
-    const data = await store.getUserMachineData(defaultQuery.value)
-    userTableRow.value = data.data.results
-    paginationTable.value.page = 1
-    paginationTable.value.count = data.data.count
-  }
-}
 const initQuery = () => {
   query.value.page = 1
   let dateStart = ''
@@ -468,7 +152,7 @@ const initQuery = () => {
       dateStart = year + '-' + '01-01'
       dateEnd = currentDate
     } else if (searchQuery.value.month.value === month) {
-      dateStart = year + '-' + month1 + '-' + '01'
+      dateStart = year + '-' + monthNew + '-' + '01'
       dateEnd = currentDate
     } else {
       const day = new Date(searchQuery.value.year.value, searchQuery.value.month.value, 0).getDate()
@@ -503,26 +187,72 @@ const initQuery = () => {
     delete query.value.service_id
   }
 }
+const getUserData = async () => {
+  const data = await store.getUserMachineData(query.value)
+  userTableRow.value = data.data.results
+  paginationTable.value.page = 1
+  paginationTable.value.count = data.data.count
+}
+const getGroupData = async () => {
+  const data = await store.getVoMachineData(query.value)
+  groupTableRow.value = data.data.results
+  paginationTable.value.page = 1
+  paginationTable.value.count = data.data.count
+}
+const getServerData = async () => {
+  const data = await store.getUUMachineData(query.value)
+  serverTableRow.value = data.data.results
+  paginationTable.value.page = 1
+  paginationTable.value.count = data.data.count
+}
+const getServiceData = async () => {
+  const data = await store.getServiceData(query.value)
+  serviceTableRow.value = data.data.results
+  paginationTable.value.page = 1
+  paginationTable.value.count = data.data.count
+}
+const changeTab = async (name: string) => {
+  activeItem.value = name
+  searchQuery.value = {
+    year: {
+      label: year,
+      value: year
+    },
+    month: {
+      label: '全年',
+      value: 0
+    }
+  }
+  searchName.value = ''
+  query.value.date_start = searchQuery.value.year.value + '-' + monthNew + '-' + '01'
+  query.value.date_end = currentDate
+  changeYear(searchQuery.value.year)
+  if (name === 'id') {
+    await getUserData()
+  } else if (name === 'group') {
+    await getGroupData()
+  } else if (name === 'uuid') {
+    await getServerData()
+  } else if (name === 'node') {
+    await getServiceData()
+  }
+}
 const search = async () => {
   if (activeItem.value === 'id') {
     initQuery()
-    const data = await store.getUserMachineData(query.value)
-    userTableRow.value = data.data.results
-    paginationTable.value.page = 1
-    paginationTable.value.count = data.data.count
+    await getUserData()
   }
   if (activeItem.value === 'group') {
-    console.log('group')
+    initQuery()
+    await getGroupData()
   }
   if (activeItem.value === 'uuid') {
     initQuery()
-    const data = await store.getUUMachineData(query.value)
-    UUTableRow.value = data.data.results
-    paginationTable.value.page = 1
-    paginationTable.value.count = data.data.count
+    await getServerData()
   }
   if (activeItem.value === 'node') {
-    console.log('node')
+    initQuery()
+    await getServiceData()
   }
 }
 // const changePageSize = async () => {
@@ -530,17 +260,25 @@ const search = async () => {
 //   query.value.page = 1
 //   paginationTable.value.page = 1
 //   const data = await store.getUUMachineData(query.value)
-//   UUTableRow.value = data.data.results
+//   serverTableRow.value = data.data.results
 // }
 const changePagination = async (val: number) => {
   if (activeItem.value === 'uuid') {
     query.value.page = val
     const data = await store.getUUMachineData(query.value)
-    UUTableRow.value = data.data.results
+    serverTableRow.value = data.data.results
   } else if (activeItem.value === 'id') {
     query.value.page = val
     const data = await store.getUserMachineData(query.value)
     userTableRow.value = data.data.results
+  } else if (activeItem.value === 'group') {
+    query.value.page = val
+    const data = await store.getVoMachineData(query.value)
+    groupTableRow.value = data.data.results
+  } else if (activeItem.value === 'node') {
+    query.value.page = val
+    const data = await store.getServiceData(query.value)
+    serviceTableRow.value = data.data.results
   }
 }
 const exportExcel = (name: string) => {
@@ -548,8 +286,12 @@ const exportExcel = (name: string) => {
   let id = ''
   if (activeItem.value === 'id') {
     id = '#userTable'
+  } else if (activeItem.value === 'group') {
+    id = '#groupTable'
   } else if (activeItem.value === 'uuid') {
     id = '#uuTable'
+  } else if (activeItem.value === 'node') {
+    id = '#nodeTable'
   }
   const sel = XLSX.utils.table_to_book(document.querySelector(id))
   const selIn = XLSX.write(sel, {
@@ -566,7 +308,7 @@ const exportExcel = (name: string) => {
 }
 onMounted(async () => {
   initSelectYear()
-  const data = await store.getUserMachineData(defaultQuery.value)
+  const data = await store.getUserMachineData(query.value)
   userTableRow.value = data.data.results
   paginationTable.value.count = data.data.count
 })
@@ -576,8 +318,7 @@ onMounted(async () => {
   <div class="ServiceList">
     <div class="row q-px-lg q-mt-md q-gutter-x-sm">
       <div class="col-1">
-        <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" label="请选择"
-                  @update:model-value="changeYear"/>
+        <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" label="请选择" @update:model-value="changeYear"/>
       </div>
       <div class="col-1">
         <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" label="请选择"/>
@@ -592,15 +333,16 @@ onMounted(async () => {
     </div>
     <div class="q-px-lg q-mt-md items-center">
       <q-tabs
-        v-model="tab"
+        v-model="activeItem"
         inline-label
         :breakpoint="0"
         align="justify"
         indicator-color="blue-grey"
         class="shadow-2"
-        style="width: 60%"
+        style="width: 65%"
       >
-        <q-tab name="id" @click="changeTab('id')" :class="activeItem === 'id' ? 'bg-blue-4' : 'bg-grey-4'">按用户id显示
+        <q-tab name="id" @click="changeTab('id')" :class="activeItem === 'id' ? 'bg-blue-4' : 'bg-grey-4'">
+          按用户id显示
         </q-tab>
         <q-tab name="group" @click="changeTab('group')" :class="activeItem === 'group' ? 'bg-blue-4' : 'bg-grey-4'">
           按项目组id显示
@@ -619,7 +361,7 @@ onMounted(async () => {
             id="userTable"
             table-header-class="bg-grey-1 text-grey"
             :rows="userTableRow"
-            :columns="idColumns"
+            :columns="userColumns"
             row-key="name"
             color="primary"
             loading-label="网络请求中，请稍候..."
@@ -648,8 +390,9 @@ onMounted(async () => {
         <q-tab-panel name="group">
           <q-table
             flat
+            id="groupTable"
             table-header-class="bg-grey-1 text-grey"
-            :rows="groupRows"
+            :rows="groupTableRow"
             :columns="groupColumns"
             row-key="name"
             color="primary"
@@ -660,25 +403,17 @@ onMounted(async () => {
           >
             <template v-slot:body="props">
               <q-tr :props="props">
-                <q-td key="id" :props="props">
-                  {{ props.row.id }}
-                </q-td>
-                <q-td key="teamName" :props="props">
+                <q-td key="vo_id" :props="props">{{ props.row.vo_id }}</q-td>
+                <q-td key="name" :props="props">
                   <q-btn
-                    @click="navigateToUrl(`/my/stats/cloud/groupUsage/${props.row.teamName}`)"
-                    class="q-ma-none" :label="props.row.teamName" color="primary" padding="xs" flat dense unelevated>
+                    @click="navigateToUrl(`/my/stats/cloud/groupUsage/${props.row.vo_id}`)"
+                    class="q-ma-none" :label="props.row.vo.name" color="primary" padding="xs" flat dense unelevated>
                   </q-btn>
                 </q-td>
-                <q-td key="company" :props="props">
-                  <div class="text-pre-wrap">{{ props.row.company }}</div>
-                </q-td>
-                <q-td key="department" :props="props">
-                  {{ props.row.department }}
-                </q-td>
-                <q-td key="totalBillAount" :props="props">{{ props.row.totalBillAount }}</q-td>
-                <q-td key="totalActualDeductionAmount" :props="props">{{ props.row.totalActualDeductionAmount }}</q-td>
-                <q-td key="totalvirtualMachines" :props="props">{{ props.row.totalvirtualMachines }}</q-td>
-                <q-td key="operation" :props="props">{{ props.row.operation }}</q-td>
+                <q-td key="company" :props="props">{{ props.row.vo.company }}</q-td>
+                <q-td key="total_original_amount" :props="props">{{ props.row.total_original_amount }}</q-td>
+                <q-td key="total_trade_amount" :props="props">{{ props.row.total_trade_amount }}</q-td>
+                <q-td key="total_server" :props="props">{{ props.row.total_server }}</q-td>
               </q-tr>
             </template>
           </q-table>
@@ -689,8 +424,8 @@ onMounted(async () => {
             flat
             id="uuTable"
             table-header-class="bg-grey-1 text-grey"
-            :rows="UUTableRow"
-            :columns="uuidColumns"
+            :rows="serverTableRow"
+            :columns="serverColumns"
             row-key="name"
             color="primary"
             loading-label="网络请求中，请稍候..."
@@ -761,9 +496,10 @@ onMounted(async () => {
         <q-tab-panel name="node">
           <q-table
             flat
+            id="nodeTable"
             table-header-class="bg-grey-1 text-grey"
-            :rows="nodeRows"
-            :columns="nodeColumns"
+            :rows="serviceTableRow"
+            :columns="serviceColumns"
             row-key="name"
             color="primary"
             loading-label="网络请求中，请稍候..."
@@ -773,50 +509,19 @@ onMounted(async () => {
           >
             <template v-slot:body="props">
               <q-tr :props="props">
-                <q-td key="id" :props="props">
-                  {{ props.row.id }}
-                </q-td>
-                <q-td key="service" :props="props">
+                <q-td key="service_id" :props="props">{{ props.row.service_id }}</q-td>
+                <q-td key="name" :props="props">
                   <q-btn
-                    @click="navigateToUrl(`/my/stats/cloud/nodeUsage/${props.row.service}`)"
-                    class="q-ma-none" :label="props.row.service" color="primary" padding="xs" flat dense unelevated>
+                    @click="navigateToUrl(`/my/stats/cloud/nodeUsage/${props.row.service_id}`)"
+                    class="q-ma-none" :label="props.row.service.name" color="primary" padding="xs" flat dense unelevated>
                   </q-btn>
                 </q-td>
-                <q-td key="company" :props="props">
-                  <div class="text-pre-wrap">{{ props.row.company }}</div>
-                </q-td>
-                <q-td key="totalBillAount" :props="props">{{ props.row.totalBillAount }}</q-td>
-                <q-td key="totalActualDeductionAmount" :props="props">{{ props.row.totalActualDeductionAmount }}</q-td>
-                <q-td key="userNumber" :props="props">
-                  {{ props.row.userNumber }}
-                </q-td>
-                <q-td key="totalvirtualMachines" :props="props">{{ props.row.totalvirtualMachines }}</q-td>
-                <q-td key="operation" :props="props">{{ props.row.operation }}</q-td>
+                <q-td key="total_original_amount" :props="props">{{ props.row.total_original_amount }}</q-td>
+                <q-td key="total_trade_amount" :props="props">{{ props.row.total_trade_amount }}</q-td>
+                <q-td key="total_server" :props="props">{{ props.row.total_server }}</q-td>
               </q-tr>
             </template>
           </q-table>
-          <!--            <div class="row q-pa-sm text-grey justify-between items-center">-->
-          <!--                <div class="row items-center">-->
-          <!--                  <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>-->
-          <!--                  <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense-->
-          <!--                            options-dense-->
-          <!--                            borderless @update:model-value="changePageSize">-->
-          <!--                  </q-select>-->
-          <!--                  <span>/页</span>-->
-          <!--                </div>-->
-          <!--                <div class="q-pa-lg flex flex-center">-->
-          <!--                  <q-pagination-->
-          <!--                    v-model="current"-->
-          <!--                    :max="5"-->
-          <!--                    direction-links-->
-          <!--                    boundary-links-->
-          <!--                    icon-first="skip_previous"-->
-          <!--                    icon-last="skip_next"-->
-          <!--                    icon-prev="fast_rewind"-->
-          <!--                    icon-next="fast_forward"-->
-          <!--                  />-->
-          <!--                </div>-->
-          <!--              </div>-->
         </q-tab-panel>
       </q-tab-panels>
       <div class="row q-pa-sm text-grey justify-between items-center">

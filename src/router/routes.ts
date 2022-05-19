@@ -41,27 +41,30 @@ const routes: RouteRecordRaw[] = [
             name: '用户用量列表',
             meta: {
               icon: 'las la-user',
-              roles: ['federal-admin']
+              roles: ['federal-admin'],
+              type: 'user'
             },
-            component: () => import('pages/admin/cloud/UserUsageList.vue')
+            component: () => import('pages/admin/cloud/DetailList.vue')
           },
           {
             path: 'groupUsage/:groupId',
             name: '项目组用量列表',
             meta: {
               icon: 'las la-users',
-              roles: ['federal-admin']
+              roles: ['federal-admin'],
+              type: 'group'
             },
-            component: () => import('pages/admin/cloud/GroupUsageList.vue')
+            component: () => import('pages/admin/cloud/DetailList.vue')
           },
           {
             path: 'nodeUsage/:nodeId',
             name: '服务用量列表',
             meta: {
-              icon: 'las la-ioxhost',
-              roles: ['federal-admin']
+              icon: 'lab las la-user',
+              roles: ['federal-admin'],
+              type: 'service'
             },
-            component: () => import('pages/admin/cloud/NodeUsageList.vue')
+            component: () => import('pages/admin/cloud/DetailList.vue')
           },
           {
             path: 'uuUsage/:uuId',

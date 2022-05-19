@@ -4,7 +4,7 @@ import { onMounted, ref } from 'vue'
 import { useStore } from 'stores/store'
 import { useRoute } from 'vue-router'
 // import { i18n } from 'boot/i18n'
-import UserTable from 'components/admin/cloud/UserTable.vue'
+import UserTable from 'components/admin/cloud/DetailTable.vue'
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -23,10 +23,15 @@ const dateTo: any = ref('')
 const isLastMonth = ref(false)
 const isCurrentMonth = ref(true)
 const tableRow: any = ref([])
+const paginationTable = ref({
+  page: 1,
+  count: 0,
+  rowsPerPage: 10
+})
 const myDate = new Date()
 const year = myDate.getFullYear()
-let month: any = myDate.getMonth() + 1
-let strDate: any = myDate.getDate()
+let month: number | string = myDate.getMonth() + 1
+let strDate: number | string = myDate.getDate()
 const getNowFormatDate = (type: number) => {
   month = myDate.getMonth() + 1
   const seperator1 = '-'
@@ -62,23 +67,23 @@ const startDate = getNowFormatDate(0)
 const currentDate = getNowFormatDate(1)
 const startLastDate = getLastFormatDate(0)
 const currentLastDate = getLastFormatDate(1)
-const query: any = ref({
+const query: Record<string, any> = ref({
   page: 1,
   page_size: 10,
   date_start: startDate,
   date_end: currentDate,
-  user_id: '',
   'as-admin': true
-})
-const paginationTable = ref({
-  page: 1,
-  count: 0,
-  rowsPerPage: 10
 })
 const getData = async () => {
   tableRow.value = []
-  let obj: any = {}
-  query.value.user_id = route.params.userId
+  let obj: Record<string, any> = {}
+  if (route.meta.type === 'user') {
+    query.value.user_id = route.params.userId
+  } else if (route.meta.type === 'group') {
+    query.value.vo_id = route.params.groupId
+  } else if (route.meta.type === 'service') {
+    query.value.service_id = route.params.nodeId
+  }
   const data = await store.getMachineDetail(query.value)
   for (const elem of data.data.results) {
     obj = {}

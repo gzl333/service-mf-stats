@@ -12,10 +12,10 @@ export default {
     },
     getService (payload?: {
       query?: {
-        page?: number;
-        page_size?: number;
-        center_id?: string;
-        available_only?: boolean;
+        page: number;
+        page_size: number;
+        center_id: string;
+        available_only: boolean;
       }
     }) {
       const config = {
@@ -25,8 +25,8 @@ export default {
     },
     getUserPermissionPolicy (payload?: {
       query?: {
-        page?: number;
-        page_size?: number;
+        page: number;
+        page_size: number;
       }
     }) {
       const config = {
@@ -36,15 +36,15 @@ export default {
     },
     getMeteringServer (payload: {
       query?: {
-        page?: number;
-        page_size?: number;
-        service_id?: string;
-        server_id?: string;
-        date_start?: string;
-        date_end?: string;
-        vo_id?: string;
-        user_id?: string;
-        'as-admin'?: boolean
+        page: number;
+        page_size: number;
+        service_id: string;
+        server_id: string;
+        date_start: string;
+        date_end: string;
+        vo_id: string;
+        user_id: string;
+        'as-admin': boolean
       }
     }) {
       const config = {
@@ -53,14 +53,14 @@ export default {
       return axiosStats.get('/metering/server', config)
     },
     getAggregationServer (payload: {
-      query: {
-        page?: number;
-        page_size?: number;
-        date_start?: string;
-        date_end?: string;
-        vo_id?: string;
-        user_id?: string;
-        service_id?: string;
+      query?: {
+        page: number;
+        page_size: number;
+        date_start: string;
+        date_end: string;
+        vo_id: string;
+        user_id: string;
+        service_id: string;
         'as-admin': boolean
       }
     }) {
@@ -83,6 +83,35 @@ export default {
         params: payload.query
       }
       return axiosStats.get('/metering/server/aggregation/user', config)
+    },
+    getAggregationVo (payload: {
+      query?: {
+        page: number;
+        page_size: number;
+        date_start: string;
+        date_end: string;
+        service_id: string;
+        'as-admin': boolean
+      }
+    }) {
+      const config = {
+        params: payload.query
+      }
+      return axiosStats.get('/metering/server/aggregation/vo', config)
+    },
+    getAggregationService (payload: {
+      query?: {
+        page: number;
+        page_size: number;
+        date_start: string;
+        date_end: string;
+        'as-admin': boolean
+      }
+    }) {
+      const config = {
+        params: payload.query
+      }
+      return axiosStats.get('/metering/server/aggregation/service', config)
     }
   }
 }
