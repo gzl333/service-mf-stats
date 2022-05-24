@@ -1,20 +1,6 @@
 import { defineStore } from 'pinia'
 import stats from 'src/api/index'
 import { normalize, schema } from 'normalizr'
-export interface UUVirtualMachineInterface {
-  server_id: string
-  total_cpu_hours: number
-  total_ram_hours: number
-  total_disk_hours: number
-  total_public_ip_hours: number
-  total_original_amount_hours: number
-  ipv4: never
-  archive_ipv4: string
-  vcpus: number
-  ram: number
-  disk_size: number
-  pay_type: string
-}
 export interface DataCenterInterface {
   // 来自registry接口
   id: string
@@ -50,6 +36,24 @@ export interface ServiceInterface {
   longitude: number
   latitude: number
 }
+export interface UUVirtualMachineInterface {
+  server_id: string
+  total_cpu_hours: number
+  total_ram_hours: number
+  total_disk_hours: number
+  total_public_ip_hours: number
+  total_original_amount_hours: number
+  ipv4: never
+  archive_ipv4: string
+  vcpus: number
+  ram: number
+  disk_size: number
+  pay_type: string
+}
+export interface UserNameInterface {
+  id: string
+  username: string
+}
 export const useStore = defineStore('stats', {
   state: () => ({
     items: {
@@ -60,11 +64,6 @@ export const useStore = defineStore('stats', {
       vmsAdmin: [] as string[]
     },
     tables: {
-      UUVirtualMachineTable: {
-        byId: {} as Record<string, UUVirtualMachineInterface>,
-        allIds: [],
-        isLoaded: false
-      },
       dataCenterTable: {
         byId: {} as Record<string, DataCenterInterface>,
         allIds: [],
@@ -72,6 +71,16 @@ export const useStore = defineStore('stats', {
       },
       serviceTable: {
         byId: {} as Record<string, ServiceInterface>,
+        allIds: [],
+        isLoaded: false
+      },
+      UUVirtualMachineTable: {
+        byId: {} as Record<string, UUVirtualMachineInterface>,
+        allIds: [],
+        isLoaded: false
+      },
+      UserNameTable: {
+        byId: {} as Record<string, UserNameInterface>,
         allIds: [],
         isLoaded: false
       }
@@ -160,6 +169,20 @@ export const useStore = defineStore('stats', {
     },
     async getUserMachineData (payload: { page: number, page_size: number, date_start: string, date_end: string, service_id: string, 'as-admin': boolean }) {
       const respDataCenter = await stats.stats.api.getAggregationUser({ query: payload })
+      this.tables.UserNameTable = {
+        byId: {},
+        allIds: [],
+        isLoaded: false
+      }
+      const user = new schema.Entity('user')
+      respDataCenter.data.results.forEach((data: Record<string, any>) => {
+        const normalizedData = normalize(data.user, user)
+        Object.assign(this.tables.UserNameTable.byId, normalizedData.entities.user)
+        // @ts-ignore
+        this.tables.UserNameTable.allIds.unshift(Object.keys(normalizedData.entities.user)[0])
+        this.tables.UserNameTable.allIds = [...new Set(this.tables.UserNameTable.allIds)]
+      })
+      this.tables.serviceTable.isLoaded = true
       return respDataCenter
     },
     async getVoMachineData (payload: { page: number, page_size: number, date_start: string, date_end: string, service_id: string, 'as-admin': boolean }) {

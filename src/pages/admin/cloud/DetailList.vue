@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, onUnmounted } from 'vue'
 // import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 import { useRoute } from 'vue-router'
 // import { i18n } from 'boot/i18n'
-import UserTable from 'components/admin/cloud/DetailTable.vue'
+import DetailTable from 'components/admin/cloud/DetailTable.vue'
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -18,6 +18,13 @@ const store = useStore()
 const route = useRoute()
 // const router = useRouter()
 // const tc = i18n.global.tc
+// console.log(store.tables)
+// console.log(route)
+// console.log(router)
+const count: any = ref('')
+const userName: any = ref('')
+const totalAmount = ref(0)
+const actualAmount = ref(0)
 const dateFrom: any = ref('')
 const dateTo: any = ref('')
 const isLastMonth = ref(false)
@@ -67,6 +74,8 @@ const startDate = getNowFormatDate(0)
 const currentDate = getNowFormatDate(1)
 const startLastDate = getLastFormatDate(0)
 const currentLastDate = getLastFormatDate(1)
+const dateStart = ref('')
+const dateEnd = ref('')
 const query: Record<string, any> = ref({
   page: 1,
   page_size: 10,
@@ -76,43 +85,52 @@ const query: Record<string, any> = ref({
 })
 const getData = async () => {
   tableRow.value = []
+  totalAmount.value = 0
+  actualAmount.value = 0
   let obj: Record<string, any> = {}
   if (route.meta.type === 'user') {
-    query.value.user_id = route.params.userId
+    query.value.user_id = route.params.userid
   } else if (route.meta.type === 'group') {
     query.value.vo_id = route.params.groupId
   } else if (route.meta.type === 'service') {
     query.value.service_id = route.params.nodeId
   }
-  const data = await store.getMachineDetail(query.value)
+  const data = await store.getUUMachineData(query.value)
   for (const elem of data.data.results) {
     obj = {}
-    obj.service_id = elem.service_id
-    obj.payment_status = elem.payment_status
-    obj.pay_type = elem.pay_type
-    obj.public_ip_hours = elem.public_ip_hours
-    obj.cpu_hours = elem.cpu_hours
-    obj.ram_hours = elem.ram_hours
-    obj.disk_hours = elem.disk_hours
-    obj.original_amount = elem.original_amount
-    obj.trade_amount = elem.trade_amount
+    obj.ipv4 = elem.server.ipv4
+    obj.service_name = elem.service_name
+    obj.vcpus = elem.server.vcpus
+    obj.ram = elem.server.ram
+    obj.total_public_ip_hours = elem.total_public_ip_hours
+    obj.total_cpu_hours = elem.total_cpu_hours
+    obj.total_ram_hours = elem.total_ram_hours
+    obj.total_disk_hours = elem.total_disk_hours
+    obj.total_original_amount = elem.total_original_amount
+    obj.total_trade_amount = elem.total_trade_amount
+    totalAmount.value = totalAmount.value + elem.total_original_amount
+    actualAmount.value = actualAmount.value + elem.total_trade_amount
     tableRow.value.push(obj)
   }
+  console.log(totalAmount.value)
+  console.log(actualAmount.value)
   paginationTable.value.count = data.data.count
+  dateStart.value = query.value.date_start
+  dateEnd.value = query.value.date_end
 }
-const changeMonth = (type: number) => {
+const changeMonth = async (type: number) => {
   if (type === 0) {
     isLastMonth.value = false
     isCurrentMonth.value = true
     query.value.date_start = startDate
     query.value.date_end = currentDate
-    getData()
+    await getData()
   } else {
     isCurrentMonth.value = false
     isLastMonth.value = true
     query.value.date_start = startLastDate
     query.value.date_end = currentLastDate
-    getData()
+    await getData()
   }
   dateFrom.value = null
   dateTo.value = null
@@ -132,15 +150,31 @@ const changePagination = async (val: number) => {
 const search = async () => {
   await getData()
 }
-onMounted(() => {
-  getData()
+onMounted(async () => {
+  console.log(sessionStorage)
+  if (route.meta.type === 'user') {
+    count.value = sessionStorage.getItem('userCount')
+    userName.value = sessionStorage.getItem('username')
+  } else if (route.meta.type === 'group') {
+    count.value = sessionStorage.getItem('groupCount')
+    userName.value = sessionStorage.getItem('voName')
+  } else if (route.meta.type === 'service') {
+    query.value.service_id = route.params.nodeId
+  }
+  await getData()
+})
+onUnmounted(() => {
+  sessionStorage.removeItem('userCount')
+  sessionStorage.removeItem('username')
+  sessionStorage.removeItem('groupCount')
+  sessionStorage.removeItem('voName')
 })
 </script>
 
 <template>
   <div class="UserUsageList">
     <div class="row q-pa-lg q-gutter-x-md">
-      <div class="col-2">
+      <div class="col-3">
         <q-btn-group>
           <q-btn :color="isCurrentMonth ? 'blue-5' : 'white'" label="本月" class="text-subtitle1 q-px-xl text-black"
                  @click="changeMonth(0)"/>
@@ -150,46 +184,51 @@ onMounted(() => {
       </div>
       <div class="col-4 row items-baseline">
         <div class="col-5">
-        <q-input filled dense v-model="dateFrom" mask="date">
-          <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
-                <q-date v-model="dateFrom" @update:model-value="selectDate">
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Close" color="primary" flat/>
-                  </div>
-                </q-date>
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
+          <q-input filled dense v-model="dateFrom" mask="date">
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
+                  <q-date v-model="dateFrom" @update:model-value="selectDate">
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="Close" color="primary" flat/>
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
         </div>
         <div class="col-1 text-center">至</div>
         <div class="col-5">
-        <q-input filled dense v-model="dateTo" mask="date">
-          <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
-                <q-date v-model="dateTo" @update:model-value="selectDate">
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Close" color="primary" flat/>
-                  </div>
-                </q-date>
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
+          <q-input filled dense v-model="dateTo" mask="date">
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
+                  <q-date v-model="dateTo" @update:model-value="selectDate">
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="Close" color="primary" flat/>
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
         </div>
       </div>
-<!--      <div class="col-2">-->
-<!--        <q-input square dense outlined v-model="text" label="请输入"/>-->
-<!--      </div>-->
       <div class="col-2">
         <q-btn outline color="primary" label="搜索" class="q-px-xl" @click="search"/>
-<!--        <q-btn outline color="primary" label="导出" class="q-px-xl q-ml-sm"/>-->
+        <!--        <q-btn outline color="primary" label="导出" class="q-px-xl q-ml-sm"/>-->
       </div>
     </div>
-    <user-table :tableRow="tableRow"/>
+    <div class="row q-px-lg text-subtitle1 text-bold">
+<!--      <div class="col-2">{{ store.tables.UserNameTable.byId[route.params.userid]?.username }}</div>-->
+      <div class="col-3">{{`${route.meta.type ===  'user' ? '用户名：' : '组名称：'}`}}{{ userName }}</div>
+      <div class="col-2">云主机数量合计：{{count}}</div>
+      <div class="col-3">计费周期：{{dateStart}}-{{dateEnd}}</div>
+      <div class="col-2">计费金额合计：{{totalAmount}}点</div>
+      <div class="col-2">实际扣费金额合计：{{ actualAmount }}点</div>
+    </div>
+    <detail-table :tableRow="tableRow"/>
     <q-separator/>
     <div class="row q-pa-md text-grey justify-between items-center">
       <div class="row items-center">

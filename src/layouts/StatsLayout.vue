@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { /* ref, */ computed } from 'vue'
+import { computed } from 'vue'
 import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
@@ -84,10 +84,12 @@ store.loadAllTables()
     </q-drawer>
 
     <q-page-container>
-      <breadcrumb v-show="activeItem !== 'home'" v-cloak/>
-      <q-scroll-area style="height: 100vh;">
+      <q-page>
+      <q-scroll-area style="height: 100vh">
+        <breadcrumb v-show="activeItem !== 'home'" v-cloak/>
         <router-view/>
       </q-scroll-area>
+      </q-page>
     </q-page-container>
 
   </q-layout>
