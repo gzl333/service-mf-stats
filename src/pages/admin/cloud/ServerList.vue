@@ -2,9 +2,10 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
+import emitter from 'boot/mitt'
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
-import emitter from 'boot/mitt'
+
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -19,12 +20,17 @@ const store = useStore()
 // const router = useRouter()
 // const tc = i18n.global.tc
 
-const serviceColumns = [
-  { name: 'service_id', label: 'ID', align: 'center' },
-  { name: 'name', align: 'center', label: '服务节点' },
-  { name: 'total_original_amount', label: '计费金额合计', align: 'center' },
-  { name: 'total_trade_amount', label: '实际扣费金额合计', align: 'center' },
-  { name: 'total_server', label: '云主机数量合计', align: 'center' }
+const serverColumns = [
+  { name: 'server_id', label: '云主机uuid', align: 'center' },
+  { name: 'ipv4', align: 'center', label: 'ip地址' },
+  { name: 'service_name', label: '服务节点', align: 'center' },
+  { name: 'configuration', label: '初始配置', align: 'center' },
+  { name: 'total_public_ip_hours', label: '公网IP(个)', align: 'center' },
+  { name: 'total_cpu_hours', label: 'vCPU(核*天）', align: 'center' },
+  { name: 'total_ram_hours', label: '内存(GB*天)', align: 'center' },
+  { name: 'total_disk_hours', label: '本地硬盘(GB*天)', align: 'center' },
+  { name: 'total_original_amount', label: '计费金额(总)', align: 'center' },
+  { name: 'total_trade_amount', label: '实际扣费金额(总)', align: 'center' }
 ]
 const paginationTable = ref({
   page: 1,
@@ -35,7 +41,7 @@ const myDate = new Date()
 const year = myDate.getFullYear()
 let monthNew: number | string = myDate.getMonth() + 1
 let strDate: number | string = myDate.getDate()
-const serviceTableRow = ref([])
+const serverTableRow = ref([])
 const getNowFormatDate = () => {
   const seperator1 = '-'
   if (monthNew >= 1 && monthNew <= 9) {
@@ -54,13 +60,13 @@ const query: Record<string, any> = ref({
   date_end: currentDate,
   'as-admin': true
 })
-emitter.on('service', (value) => {
+emitter.on('server', (value) => {
   query.value = value
-  getServiceData()
+  getServerData()
 })
-const getServiceData = async () => {
-  const data = await store.getServiceData(query.value)
-  serviceTableRow.value = data.data.results
+const getServerData = async () => {
+  const data = await store.getUUMachineData(query.value)
+  serverTableRow.value = data.data.results
   paginationTable.value.page = 1
   paginationTable.value.count = data.data.count
 }
@@ -68,35 +74,37 @@ const changePageSize = async () => {
   query.value.page_size = paginationTable.value.rowsPerPage
   query.value.page = 1
   paginationTable.value.page = 1
-  await getServiceData()
+  await getServerData()
 }
 const changePagination = async (val: number) => {
   query.value.page = val
-  await getServiceData()
+  await getServerData()
 }
-const goToDetail = (serviceId: string, serviceName: string, serviceCount: any) => {
-  navigateToUrl(`/my/stats/cloud/service/${serviceId}`)
+const goToDetail = (serverId: string, serviceName: string, ipv4: string, vcpus: string, ram: string) => {
+  navigateToUrl(`/my/stats/cloud/server/${serverId}`)
   sessionStorage.setItem('serviceName', serviceName)
-  sessionStorage.setItem('serviceCount', serviceCount)
+  sessionStorage.setItem('ipv4', ipv4)
+  sessionStorage.setItem('vcpus', vcpus)
+  sessionStorage.setItem('ram', ram)
 }
 onMounted(async () => {
-  await getServiceData()
+  await getServerData()
 })
 onBeforeUnmount(() => {
-  emitter.off('service')
+  emitter.off('server')
 })
 </script>
 
 <template>
-  <div class="ServiceList">
+  <div class="ServerList">
     <div class="q-px-sm q-mt-md">
       <q-separator/>
       <q-table
         flat
-        id="nodeTable"
+        id="uuTable"
         table-header-class="bg-grey-1 text-grey"
-        :rows="serviceTableRow"
-        :columns="serviceColumns"
+        :rows="serverTableRow"
+        :columns="serverColumns"
         row-key="name"
         color="primary"
         loading-label="网络请求中，请稍候..."
@@ -106,16 +114,27 @@ onBeforeUnmount(() => {
       >
         <template v-slot:body="props">
           <q-tr :props="props">
-            <q-td key="service_id" :props="props">{{ props.row.service_id }}</q-td>
-            <q-td key="name" :props="props">
-              <q-btn
-                @click="goToDetail(props.row.service_id, props.row.service.name, props.row.total_server )"
-                class="q-ma-none" :label="props.row.service.name" color="primary" padding="xs" flat dense unelevated>
-              </q-btn>
+            <q-td key="server_id" :props="props">
+              <div class="text-center">
+                <q-btn
+                  @click="goToDetail(props.row.server_id, props.row.service_name, props.row.server.ipv4, props.row.server.vcpus, props.row.server.ram)"
+                  class="q-ma-none" :label="props.row.server_id" color="primary" padding="xs" flat dense unelevated>
+                </q-btn>
+              </div>
             </q-td>
+            <q-td key="ipv4" :props="props">{{ props.row.server.ipv4 }}</q-td>
+            <q-td key="service_name" :props="props">{{ props.row.service_name }}
+            </q-td>
+            <q-td key="configuration" :props="props">{{props.row.server.vcpus + '核' + props.row.server.ram / 1024 + 'GB内存' }}
+            </q-td>
+            <q-td class="text-right" key="total_public_ip_hours" :props="props">{{ props.row.total_public_ip_hours / 24 }}
+            </q-td>
+            <q-td class="text-left" key="total_cpu_hours" :props="props">{{ props.row.total_cpu_hours / 24 }}
+            </q-td>
+            <q-td key="total_ram_hours" :props="props">{{ props.row.total_ram_hours / 24 }}</q-td>
+            <q-td key="total_disk_hours" :props="props">{{ props.row.total_disk_hours / 24 }}</q-td>
             <q-td key="total_original_amount" :props="props">{{ props.row.total_original_amount }}</q-td>
             <q-td key="total_trade_amount" :props="props">{{ props.row.total_trade_amount }}</q-td>
-            <q-td key="total_server" :props="props">{{ props.row.total_server }}</q-td>
           </q-tr>
         </template>
       </q-table>
@@ -143,6 +162,6 @@ onBeforeUnmount(() => {
 </template>
 
 <style lang="scss" scoped>
-.ServiceList {
+.ServerList {
 }
 </style>

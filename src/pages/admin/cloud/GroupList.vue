@@ -68,13 +68,11 @@ const changePageSize = async () => {
   query.value.page_size = paginationTable.value.rowsPerPage
   query.value.page = 1
   paginationTable.value.page = 1
-  const data = await store.getUUMachineData(query.value)
-  groupTableRow.value = data.data.results
+  await getGroupData()
 }
 const changePagination = async (val: number) => {
   query.value.page = val
-  const data = await store.getUserMachineData(query.value)
-  groupTableRow.value = data.data.results
+  await getGroupData()
 }
 const goToDetail = (userid: string, voName: string, count: any) => {
   navigateToUrl(`/my/stats/cloud/group/${userid}`)
@@ -92,7 +90,8 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="GroupList">
-    <div class="q-px-lg q-mt-md">
+    <div class="q-px-sm q-mt-md">
+    <q-separator/>
     <q-table
       flat
       id="groupTable"
@@ -122,6 +121,7 @@ onBeforeUnmount(() => {
         </q-tr>
       </template>
     </q-table>
+    <q-separator/>
     <div class="row q-pa-sm text-grey justify-between items-center">
       <div class="row items-center">
         <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>

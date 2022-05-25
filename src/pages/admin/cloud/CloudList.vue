@@ -4,6 +4,7 @@ import { navigateToUrl } from 'single-spa'
 // import { useStore } from 'stores/store'
 import XLSX from 'xlsx'
 import FileSaver from 'file-saver'
+import emitter from 'boot/mitt'
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
 
@@ -20,7 +21,7 @@ import FileSaver from 'file-saver'
 // const route = useRoute()
 // const router = useRouter()
 // const tc = i18n.global.tc
-const activeItem = ref('id')
+const activeItem = ref('user')
 const isDisable = ref(false)
 const myDate = new Date()
 const year = myDate.getFullYear()
@@ -162,44 +163,48 @@ const changeTab = async (name: string) => {
   query.value.date_start = searchQuery.value.year.value + '-' + monthNew + '-' + '01'
   query.value.date_end = currentDate
   changeYear(searchQuery.value.year)
-  if (name === 'id') {
+  if (name === 'user') {
     isDisable.value = false
     navigateToUrl('/my/stats/cloud/list/user')
   } else if (name === 'group') {
     isDisable.value = false
-    navigateToUrl('/my/stats/cloud/list/user2')
-  } else if (name === 'uuid') {
+    navigateToUrl('/my/stats/cloud/list/group')
+  } else if (name === 'server') {
     isDisable.value = false
-    navigateToUrl('/my/stats/cloud/list/user2')
-  } else if (name === 'node') {
+    navigateToUrl('/my/stats/cloud/list/server')
+  } else if (name === 'service') {
     isDisable.value = true
-    navigateToUrl('/my/stats/cloud/list/user3')
+    navigateToUrl('/my/stats/cloud/list/service')
   }
 }
 const search = async () => {
-  if (activeItem.value === 'id') {
+  if (activeItem.value === 'user') {
     initQuery()
+    emitter.emit('user', query.value)
   }
   if (activeItem.value === 'group') {
     initQuery()
+    emitter.emit('group', query.value)
   }
-  if (activeItem.value === 'uuid') {
+  if (activeItem.value === 'server') {
     initQuery()
+    emitter.emit('server', query.value)
   }
-  if (activeItem.value === 'node') {
+  if (activeItem.value === 'service') {
     initQuery()
+    emitter.emit('service', query.value)
   }
 }
 const exportExcel = (name: string) => {
   // name表示生成excel的文件名     tableName表示表格的id
   let id = ''
-  if (activeItem.value === 'id') {
+  if (activeItem.value === 'user') {
     id = '#userTable'
   } else if (activeItem.value === 'group') {
     id = '#groupTable'
-  } else if (activeItem.value === 'uuid') {
+  } else if (activeItem.value === 'server') {
     id = '#uuTable'
-  } else if (activeItem.value === 'node') {
+  } else if (activeItem.value === 'service') {
     id = '#nodeTable'
   }
   const sel = XLSX.utils.table_to_book(document.querySelector(id))
@@ -222,51 +227,51 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="Search">
-        <div class="row q-px-lg q-mt-md q-gutter-x-sm">
-          <div class="col-1">
-            <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" label="请选择" @update:model-value="changeYear"/>
-          </div>
-          <div class="col-1">
-            <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" label="请选择"/>
-          </div>
-          <div class="col-2">
-            <q-input outlined dense clearable :disable="isDisable" v-model="searchName" label="请输入"/>
-          </div>
-          <div class="col-3 row q-gutter-x-xs">
-            <q-btn outline text-color="black" label="搜索" class="q-px-xl" @click="search"/>
-            <q-btn outline text-color="black" label="导出Excel" class="q-px-lg" @click="exportExcel('用量列表.xlsx')"/>
-          </div>
-        </div>
-        <div class="q-px-lg q-mt-md">
-          <q-tabs
-            v-model="activeItem"
-            inline-label
-            :breakpoint="0"
-            align="justify"
-            indicator-color="blue-grey"
-            class="shadow-2"
-            style="width: 65%"
-          >
-            <q-tab name="id" @click="changeTab('id')" :class="activeItem === 'id' ? 'bg-blue-4' : 'bg-grey-4'">
-              按用户id显示
-            </q-tab>
-            <q-tab name="group" @click="changeTab('group')" :class="activeItem === 'group' ? 'bg-blue-4' : 'bg-grey-4'">
-              按项目组id显示
-            </q-tab>
-            <q-tab name="uuid" @click="changeTab('uuid')" :class="activeItem === 'uuid' ? 'bg-blue-4' : 'bg-grey-4'">
-              按云主机uuid显示
-            </q-tab>
-            <q-tab name="node" @click="changeTab('node')" :class="activeItem === 'node' ? 'bg-blue-4' : 'bg-grey-4'">
-              按服务节点显示
-            </q-tab>
-          </q-tabs>
-        </div>
+  <div class="CloudList">
+    <div class="row q-px-sm q-mt-md q-gutter-x-sm">
+      <div class="col-1">
+        <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" label="请选择" @update:model-value="changeYear"/>
+      </div>
+      <div class="col-1">
+        <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" label="请选择"/>
+      </div>
+      <div class="col-2">
+        <q-input outlined dense clearable :disable="isDisable" v-model="searchName" label="请输入"/>
+      </div>
+      <div class="col-3 row q-gutter-x-xs">
+        <q-btn outline text-color="black" label="搜索" class="q-px-xl" @click="search"/>
+        <q-btn outline text-color="black" label="导出Excel" class="q-px-lg" @click="exportExcel('用量列表.xlsx')"/>
+      </div>
+    </div>
+    <div class="q-px-sm q-mt-md">
+      <q-tabs
+        v-model="activeItem"
+        inline-label
+        :breakpoint="0"
+        align="justify"
+        indicator-color="blue-grey"
+        class="shadow-2"
+        style="width: 65%"
+      >
+        <q-tab name="user" @click="changeTab('user')" :class="activeItem === 'user' ? 'bg-blue-4' : 'bg-grey-4'">
+          按用户id显示
+        </q-tab>
+        <q-tab name="group" @click="changeTab('group')" :class="activeItem === 'group' ? 'bg-blue-4' : 'bg-grey-4'">
+          按项目组id显示
+        </q-tab>
+        <q-tab name="server" @click="changeTab('server')" :class="activeItem === 'server' ? 'bg-blue-4' : 'bg-grey-4'">
+          按云主机uuid显示
+        </q-tab>
+        <q-tab name="service" @click="changeTab('service')" :class="activeItem === 'service' ? 'bg-blue-4' : 'bg-grey-4'">
+          按服务节点显示
+        </q-tab>
+      </q-tabs>
+    </div>
     <router-view></router-view>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.Search {
+.CloudList {
 }
 </style>

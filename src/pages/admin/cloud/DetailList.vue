@@ -112,8 +112,6 @@ const getData = async () => {
     actualAmount.value = actualAmount.value + elem.total_trade_amount
     tableRow.value.push(obj)
   }
-  console.log(totalAmount.value)
-  console.log(actualAmount.value)
   paginationTable.value.count = data.data.count
   dateStart.value = query.value.date_start
   dateEnd.value = query.value.date_end
@@ -144,14 +142,17 @@ const selectDate = () => {
 const changePagination = async (val: number) => {
   query.value.page = val
   await getData()
-  // const data = await store.getUUMachineData(query.value)
-  // tableRow.value = data.data.results
+}
+const changePageSize = async () => {
+  query.value.page_size = paginationTable.value.rowsPerPage
+  query.value.page = 1
+  paginationTable.value.page = 1
+  await getData()
 }
 const search = async () => {
   await getData()
 }
 onMounted(async () => {
-  console.log(sessionStorage)
   if (route.meta.type === 'user') {
     count.value = sessionStorage.getItem('userCount')
     userName.value = sessionStorage.getItem('username')
@@ -159,7 +160,8 @@ onMounted(async () => {
     count.value = sessionStorage.getItem('groupCount')
     userName.value = sessionStorage.getItem('voName')
   } else if (route.meta.type === 'service') {
-    query.value.service_id = route.params.nodeId
+    count.value = sessionStorage.getItem('serviceCount')
+    userName.value = sessionStorage.getItem('serviceName')
   }
   await getData()
 })
@@ -168,11 +170,13 @@ onUnmounted(() => {
   sessionStorage.removeItem('username')
   sessionStorage.removeItem('groupCount')
   sessionStorage.removeItem('voName')
+  sessionStorage.removeItem('serviceCount')
+  sessionStorage.removeItem('serviceName')
 })
 </script>
 
 <template>
-  <div class="UserUsageList">
+  <div class="DetailList">
     <div class="row q-pa-lg q-gutter-x-md">
       <div class="col-3">
         <q-btn-group>
@@ -222,17 +226,21 @@ onUnmounted(() => {
     </div>
     <div class="row q-px-lg text-subtitle1 text-bold">
 <!--      <div class="col-2">{{ store.tables.UserNameTable.byId[route.params.userid]?.username }}</div>-->
-      <div class="col-3">{{`${route.meta.type ===  'user' ? '用户名：' : '组名称：'}`}}{{ userName }}</div>
+      <div class="col-3">{{route.meta.type ===  'user' ? '用户名：' : route.meta.type ===  'group' ? '组名称：' : '服务名称：'}}{{ userName }}</div>
       <div class="col-2">云主机数量合计：{{count}}</div>
       <div class="col-3">计费周期：{{dateStart}}-{{dateEnd}}</div>
-      <div class="col-2">计费金额合计：{{totalAmount}}点</div>
-      <div class="col-2">实际扣费金额合计：{{ actualAmount }}点</div>
+      <div class="col-2">计费金额合计：{{totalAmount.toFixed(2)}}点</div>
+      <div class="col-2">实际扣费金额合计：{{ actualAmount.toFixed(2) }}点</div>
     </div>
     <detail-table :tableRow="tableRow"/>
     <q-separator/>
     <div class="row q-pa-md text-grey justify-between items-center">
       <div class="row items-center">
         <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>
+        <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense
+                  borderless @update:model-value="changePageSize">
+        </q-select>
+        <span>/页</span>
       </div>
       <q-pagination
         v-model="paginationTable.page"
@@ -248,6 +256,6 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss" scoped>
-.UserUsageList {
+.DetailList {
 }
 </style>

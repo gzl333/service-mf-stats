@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import UUTable from 'components/admin/cloud/UUTable.vue'
+import { ref, onMounted, onUnmounted } from 'vue'
+import ServerTable from 'components/admin/cloud/ServerTable.vue'
 // import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 import { useRoute } from 'vue-router'
@@ -22,8 +22,11 @@ const dateFrom: any = ref('')
 const dateTo: any = ref('')
 const isLastMonth = ref(false)
 const isCurrentMonth = ref(true)
-const topRow: any = ref([])
-const bottomRow: any = ref([])
+const tableRow: any = ref([])
+const serviceName: any = ref('')
+const ipv4: any = ref('')
+const vcpus: any = ref('')
+const ram: any = ref('')
 const myDate = new Date()
 const year = myDate.getFullYear()
 let month: any = myDate.getMonth() + 1
@@ -77,21 +80,12 @@ const paginationTable = ref({
   rowsPerPage: 10
 })
 const getData = async () => {
-  topRow.value = []
-  bottomRow.value = []
-  let obj: any = {}
+  tableRow.value = []
   let objTwo: any = {}
-  query.value.server_id = route.params.uuId
+  query.value.server_id = route.params.serverId
   const data = await store.getMachineDetail(query.value)
   for (const elem of data.data.results) {
-    obj = {}
     objTwo = {}
-    obj.server_id = elem.server_id
-    obj.service_id = elem.service_id
-    obj.pay_type = elem.pay_type
-    obj.payment_status = elem.payment_status
-    obj.owner_type = elem.owner_type
-    topRow.value.push(obj)
     objTwo.creation_time = elem.creation_time
     objTwo.public_ip_hours = elem.public_ip_hours
     objTwo.cpu_hours = elem.cpu_hours
@@ -99,7 +93,7 @@ const getData = async () => {
     objTwo.disk_hours = elem.disk_hours
     objTwo.original_amount = elem.original_amount
     objTwo.trade_amount = elem.trade_amount
-    bottomRow.value.push(objTwo)
+    tableRow.value.push(objTwo)
   }
   paginationTable.value.count = data.data.count
 }
@@ -126,30 +120,38 @@ const selectDate = () => {
   query.value.date_start = dateStart
   query.value.date_end = dateEnd
 }
-// const changePageSize = async () => {
-//   query.value.page_size = paginationTable.value.rowsPerPage
-//   query.value.page = 1
-//   paginationTable.value.page = 1
-//   const data = await store.getUUMachineData(query.value)
-//   tableRow.value = data.data.results
-// }
+const changePageSize = async () => {
+  query.value.page_size = paginationTable.value.rowsPerPage
+  query.value.page = 1
+  paginationTable.value.page = 1
+  await getData()
+}
 const changePagination = async (val: number) => {
   query.value.page = val
-  // const data = await store.getUUMachineData(query.value)
-  // tableRow.value = data.data.results
+  await getData()
 }
 const search = async () => {
   await getData()
 }
 onMounted(() => {
+  serviceName.value = sessionStorage.getItem('serviceName')
+  ipv4.value = sessionStorage.getItem('ipv4')
+  vcpus.value = sessionStorage.getItem('vcpus')
+  ram.value = sessionStorage.getItem('ram')
   getData()
+})
+onUnmounted(() => {
+  sessionStorage.removeItem('serviceName')
+  sessionStorage.removeItem('ipv4')
+  sessionStorage.removeItem('vcpus')
+  sessionStorage.removeItem('ram')
 })
 </script>
 
 <template>
-  <div class="UUUsageList">
+  <div class="DetailServer">
     <div class="row q-px-lg q-pt-lg q-pb-xs">
-      <div class="col-2">
+      <div class="col-3">
         <q-btn-group>
           <q-btn :color="isCurrentMonth ? 'blue-5' : 'white'" label="本月" class="text-subtitle1 q-px-xl text-black"
                  @click="changeMonth(0)"/>
@@ -195,11 +197,40 @@ onMounted(() => {
 <!--        <q-btn outline color="primary" label="导出" class="q-px-xl q-ml-sm"/>-->
       </div>
     </div>
-    <u-u-table :topRow="topRow" :bottomRow="bottomRow"/>
+    <div class="q-px-lg q-py-md">
+      <q-card class="my-card" flat bordered>
+        <q-card-section>
+          <div class="row">
+            <div class="col-4 text-center">
+              <div class="text-h6">UUID</div>
+              <q-separator size="0.1rem"/>
+              <div class="text-subtitle1 q-mt-xl">{{route.params.serverId}}</div>
+            </div>
+            <div class="col-4 text-center">
+              <div class="text-h6">服务节点</div>
+              <q-separator size="0.1rem"/>
+              <div class="text-subtitle1 q-mt-xl">{{serviceName}}</div>
+            </div>
+            <div class="col-4 text-center">
+              <div class="text-h6">初始配置</div>
+              <q-separator size="0.1rem"/>
+              <div class="text-subtitle1 q-mt-md">{{vcpus}}核</div>
+              <div class="text-subtitle1">{{ram / 1024}}GB内存</div>
+              <div class="text-subtitle1">公网ip：{{ipv4}}</div>
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
+    </div>
+    <server-table :tableRow="tableRow"/>
     <q-separator/>
     <div class="row q-pa-md text-grey justify-between items-center">
       <div class="row items-center">
         <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>
+        <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense
+                  borderless @update:model-value="changePageSize">
+        </q-select>
+        <span>/页</span>
       </div>
       <q-pagination
         v-model="paginationTable.page"
@@ -215,6 +246,6 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
-.UUUsageList {
+.DetailServer {
 }
 </style>

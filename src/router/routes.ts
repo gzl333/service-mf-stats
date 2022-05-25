@@ -25,7 +25,7 @@ const routes: RouteRecordRaw[] = [
           icon: 'las la-cloud',
           roles: ['federal-admin']
         },
-        component: () => import('pages/admin/cloud/ServiceIndex.vue'),
+        component: () => import('pages/admin/cloud/CloudIndex.vue'),
         redirect: '/my/stats/cloud/list',
         children: [
           {
@@ -34,7 +34,7 @@ const routes: RouteRecordRaw[] = [
               icon: 'las la-user',
               roles: ['federal-admin']
             },
-            component: () => import('pages/admin/cloud/ServiceList.vue'),
+            component: () => import('pages/admin/cloud/CloudList.vue'),
             redirect: '/my/stats/cloud/list/user',
             children: [
               {
@@ -52,6 +52,22 @@ const routes: RouteRecordRaw[] = [
                   roles: ['federal-admin']
                 },
                 component: () => import('pages/admin/cloud/GroupList.vue')
+              },
+              {
+                path: 'server',
+                meta: {
+                  icon: 'las la-user',
+                  roles: ['federal-admin']
+                },
+                component: () => import('pages/admin/cloud/ServerList.vue')
+              },
+              {
+                path: 'service',
+                meta: {
+                  icon: 'las la-user',
+                  roles: ['federal-admin']
+                },
+                component: () => import('pages/admin/cloud/ServiceList.vue')
               }
             ]
           },
@@ -76,7 +92,7 @@ const routes: RouteRecordRaw[] = [
             component: () => import('pages/admin/cloud/DetailList.vue')
           },
           {
-            path: 'nodeUsage/:nodeId',
+            path: 'service/:serviceId',
             name: '服务用量列表',
             meta: {
               icon: 'lab las la-user',
@@ -86,13 +102,13 @@ const routes: RouteRecordRaw[] = [
             component: () => import('pages/admin/cloud/DetailList.vue')
           },
           {
-            path: 'uuUsage/:uuId',
+            path: 'server/:serverId',
             name: '云主机每月用量明细',
             meta: {
               icon: 'lab la-stack-exchange',
               roles: ['federal-admin']
             },
-            component: () => import('pages/admin/cloud/UUUsageList.vue')
+            component: () => import('pages/admin/cloud/DetailServer.vue')
           }
         ]
       },

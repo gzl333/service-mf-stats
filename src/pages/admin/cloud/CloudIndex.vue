@@ -21,12 +21,12 @@
 
 </script>
 <template>
-  <div class="ServiceIndex">
+  <div class="CloudIndex">
     <router-view></router-view>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.ServiceIndex {
+.CloudIndex {
 }
 </style>
