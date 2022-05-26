@@ -5,7 +5,7 @@ import { navigateToUrl } from 'single-spa'
 import XLSX from 'xlsx'
 import FileSaver from 'file-saver'
 import emitter from 'boot/mitt'
-// import { useRoute, useRouter } from 'vue-router'
+// import { useRoute } from 'vue-router'
 // import { i18n } from 'boot/i18n'
 
 // const props = defineProps({
@@ -21,7 +21,7 @@ import emitter from 'boot/mitt'
 // const route = useRoute()
 // const router = useRouter()
 // const tc = i18n.global.tc
-const activeItem = ref('user')
+const activeItem: any = ref('user')
 const isDisable = ref(false)
 const myDate = new Date()
 const year = myDate.getFullYear()
@@ -163,6 +163,7 @@ const changeTab = async (name: string) => {
   query.value.date_start = searchQuery.value.year.value + '-' + monthNew + '-' + '01'
   query.value.date_end = currentDate
   changeYear(searchQuery.value.year)
+  sessionStorage.setItem('tabStatus', name)
   if (name === 'user') {
     isDisable.value = false
     navigateToUrl('/my/stats/cloud/list/user')
@@ -221,6 +222,9 @@ const exportExcel = (name: string) => {
   return selIn
 }
 onMounted(async () => {
+  if (sessionStorage.getItem('tabStatus') != null) {
+    activeItem.value = sessionStorage.getItem('tabStatus')
+  }
   initSelectYear()
 })
 

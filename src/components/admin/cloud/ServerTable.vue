@@ -57,6 +57,7 @@ const columnsTwo = [
           </q-tr>
         </template>
       </q-table>
+      <q-separator/>
     </div>
   </div>
 </template>

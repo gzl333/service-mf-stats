@@ -5,6 +5,7 @@ import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
 import emitter from 'boot/mitt'
+import { loadingShow, loadingHide } from 'src/hooks/loadingPluugins'
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -59,10 +60,12 @@ emitter.on('group', (value) => {
   getGroupData()
 })
 const getGroupData = async () => {
+  loadingShow()
   const data = await store.getVoMachineData(query.value)
   groupTableRow.value = data.data.results
   paginationTable.value.page = 1
   paginationTable.value.count = data.data.count
+  loadingHide()
 }
 const changePageSize = async () => {
   query.value.page_size = paginationTable.value.rowsPerPage
@@ -71,8 +74,11 @@ const changePageSize = async () => {
   await getGroupData()
 }
 const changePagination = async (val: number) => {
+  loadingShow()
   query.value.page = val
-  await getGroupData()
+  const data = await store.getVoMachineData(query.value)
+  groupTableRow.value = data.data.results
+  loadingHide()
 }
 const goToDetail = (userid: string, voName: string, count: any) => {
   navigateToUrl(`/my/stats/cloud/group/${userid}`)

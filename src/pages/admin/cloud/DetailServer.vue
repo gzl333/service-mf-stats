@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import { loadingShow, loadingHide } from 'src/hooks/loadingPluugins'
 import ServerTable from 'components/admin/cloud/ServerTable.vue'
 // import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
@@ -80,22 +81,24 @@ const paginationTable = ref({
   rowsPerPage: 10
 })
 const getData = async () => {
+  loadingShow()
   tableRow.value = []
-  let objTwo: any = {}
+  let obj: any = {}
   query.value.server_id = route.params.serverId
   const data = await store.getMachineDetail(query.value)
   for (const elem of data.data.results) {
-    objTwo = {}
-    objTwo.creation_time = elem.creation_time
-    objTwo.public_ip_hours = elem.public_ip_hours
-    objTwo.cpu_hours = elem.cpu_hours
-    objTwo.ram_hours = elem.ram_hours
-    objTwo.disk_hours = elem.disk_hours
-    objTwo.original_amount = elem.original_amount
-    objTwo.trade_amount = elem.trade_amount
-    tableRow.value.push(objTwo)
+    obj = {}
+    obj.creation_time = elem.creation_time
+    obj.public_ip_hours = elem.public_ip_hours
+    obj.cpu_hours = elem.cpu_hours
+    obj.ram_hours = elem.ram_hours
+    obj.disk_hours = elem.disk_hours
+    obj.original_amount = elem.original_amount
+    obj.trade_amount = elem.trade_amount
+    tableRow.value.push(obj)
   }
   paginationTable.value.count = data.data.count
+  loadingHide()
 }
 const changeMonth = (type: number) => {
   if (type === 0) {
@@ -223,7 +226,6 @@ onUnmounted(() => {
       </q-card>
     </div>
     <server-table :tableRow="tableRow"/>
-    <q-separator/>
     <div class="row q-pa-md text-grey justify-between items-center">
       <div class="row items-center">
         <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>

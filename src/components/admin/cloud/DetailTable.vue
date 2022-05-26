@@ -52,13 +52,14 @@ const columns = [
             <q-td key="configuration" :props="props">{{props.row.vcpus + '核' + props.row.ram / 1024 + 'GB内存' }}</q-td>
             <q-td key="total_public_ip_hours" :props="props">{{ props.row.total_public_ip_hours / 24 }}</q-td>
             <q-td key="total_cpu_hours" :props="props">{{ props.row.total_cpu_hours / 24 }}</q-td>
-            <q-td key="total_ram_hours" :props="props">{{ props.row.total_ram_hours / 24 }}</q-td>
+            <q-td key="total_ram_hours" :props="props">{{ Math.round(props.row.total_ram_hours / 24) }}</q-td>
             <q-td key="total_disk_hours" :props="props">{{ props.row.total_disk_hours / 24 }}</q-td>
             <q-td key="total_original_amount" :props="props">{{ props.row.total_original_amount }}</q-td>
             <q-td key="total_trade_amount" :props="props">{{ props.row.total_trade_amount }}</q-td>
           </q-tr>
         </template>
       </q-table>
+      <q-separator/>
     </div>
   </div>
 </template>

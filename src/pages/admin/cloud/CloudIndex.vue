@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// import { ref } from 'vue'
+import { onBeforeUnmount } from 'vue'
 // import { navigateToUrl } from 'single-spa'
 // import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
@@ -19,6 +19,9 @@
 // const router = useRouter()
 // const tc = i18n.global.tc
 
+onBeforeUnmount(() => {
+  sessionStorage.removeItem('tabStatus')
+})
 </script>
 <template>
   <div class="CloudIndex">

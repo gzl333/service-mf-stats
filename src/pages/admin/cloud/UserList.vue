@@ -5,6 +5,7 @@ import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
 import emitter from 'boot/mitt'
+import { loadingShow, loadingHide } from 'src/hooks/loadingPluugins'
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -83,10 +84,12 @@ emitter.on('user', (value) => {
   getUserData()
 })
 const getUserData = async () => {
+  loadingShow()
   const data = await store.getUserMachineData(query.value)
   userTableRow.value = data.data.results
   paginationTable.value.page = 1
   paginationTable.value.count = data.data.count
+  loadingHide()
 }
 const changePageSize = async () => {
   query.value.page_size = paginationTable.value.rowsPerPage
@@ -95,8 +98,11 @@ const changePageSize = async () => {
   await getUserData()
 }
 const changePagination = async (val: number) => {
+  loadingShow()
   query.value.page = val
-  await getUserData()
+  const data = await store.getUserMachineData(query.value)
+  userTableRow.value = data.data.results
+  loadingHide()
 }
 const goToDetail = (userid: string, username: string, count: any) => {
   navigateToUrl(`/my/stats/cloud/user/${userid}`)
@@ -130,7 +136,9 @@ onBeforeUnmount(() => {
     >
       <template v-slot:body="props">
         <q-tr :props="props">
-          <q-td key="user_id" :props="props">{{ props.row.user_id }}</q-td>
+          <q-td key="user_id" :props="props">
+            <div class="text">{{ props.row.user_id }}</div>
+          </q-td>
           <q-td key="username" :props="props">
             <q-btn
               @click="goToDetail(props.row.user_id, props.row.user.username, props.row.total_server)"

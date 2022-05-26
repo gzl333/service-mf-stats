@@ -4,6 +4,7 @@ import { onMounted, ref, onUnmounted } from 'vue'
 import { useStore } from 'stores/store'
 import { useRoute } from 'vue-router'
 // import { i18n } from 'boot/i18n'
+import { loadingShow, loadingHide } from 'src/hooks/loadingPluugins'
 import DetailTable from 'components/admin/cloud/DetailTable.vue'
 // const props = defineProps({
 //   foo: {
@@ -18,9 +19,6 @@ const store = useStore()
 const route = useRoute()
 // const router = useRouter()
 // const tc = i18n.global.tc
-// console.log(store.tables)
-// console.log(route)
-// console.log(router)
 const count: any = ref('')
 const userName: any = ref('')
 const totalAmount = ref(0)
@@ -84,6 +82,7 @@ const query: Record<string, any> = ref({
   'as-admin': true
 })
 const getData = async () => {
+  loadingShow()
   tableRow.value = []
   totalAmount.value = 0
   actualAmount.value = 0
@@ -115,6 +114,7 @@ const getData = async () => {
   paginationTable.value.count = data.data.count
   dateStart.value = query.value.date_start
   dateEnd.value = query.value.date_end
+  loadingHide()
 }
 const changeMonth = async (type: number) => {
   if (type === 0) {
@@ -233,7 +233,6 @@ onUnmounted(() => {
       <div class="col-2">实际扣费金额合计：{{ actualAmount.toFixed(2) }}点</div>
     </div>
     <detail-table :tableRow="tableRow"/>
-    <q-separator/>
     <div class="row q-pa-md text-grey justify-between items-center">
       <div class="row items-center">
         <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>
