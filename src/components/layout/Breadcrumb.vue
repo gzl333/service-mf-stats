@@ -32,11 +32,10 @@ const getBreadcrumb = () => {
   //   matched = [{ path: '/home', meta: { title: '首页' } }].concat(matched)
   // }
   breadList.value = matched.filter(item => item.name !== undefined)
-  console.log(breadList.value)
 }
 const changeRouter = (path: string, index: number) => {
   if (index + 1 !== breadList.value.length) {
-    if (sessionStorage.getItem('tabStatus') != null) {
+    if (index === 1 && sessionStorage.getItem('tabStatus') != null) {
       const lastPath = sessionStorage.getItem('tabStatus')
       const routerPath = path + '/list/' + lastPath
       navigateToUrl(routerPath)

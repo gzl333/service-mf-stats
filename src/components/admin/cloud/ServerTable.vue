@@ -35,6 +35,7 @@ const columnsTwo = [
     <div class="q-px-lg q-mt-md">
       <q-table
         flat
+        id="serverTable"
         table-header-class="bg-grey-1 text-grey"
         :rows="props.tableRow"
         :columns="columnsTwo"

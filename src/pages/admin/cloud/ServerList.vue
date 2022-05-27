@@ -69,7 +69,7 @@ emitter.on('server', (value) => {
 })
 const getServerData = async () => {
   loadingShow()
-  const data = await store.getUUMachineData(query.value)
+  const data = await store.getServerData(query.value)
   serverTableRow.value = data.data.results
   paginationTable.value.page = 1
   paginationTable.value.count = data.data.count
@@ -84,7 +84,7 @@ const changePageSize = async () => {
 const changePagination = async (val: number) => {
   loadingShow()
   query.value.page = val
-  const data = await store.getUUMachineData(query.value)
+  const data = await store.getServerData(query.value)
   serverTableRow.value = data.data.results
   loadingHide()
 }
@@ -109,7 +109,7 @@ onBeforeUnmount(() => {
       <q-separator/>
       <q-table
         flat
-        id="uuTable"
+        id="serverTable"
         table-header-class="bg-grey-1 text-grey"
         :rows="serverTableRow"
         :columns="serverColumns"

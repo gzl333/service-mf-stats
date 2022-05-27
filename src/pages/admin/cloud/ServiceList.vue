@@ -99,7 +99,7 @@ onBeforeUnmount(() => {
       <q-separator/>
       <q-table
         flat
-        id="nodeTable"
+        id="serviceTable"
         table-header-class="bg-grey-1 text-grey"
         :rows="serviceTableRow"
         :columns="serviceColumns"

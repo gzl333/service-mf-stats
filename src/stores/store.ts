@@ -167,7 +167,7 @@ export const useStore = defineStore('stats', {
       const respDataCenter = await stats.stats.api.getMeteringServer({ query: payload })
       return respDataCenter
     },
-    async getUserMachineData (payload: { page: number, page_size: number, date_start: string, date_end: string, service_id: string, 'as-admin': boolean }) {
+    async getUserData (payload: { page: number, page_size: number, date_start: string, date_end: string, service_id: string, 'as-admin': boolean }) {
       const respDataCenter = await stats.stats.api.getAggregationUser({ query: payload })
       this.tables.UserNameTable = {
         byId: {},
@@ -185,11 +185,11 @@ export const useStore = defineStore('stats', {
       this.tables.serviceTable.isLoaded = true
       return respDataCenter
     },
-    async getVoMachineData (payload: { page: number, page_size: number, date_start: string, date_end: string, service_id: string, 'as-admin': boolean }) {
+    async getGroupData (payload: { page: number, page_size: number, date_start: string, date_end: string, service_id: string, 'as-admin': boolean }) {
       const respDataCenter = await stats.stats.api.getAggregationVo({ query: payload })
       return respDataCenter
     },
-    async getUUMachineData (payload: { page: number, page_size: number, date_start: string, date_end: string, vo_id: string, user_id: string, service_id: string, 'as-admin': boolean }) {
+    async getServerData (payload: { page: number, page_size: number, date_start: string, date_end: string, vo_id: string, user_id: string, service_id: string, 'as-admin': boolean }) {
       const respDataCenter = await stats.stats.api.getAggregationServer({ query: payload })
       return respDataCenter
     },

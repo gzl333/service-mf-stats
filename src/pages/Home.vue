@@ -30,7 +30,7 @@ const store = useStore()
     <div>
       <div class="text-h6 q-py-md q-px-xl text-weight-bold">用量计费</div>
       <div class="q-pt-lg q-pb-xl q-px-xl row q-gutter-md">
-        <div class="col-2" @click="navigateToUrl(store.items?.fedRole === 'federal-admin' ? '/my/stats/cloud' : '/my/stats/cloud/uuUsage/159')">
+        <div class="col-2" @click="navigateToUrl(store.items?.fedRole === 'federal-admin' ? '/my/stats/cloud' : '/my/stats/host')">
           <q-card class="my-card text-white q-py-md">
             <q-card-section>
               <div class="row items-center justify-center q-gutter-x-sm">

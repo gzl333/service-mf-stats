@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { onMounted, ref, onUnmounted } from 'vue'
+import { onMounted, ref } from 'vue'
 // import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
-import { useRoute } from 'vue-router'
+// import { useRoute } from 'vue-router'
 // import { i18n } from 'boot/i18n'
 import { loadingShow, loadingHide } from 'src/hooks/loadingPluugins'
-import DetailTable from 'components/admin/cloud/DetailTable.vue'
+import DetailTable from 'components/user/cloud/DetailTable.vue'
 import { exportExcel } from 'src/hooks/exportExcel'
 // const props = defineProps({
 //   foo: {
@@ -17,13 +17,9 @@ import { exportExcel } from 'src/hooks/exportExcel'
 // const emits = defineEmits(['change', 'delete'])
 
 const store = useStore()
-const route = useRoute()
+// const route = useRoute()
 // const router = useRouter()
 // const tc = i18n.global.tc
-const count: any = ref('')
-const userName: any = ref('')
-const totalAmount = ref(0)
-const actualAmount = ref(0)
 const dateFrom: any = ref('')
 const dateTo: any = ref('')
 const isLastMonth = ref(false)
@@ -79,25 +75,16 @@ const query: Record<string, any> = ref({
   page: 1,
   page_size: 10,
   date_start: startDate,
-  date_end: currentDate,
-  'as-admin': true
+  date_end: currentDate
 })
 const getData = async () => {
   loadingShow()
   tableRow.value = []
-  totalAmount.value = 0
-  actualAmount.value = 0
   let obj: Record<string, any> = {}
-  if (route.meta.type === 'user') {
-    query.value.user_id = route.params.userid
-  } else if (route.meta.type === 'group') {
-    query.value.vo_id = route.params.groupId
-  } else if (route.meta.type === 'service') {
-    query.value.service_id = route.params.nodeId
-  }
   const data = await store.getServerData(query.value)
   for (const elem of data.data.results) {
     obj = {}
+    obj.server_id = elem.server_id
     obj.ipv4 = elem.server.ipv4
     obj.service_name = elem.service_name
     obj.vcpus = elem.server.vcpus
@@ -108,8 +95,6 @@ const getData = async () => {
     obj.total_disk_hours = elem.total_disk_hours
     obj.total_original_amount = elem.total_original_amount
     obj.total_trade_amount = elem.total_trade_amount
-    totalAmount.value = totalAmount.value + elem.total_original_amount
-    actualAmount.value = actualAmount.value + elem.total_trade_amount
     tableRow.value.push(obj)
   }
   paginationTable.value.count = data.data.count
@@ -157,25 +142,7 @@ const exportFile = () => {
   exportExcel('用量列表.xlsx', '#detailTable')
 }
 onMounted(async () => {
-  if (route.meta.type === 'user') {
-    count.value = sessionStorage.getItem('userCount')
-    userName.value = sessionStorage.getItem('username')
-  } else if (route.meta.type === 'group') {
-    count.value = sessionStorage.getItem('groupCount')
-    userName.value = sessionStorage.getItem('voName')
-  } else if (route.meta.type === 'service') {
-    count.value = sessionStorage.getItem('serviceCount')
-    userName.value = sessionStorage.getItem('serviceName')
-  }
   await getData()
-})
-onUnmounted(() => {
-  sessionStorage.removeItem('userCount')
-  sessionStorage.removeItem('username')
-  sessionStorage.removeItem('groupCount')
-  sessionStorage.removeItem('voName')
-  sessionStorage.removeItem('serviceCount')
-  sessionStorage.removeItem('serviceName')
 })
 </script>
 
@@ -227,14 +194,6 @@ onUnmounted(() => {
         <q-btn outline color="primary" label="搜索" class="q-px-xl" @click="search"/>
         <q-btn outline color="primary" label="导出" class="q-px-xl q-ml-sm" @click="exportFile"/>
       </div>
-    </div>
-    <div class="row q-px-lg text-subtitle1 text-bold">
-<!--      <div class="col-2">{{ store.tables.UserNameTable.byId[route.params.userid]?.username }}</div>-->
-      <div class="col-3">{{route.meta.type ===  'user' ? '用户名：' : route.meta.type ===  'group' ? '组名称：' : '服务名称：'}}{{ userName }}</div>
-      <div class="col-2">云主机数量合计：{{count}}</div>
-      <div class="col-3">计费周期：{{dateStart}}-{{dateEnd}}</div>
-      <div class="col-2">计费金额合计：{{totalAmount.toFixed(2)}}点</div>
-      <div class="col-2">实际扣费金额合计：{{ actualAmount.toFixed(2) }}点</div>
     </div>
     <detail-table :tableRow="tableRow"/>
     <div class="row q-pa-md text-grey justify-between items-center">

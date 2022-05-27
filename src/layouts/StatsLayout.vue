@@ -53,8 +53,8 @@ store.loadAllTables()
 
             <q-item
               clickable
-              :active="activeItem === 'cloud' || activeItem === 'cloudUser'"
-              @click="store.items?.fedRole === 'federal-admin' ? activeItem = 'cloud' : activeItem = 'cloudUser'; navigateToUrl(store.items?.fedRole === 'federal-admin' ? '/my/stats/cloud' : '/my/stats/cloud/uuUsage/159')"
+              :active="activeItem === 'cloud' || activeItem === 'host'"
+              @click="activeItem = 'cloud'; navigateToUrl(store.items?.fedRole === 'federal-admin' ? '/my/stats/cloud' : '/my/stats/host')"
               active-class="active-item"
             >
               <q-item-section class="column items-center">

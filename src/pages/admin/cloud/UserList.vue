@@ -85,7 +85,7 @@ emitter.on('user', (value) => {
 })
 const getUserData = async () => {
   loadingShow()
-  const data = await store.getUserMachineData(query.value)
+  const data = await store.getUserData(query.value)
   userTableRow.value = data.data.results
   paginationTable.value.page = 1
   paginationTable.value.count = data.data.count
@@ -100,7 +100,7 @@ const changePageSize = async () => {
 const changePagination = async (val: number) => {
   loadingShow()
   query.value.page = val
-  const data = await store.getUserMachineData(query.value)
+  const data = await store.getUserData(query.value)
   userTableRow.value = data.data.results
   loadingHide()
 }

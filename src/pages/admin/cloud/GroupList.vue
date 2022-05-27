@@ -61,7 +61,7 @@ emitter.on('group', (value) => {
 })
 const getGroupData = async () => {
   loadingShow()
-  const data = await store.getVoMachineData(query.value)
+  const data = await store.getGroupData(query.value)
   groupTableRow.value = data.data.results
   paginationTable.value.page = 1
   paginationTable.value.count = data.data.count
@@ -76,7 +76,7 @@ const changePageSize = async () => {
 const changePagination = async (val: number) => {
   loadingShow()
   query.value.page = val
-  const data = await store.getVoMachineData(query.value)
+  const data = await store.getGroupData(query.value)
   groupTableRow.value = data.data.results
   loadingHide()
 }

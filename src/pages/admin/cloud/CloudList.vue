@@ -2,9 +2,8 @@
 import { ref, onMounted } from 'vue'
 import { navigateToUrl } from 'single-spa'
 // import { useStore } from 'stores/store'
-import XLSX from 'xlsx'
-import FileSaver from 'file-saver'
 import emitter from 'boot/mitt'
+import { exportExcel } from 'src/hooks/exportExcel'
 // import { useRoute } from 'vue-router'
 // import { i18n } from 'boot/i18n'
 
@@ -196,30 +195,17 @@ const search = async () => {
     emitter.emit('service', query.value)
   }
 }
-const exportExcel = (name: string) => {
+const exportFile = () => {
   // name表示生成excel的文件名     tableName表示表格的id
-  let id = ''
   if (activeItem.value === 'user') {
-    id = '#userTable'
+    exportExcel('用户用量列表.xlsx', '#userTable')
   } else if (activeItem.value === 'group') {
-    id = '#groupTable'
+    exportExcel('项目组用量列表.xlsx', '#groupTable')
   } else if (activeItem.value === 'server') {
-    id = '#uuTable'
+    exportExcel('云主机用量列表.xlsx', '#serverTable')
   } else if (activeItem.value === 'service') {
-    id = '#nodeTable'
+    exportExcel('服务用量列表.xlsx', '#serviceTable')
   }
-  const sel = XLSX.utils.table_to_book(document.querySelector(id))
-  const selIn = XLSX.write(sel, {
-    bookType: 'xlsx',
-    bookSST: true,
-    type: 'array'
-  })
-  try {
-    FileSaver.saveAs(new Blob([selIn], { type: 'application/octet-stream' }), name)
-  } catch (e) {
-    if (typeof console !== 'undefined') console.log(e, selIn)
-  }
-  return selIn
 }
 onMounted(async () => {
   if (sessionStorage.getItem('tabStatus') != null) {
@@ -244,7 +230,7 @@ onMounted(async () => {
       </div>
       <div class="col-3 row q-gutter-x-xs">
         <q-btn outline text-color="black" label="搜索" class="q-px-xl" @click="search"/>
-        <q-btn outline text-color="black" label="导出Excel" class="q-px-lg" @click="exportExcel('用量列表.xlsx')"/>
+        <q-btn outline text-color="black" label="导出Excel" class="q-px-lg" @click="exportFile()"/>
       </div>
     </div>
     <div class="q-px-sm q-mt-md">

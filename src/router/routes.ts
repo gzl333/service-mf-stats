@@ -95,7 +95,7 @@ const routes: RouteRecordRaw[] = [
             path: 'service/:serviceId',
             name: '服务用量列表',
             meta: {
-              icon: 'lab las la-user',
+              icon: 'lab la-ioxhost',
               roles: ['federal-admin'],
               type: 'service'
             },
@@ -103,12 +103,41 @@ const routes: RouteRecordRaw[] = [
           },
           {
             path: 'server/:serverId',
-            name: '云主机每月用量明细',
+            name: '云主机用量明细',
             meta: {
               icon: 'lab la-stack-exchange',
               roles: ['federal-admin']
             },
             component: () => import('pages/admin/cloud/DetailServer.vue')
+          }
+        ]
+      },
+      {
+        path: 'host',
+        name: '云主机用量',
+        meta: {
+          icon: 'las la-cloud',
+          roles: ['user']
+        },
+        component: () => import('pages/user/cloud/HostIndex.vue'),
+        redirect: '/my/stats/host/server',
+        children: [
+          {
+            path: 'server',
+            meta: {
+              icon: 'las la-user',
+              roles: ['federal-admin']
+            },
+            component: () => import('pages/user/cloud/HostList.vue')
+          },
+          {
+            path: 'server/:serverId',
+            name: '云主机每月用量明细',
+            meta: {
+              icon: 'lab la-wpforms',
+              roles: ['federal-admin']
+            },
+            component: () => import('pages/user/cloud/DetailServer.vue')
           }
         ]
       },

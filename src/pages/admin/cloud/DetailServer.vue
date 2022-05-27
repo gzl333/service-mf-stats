@@ -5,6 +5,7 @@ import ServerTable from 'components/admin/cloud/ServerTable.vue'
 // import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 import { useRoute } from 'vue-router'
+import { exportExcel } from 'src/hooks/exportExcel'
 // import { i18n } from 'boot/i18n'
 // const props = defineProps({
 //   foo: {
@@ -136,6 +137,9 @@ const changePagination = async (val: number) => {
 const search = async () => {
   await getData()
 }
+const exportFile = () => {
+  exportExcel('用量明细.xlsx', '#serverTable')
+}
 onMounted(() => {
   serviceName.value = sessionStorage.getItem('serviceName')
   ipv4.value = sessionStorage.getItem('ipv4')
@@ -195,9 +199,9 @@ onUnmounted(() => {
           </q-input>
         </div>
       </div>
-      <div class="col-2">
+      <div class="col-3">
         <q-btn outline color="primary" label="搜索" class="q-px-xl" @click="search"/>
-<!--        <q-btn outline color="primary" label="导出" class="q-px-xl q-ml-sm"/>-->
+        <q-btn outline color="primary" label="导出" class="q-px-xl q-ml-sm" @click="exportFile"/>
       </div>
     </div>
     <div class="q-px-lg q-py-md">
