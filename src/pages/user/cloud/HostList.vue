@@ -81,7 +81,7 @@ const getData = async () => {
   loadingShow()
   tableRow.value = []
   let obj: Record<string, any> = {}
-  const data = await store.getServerData(query.value)
+  const data = await store.getServerHostData(query.value)
   for (const elem of data.data.results) {
     obj = {}
     obj.server_id = elem.server_id

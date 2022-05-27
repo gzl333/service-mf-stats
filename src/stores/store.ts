@@ -167,7 +167,7 @@ export const useStore = defineStore('stats', {
       const respDataCenter = await stats.stats.api.getMeteringServer({ query: payload })
       return respDataCenter
     },
-    async getUserData (payload: { page: number, page_size: number, date_start: string, date_end: string, service_id: string, 'as-admin': boolean }) {
+    async getUserHostData (payload: { page: number, page_size: number, date_start: string, date_end: string, service_id: string, 'as-admin': boolean }) {
       const respDataCenter = await stats.stats.api.getAggregationUser({ query: payload })
       this.tables.UserNameTable = {
         byId: {},
@@ -185,15 +185,15 @@ export const useStore = defineStore('stats', {
       this.tables.serviceTable.isLoaded = true
       return respDataCenter
     },
-    async getGroupData (payload: { page: number, page_size: number, date_start: string, date_end: string, service_id: string, 'as-admin': boolean }) {
+    async getGroupHostData (payload: { page: number, page_size: number, date_start: string, date_end: string, service_id: string, 'as-admin': boolean }) {
       const respDataCenter = await stats.stats.api.getAggregationVo({ query: payload })
       return respDataCenter
     },
-    async getServerData (payload: { page: number, page_size: number, date_start: string, date_end: string, vo_id: string, user_id: string, service_id: string, 'as-admin': boolean }) {
+    async getServerHostData (payload: { page: number, page_size: number, date_start: string, date_end: string, vo_id: string, user_id: string, service_id: string, 'as-admin': boolean }) {
       const respDataCenter = await stats.stats.api.getAggregationServer({ query: payload })
       return respDataCenter
     },
-    async getServiceData (payload: { page: number, page_size: number, date_start: string, date_end: string, 'as-admin': boolean }) {
+    async getServiceHostData (payload: { page: number, page_size: number, date_start: string, date_end: string, 'as-admin': boolean }) {
       const respDataCenter = await stats.stats.api.getAggregationService({ query: payload })
       return respDataCenter
     }

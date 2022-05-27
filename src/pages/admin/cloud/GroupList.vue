@@ -55,13 +55,13 @@ const query: Record<string, any> = ref({
   date_end: currentDate,
   'as-admin': true
 })
-emitter.on('group', (value) => {
+emitter.on('group', async (value) => {
   query.value = value
-  getGroupData()
+  await getGroupData()
 })
 const getGroupData = async () => {
   loadingShow()
-  const data = await store.getGroupData(query.value)
+  const data = await store.getGroupHostData(query.value)
   groupTableRow.value = data.data.results
   paginationTable.value.page = 1
   paginationTable.value.count = data.data.count
@@ -76,7 +76,7 @@ const changePageSize = async () => {
 const changePagination = async (val: number) => {
   loadingShow()
   query.value.page = val
-  const data = await store.getGroupData(query.value)
+  const data = await store.getGroupHostData(query.value)
   groupTableRow.value = data.data.results
   loadingHide()
 }

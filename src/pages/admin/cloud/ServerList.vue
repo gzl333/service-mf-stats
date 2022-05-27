@@ -63,13 +63,13 @@ const query: Record<string, any> = ref({
   'as-admin': true
 })
 const clickToCopy = useCopyToClipboard()
-emitter.on('server', (value) => {
+emitter.on('server', async (value) => {
   query.value = value
-  getServerData()
+  await getServerData()
 })
 const getServerData = async () => {
   loadingShow()
-  const data = await store.getServerData(query.value)
+  const data = await store.getServerHostData(query.value)
   serverTableRow.value = data.data.results
   paginationTable.value.page = 1
   paginationTable.value.count = data.data.count
@@ -84,7 +84,7 @@ const changePageSize = async () => {
 const changePagination = async (val: number) => {
   loadingShow()
   query.value.page = val
-  const data = await store.getServerData(query.value)
+  const data = await store.getServerHostData(query.value)
   serverTableRow.value = data.data.results
   loadingHide()
 }

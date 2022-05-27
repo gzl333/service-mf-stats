@@ -95,7 +95,7 @@ const getData = async () => {
   } else if (route.meta.type === 'service') {
     query.value.service_id = route.params.nodeId
   }
-  const data = await store.getServerData(query.value)
+  const data = await store.getServerHostData(query.value)
   for (const elem of data.data.results) {
     obj = {}
     obj.ipv4 = elem.server.ipv4

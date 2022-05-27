@@ -79,13 +79,13 @@ const query: Record<string, any> = ref({
   date_end: currentDate,
   'as-admin': true
 })
-emitter.on('user', (value) => {
+emitter.on('user', async (value) => {
   query.value = value
-  getUserData()
+  await getUserData()
 })
 const getUserData = async () => {
   loadingShow()
-  const data = await store.getUserData(query.value)
+  const data = await store.getUserHostData(query.value)
   userTableRow.value = data.data.results
   paginationTable.value.page = 1
   paginationTable.value.count = data.data.count
@@ -100,7 +100,7 @@ const changePageSize = async () => {
 const changePagination = async (val: number) => {
   loadingShow()
   query.value.page = val
-  const data = await store.getUserData(query.value)
+  const data = await store.getUserHostData(query.value)
   userTableRow.value = data.data.results
   loadingHide()
 }
