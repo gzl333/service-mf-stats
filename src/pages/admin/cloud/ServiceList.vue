@@ -5,7 +5,6 @@ import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
 import emitter from 'boot/mitt'
-import { loadingShow, loadingHide } from 'src/hooks/loadingPluugins'
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -27,6 +26,7 @@ const serviceColumns = [
   { name: 'total_trade_amount', label: '实际扣费金额合计', align: 'center' },
   { name: 'total_server', label: '云主机数量合计', align: 'center' }
 ]
+const isLoading = ref(false)
 const paginationTable = ref({
   page: 1,
   count: 0,
@@ -60,12 +60,12 @@ emitter.on('service', async (value) => {
   await getServiceData()
 })
 const getServiceData = async () => {
-  loadingShow()
+  isLoading.value = true
   const data = await store.getServiceHostData(query.value)
   serviceTableRow.value = data.data.results
   paginationTable.value.page = 1
   paginationTable.value.count = data.data.count
-  loadingHide()
+  isLoading.value = false
 }
 const changePageSize = async () => {
   query.value.page_size = paginationTable.value.rowsPerPage
@@ -74,13 +74,13 @@ const changePageSize = async () => {
   await getServiceData()
 }
 const changePagination = async (val: number) => {
-  loadingShow()
+  isLoading.value = true
   query.value.page = val
   const data = await store.getServiceHostData(query.value)
   serviceTableRow.value = data.data.results
-  loadingHide()
+  isLoading.value = false
 }
-const goToDetail = (serviceId: string, serviceName: string, serviceCount: any) => {
+const goToDetail = (serviceId: string, serviceName: string, serviceCount: string) => {
   navigateToUrl(`/my/stats/cloud/service/${serviceId}`)
   sessionStorage.setItem('serviceName', serviceName)
   sessionStorage.setItem('serviceCount', serviceCount)
@@ -100,6 +100,7 @@ onBeforeUnmount(() => {
       <q-table
         flat
         id="serviceTable"
+        :loading="isLoading"
         table-header-class="bg-grey-1 text-grey"
         :rows="serviceTableRow"
         :columns="serviceColumns"

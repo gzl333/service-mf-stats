@@ -85,7 +85,7 @@ store.loadAllTables()
 
     <q-page-container>
       <q-page>
-      <q-scroll-area style="height: 100vh">
+      <q-scroll-area style="height: calc(100vh - 60px)">
         <breadcrumb v-show="activeItem !== 'home'" v-cloak/>
         <router-view/>
       </q-scroll-area>

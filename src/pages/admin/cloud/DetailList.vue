@@ -4,7 +4,6 @@ import { onMounted, ref, onUnmounted } from 'vue'
 import { useStore } from 'stores/store'
 import { useRoute } from 'vue-router'
 // import { i18n } from 'boot/i18n'
-import { loadingShow, loadingHide } from 'src/hooks/loadingPluugins'
 import DetailTable from 'components/admin/cloud/DetailTable.vue'
 import { exportExcel } from 'src/hooks/exportExcel'
 // const props = defineProps({
@@ -20,12 +19,12 @@ const store = useStore()
 const route = useRoute()
 // const router = useRouter()
 // const tc = i18n.global.tc
-const count: any = ref('')
-const userName: any = ref('')
+const count = ref('')
+const userName = ref('')
 const totalAmount = ref(0)
 const actualAmount = ref(0)
-const dateFrom: any = ref('')
-const dateTo: any = ref('')
+const dateFrom = ref('')
+const dateTo = ref('')
 const isLastMonth = ref(false)
 const isCurrentMonth = ref(true)
 const tableRow: any = ref([])
@@ -83,11 +82,10 @@ const query: Record<string, any> = ref({
   'as-admin': true
 })
 const getData = async () => {
-  loadingShow()
   tableRow.value = []
   totalAmount.value = 0
   actualAmount.value = 0
-  let obj: Record<string, any> = {}
+  let obj: Record<string, string> = {}
   if (route.meta.type === 'user') {
     query.value.user_id = route.params.userid
   } else if (route.meta.type === 'group') {
@@ -115,7 +113,6 @@ const getData = async () => {
   paginationTable.value.count = data.data.count
   dateStart.value = query.value.date_start
   dateEnd.value = query.value.date_end
-  loadingHide()
 }
 const changeMonth = async (type: number) => {
   if (type === 0) {
@@ -131,8 +128,8 @@ const changeMonth = async (type: number) => {
     query.value.date_end = currentLastDate
     await getData()
   }
-  dateFrom.value = null
-  dateTo.value = null
+  dateFrom.value = ''
+  dateTo.value = ''
 }
 const selectDate = () => {
   const dateStart = dateFrom.value.replace(/(\/)/g, '-')
@@ -158,14 +155,14 @@ const exportFile = () => {
 }
 onMounted(async () => {
   if (route.meta.type === 'user') {
-    count.value = sessionStorage.getItem('userCount')
-    userName.value = sessionStorage.getItem('username')
+    count.value = sessionStorage.getItem('userCount') || ''
+    userName.value = sessionStorage.getItem('username') || ''
   } else if (route.meta.type === 'group') {
-    count.value = sessionStorage.getItem('groupCount')
-    userName.value = sessionStorage.getItem('voName')
+    count.value = sessionStorage.getItem('groupCount') || ''
+    userName.value = sessionStorage.getItem('voName') || ''
   } else if (route.meta.type === 'service') {
-    count.value = sessionStorage.getItem('serviceCount')
-    userName.value = sessionStorage.getItem('serviceName')
+    count.value = sessionStorage.getItem('serviceCount') || ''
+    userName.value = sessionStorage.getItem('serviceName') || ''
   }
   await getData()
 })

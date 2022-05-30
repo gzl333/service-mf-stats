@@ -20,7 +20,7 @@ import { exportExcel } from 'src/hooks/exportExcel'
 // const route = useRoute()
 // const router = useRouter()
 // const tc = i18n.global.tc
-const activeItem: any = ref('user')
+const activeItem = ref('user')
 const isDisable = ref(false)
 const myDate = new Date()
 const year = myDate.getFullYear()
@@ -76,7 +76,8 @@ const initSelectYear = () => {
     })
   }
 }
-const changeYear = (val: any) => {
+const changeYear = (val: Record<string, number>) => {
+  console.log(val)
   monthOptions.value = []
   searchQuery.value.month = {
     label: '全年',
@@ -209,7 +210,7 @@ const exportFile = () => {
 }
 onMounted(async () => {
   if (sessionStorage.getItem('tabStatus') != null) {
-    activeItem.value = sessionStorage.getItem('tabStatus')
+    activeItem.value = sessionStorage.getItem('tabStatus') || ''
   }
   initSelectYear()
 })

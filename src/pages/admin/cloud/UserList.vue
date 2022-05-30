@@ -5,7 +5,6 @@ import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
 import emitter from 'boot/mitt'
-import { loadingShow, loadingHide } from 'src/hooks/loadingPluugins'
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -51,6 +50,7 @@ const userColumns = [
     align: 'center'
   }
 ]
+const isLoading = ref(false)
 const paginationTable = ref({
   page: 1,
   count: 0,
@@ -84,12 +84,12 @@ emitter.on('user', async (value) => {
   await getUserData()
 })
 const getUserData = async () => {
-  loadingShow()
+  isLoading.value = true
   const data = await store.getUserHostData(query.value)
   userTableRow.value = data.data.results
   paginationTable.value.page = 1
   paginationTable.value.count = data.data.count
-  loadingHide()
+  isLoading.value = false
 }
 const changePageSize = async () => {
   query.value.page_size = paginationTable.value.rowsPerPage
@@ -98,13 +98,13 @@ const changePageSize = async () => {
   await getUserData()
 }
 const changePagination = async (val: number) => {
-  loadingShow()
+  isLoading.value = true
   query.value.page = val
   const data = await store.getUserHostData(query.value)
   userTableRow.value = data.data.results
-  loadingHide()
+  isLoading.value = false
 }
-const goToDetail = (userid: string, username: string, count: any) => {
+const goToDetail = (userid: string, username: string, count: string) => {
   navigateToUrl(`/my/stats/cloud/user/${userid}`)
   sessionStorage.setItem('username', username)
   sessionStorage.setItem('userCount', count)
@@ -124,6 +124,7 @@ onBeforeUnmount(() => {
     <q-table
       flat
       id="userTable"
+      :loading="isLoading"
       table-header-class="bg-grey-1 text-grey"
       :rows="userTableRow"
       :columns="userColumns"
@@ -143,7 +144,7 @@ onBeforeUnmount(() => {
             <q-btn
               @click="goToDetail(props.row.user_id, props.row.user.username, props.row.total_server)"
               class="q-ma-none" :label="props.row.user.username" color="primary" padding="xs" flat dense
-              unelevated>
+              unelevated no-caps>
             </q-btn>
           </q-td>
           <q-td key="company" :props="props">{{ props.row.user.company === '' ? '暂无' : props.row.user.company }}</q-td>

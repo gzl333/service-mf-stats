@@ -19,7 +19,7 @@ import { navigateToUrl } from 'single-spa'
 const route = useRoute()
 // const router = useRouter()
 // const tc = i18n.global.tc
-const breadList: any = ref([])
+const breadList = ref()
 
 // const isHome = (route: any) => {
 //   return route.name === 'home'

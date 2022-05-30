@@ -3,7 +3,6 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 import emitter from 'boot/mitt'
-import { loadingShow, loadingHide } from 'src/hooks/loadingPluugins'
 import useCopyToClipboard from 'src/hooks/useCopyToClipboard'
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
@@ -39,6 +38,7 @@ const paginationTable = ref({
   count: 0,
   rowsPerPage: 10
 })
+const loading = ref(false)
 const myDate = new Date()
 const year = myDate.getFullYear()
 let monthNew: number | string = myDate.getMonth() + 1
@@ -68,12 +68,12 @@ emitter.on('server', async (value) => {
   await getServerData()
 })
 const getServerData = async () => {
-  loadingShow()
+  loading.value = true
   const data = await store.getServerHostData(query.value)
   serverTableRow.value = data.data.results
   paginationTable.value.page = 1
   paginationTable.value.count = data.data.count
-  loadingHide()
+  loading.value = false
 }
 const changePageSize = async () => {
   query.value.page_size = paginationTable.value.rowsPerPage
@@ -82,11 +82,11 @@ const changePageSize = async () => {
   await getServerData()
 }
 const changePagination = async (val: number) => {
-  loadingShow()
+  loading.value = true
   query.value.page = val
   const data = await store.getServerHostData(query.value)
   serverTableRow.value = data.data.results
-  loadingHide()
+  loading.value = false
 }
 const goToDetail = (serverId: string, serviceName: string, ipv4: string, vcpus: string, ram: string) => {
   navigateToUrl(`/my/stats/cloud/server/${serverId}`)
@@ -110,6 +110,7 @@ onBeforeUnmount(() => {
       <q-table
         flat
         id="serverTable"
+        :loading="isLoading"
         table-header-class="bg-grey-1 text-grey"
         :rows="serverTableRow"
         :columns="serverColumns"
@@ -127,7 +128,7 @@ onBeforeUnmount(() => {
                 <q-btn
                   @click="goToDetail(props.row.server_id, props.row.service_name, props.row.server.ipv4, props.row.server.vcpus, props.row.server.ram)"
                   class="q-ma-none" color="primary" padding="xs" flat dense unelevated>
-                  <div class="text">{{props.row.server_id}}</div>
+                  <div class="text">{{props.row.server_id === '' ? '暂无' : props.row.server_id}}</div>
                 </q-btn>
                 <q-btn class="col-shrink q-px-xs q-ma-none" flat dense icon="content_copy" size="xs" color="primary"
                        @click="clickToCopy(props.row.server_id)">
@@ -137,17 +138,13 @@ onBeforeUnmount(() => {
                 </q-btn>
               </div>
             </q-td>
-            <q-td key="ipv4" :props="props">{{ props.row.server.ipv4 }}</q-td>
-            <q-td key="service_name" :props="props">{{ props.row.service_name }}
-            </q-td>
-            <q-td key="configuration" :props="props">{{props.row.server.vcpus + '核' + Math.round(props.row.server.ram / 1024) + 'GB内存' }}
-            </q-td>
-            <q-td key="total_public_ip_hours" :props="props">{{ props.row.total_public_ip_hours / 24 }}
-            </q-td>
-            <q-td key="total_cpu_hours" :props="props">{{ props.row.total_cpu_hours / 24 }}
-            </q-td>
+            <q-td key="ipv4" :props="props">{{ props.row.server !== null ? props.row.server.ipv4 : '暂无' }}</q-td>
+            <q-td key="service_name" :props="props">{{ props.row.service_name === null ? '暂无' : props.row.service_name }}</q-td>
+            <q-td key="configuration" :props="props">{{props.row.server !== null ? props.row.server.vcpus + '核' + Math.round(props.row.server.ram / 1024) + 'GB内存' : '暂无' }}</q-td>
+            <q-td key="total_public_ip_hours" :props="props">{{ Math.round(props.row.total_public_ip_hours / 24)}}</q-td>
+            <q-td key="total_cpu_hours" :props="props">{{ Math.round(props.row.total_cpu_hours / 24) }}</q-td>
             <q-td key="total_ram_hours" :props="props">{{ Math.round(props.row.total_ram_hours / 24) }}</q-td>
-            <q-td key="total_disk_hours" :props="props">{{ props.row.total_disk_hours / 24 }}</q-td>
+            <q-td key="total_disk_hours" :props="props">{{ Math.round(props.row.total_disk_hours / 24) }}</q-td>
             <q-td key="total_original_amount" :props="props">{{ props.row.total_original_amount }}</q-td>
             <q-td key="total_trade_amount" :props="props">{{ props.row.total_trade_amount }}</q-td>
           </q-tr>

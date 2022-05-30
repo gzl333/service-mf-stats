@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { loadingShow, loadingHide } from 'src/hooks/loadingPluugins'
 import ServerTable from 'components/admin/cloud/ServerTable.vue'
 // import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
@@ -20,19 +19,19 @@ const store = useStore()
 const route = useRoute()
 // const router = useRouter()
 // const tc = i18n.global.tc
-const dateFrom: any = ref('')
-const dateTo: any = ref('')
+const dateFrom = ref('')
+const dateTo = ref('')
 const isLastMonth = ref(false)
 const isCurrentMonth = ref(true)
 const tableRow: any = ref([])
-const serviceName: any = ref('')
-const ipv4: any = ref('')
-const vcpus: any = ref('')
-const ram: any = ref('')
+const serviceName = ref('')
+const ipv4 = ref('')
+const vcpus = ref('')
+const ram = ref('')
 const myDate = new Date()
 const year = myDate.getFullYear()
-let month: any = myDate.getMonth() + 1
-let strDate: any = myDate.getDate()
+let month: number | string = myDate.getMonth() + 1
+let strDate: number | string = myDate.getDate()
 const getNowFormatDate = (type: number) => {
   month = myDate.getMonth() + 1
   const seperator1 = '-'
@@ -82,9 +81,8 @@ const paginationTable = ref({
   rowsPerPage: 10
 })
 const getData = async () => {
-  loadingShow()
   tableRow.value = []
-  let obj: any = {}
+  let obj: Record<string, string> = {}
   query.value.server_id = route.params.serverId
   const data = await store.getMachineDetail(query.value)
   for (const elem of data.data.results) {
@@ -99,7 +97,6 @@ const getData = async () => {
     tableRow.value.push(obj)
   }
   paginationTable.value.count = data.data.count
-  loadingHide()
 }
 const changeMonth = (type: number) => {
   if (type === 0) {
@@ -115,8 +112,8 @@ const changeMonth = (type: number) => {
     query.value.date_end = currentLastDate
     getData()
   }
-  dateFrom.value = null
-  dateTo.value = null
+  dateFrom.value = ''
+  dateTo.value = ''
 }
 const selectDate = () => {
   const dateStart = dateFrom.value.replace(/(\/)/g, '-')
@@ -141,10 +138,10 @@ const exportFile = () => {
   exportExcel('用量明细.xlsx', '#serverTable')
 }
 onMounted(() => {
-  serviceName.value = sessionStorage.getItem('serviceName')
-  ipv4.value = sessionStorage.getItem('ipv4')
-  vcpus.value = sessionStorage.getItem('vcpus')
-  ram.value = sessionStorage.getItem('ram')
+  serviceName.value = sessionStorage.getItem('serviceName') || ''
+  ipv4.value = sessionStorage.getItem('ipv4') || ''
+  vcpus.value = sessionStorage.getItem('vcpus') || ''
+  ram.value = sessionStorage.getItem('ram') || ''
   getData()
 })
 onUnmounted(() => {
