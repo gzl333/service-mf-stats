@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import ServerTable from 'components/admin/cloud/ServerTable.vue'
+import { ref, onMounted, onUnmounted, Ref } from 'vue'
 // import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 import { useRoute } from 'vue-router'
+import ServerTable from 'components/admin/cloud/ServerTable.vue'
 import { exportExcel } from 'src/hooks/exportExcel'
 // import { i18n } from 'boot/i18n'
 // const props = defineProps({
@@ -23,7 +23,7 @@ const dateFrom = ref('')
 const dateTo = ref('')
 const isLastMonth = ref(false)
 const isCurrentMonth = ref(true)
-const tableRow: any = ref([])
+const tableRow: Ref = ref([])
 const serviceName = ref('')
 const ipv4 = ref('')
 const vcpus = ref('')
@@ -34,6 +34,7 @@ let month: number | string = myDate.getMonth() + 1
 let strDate: number | string = myDate.getDate()
 const getNowFormatDate = (type: number) => {
   month = myDate.getMonth() + 1
+  strDate = myDate.getDate()
   const seperator1 = '-'
   if (month >= 1 && month <= 9) {
     month = '0' + month
@@ -49,6 +50,7 @@ const getNowFormatDate = (type: number) => {
 }
 const getLastFormatDate = (type: number) => {
   month = myDate.getMonth()
+  strDate = myDate.getDate()
   const day = new Date(year, month, 0).getDate()
   const seperator1 = '-'
   if (month >= 1 && month <= 9) {
@@ -67,7 +69,7 @@ const startDate = getNowFormatDate(0)
 const currentDate = getNowFormatDate(1)
 const startLastDate = getLastFormatDate(0)
 const currentLastDate = getLastFormatDate(1)
-const query: any = ref({
+const query: Ref = ref({
   page: 1,
   page_size: 10,
   date_start: startDate,
@@ -80,7 +82,7 @@ const paginationTable = ref({
   count: 0,
   rowsPerPage: 10
 })
-const getData = async () => {
+const getDetailData = async () => {
   tableRow.value = []
   let obj: Record<string, string> = {}
   query.value.server_id = route.params.serverId
@@ -104,13 +106,13 @@ const changeMonth = (type: number) => {
     isCurrentMonth.value = true
     query.value.date_start = startDate
     query.value.date_end = currentDate
-    getData()
+    getDetailData()
   } else {
     isCurrentMonth.value = false
     isLastMonth.value = true
     query.value.date_start = startLastDate
     query.value.date_end = currentLastDate
-    getData()
+    getDetailData()
   }
   dateFrom.value = ''
   dateTo.value = ''
@@ -125,14 +127,14 @@ const changePageSize = async () => {
   query.value.page_size = paginationTable.value.rowsPerPage
   query.value.page = 1
   paginationTable.value.page = 1
-  await getData()
+  await getDetailData()
 }
 const changePagination = async (val: number) => {
   query.value.page = val
-  await getData()
+  await getDetailData()
 }
 const search = async () => {
-  await getData()
+  await getDetailData()
 }
 const exportFile = () => {
   exportExcel('用量明细.xlsx', '#serverTable')
@@ -142,7 +144,7 @@ onMounted(() => {
   ipv4.value = sessionStorage.getItem('ipv4') || ''
   vcpus.value = sessionStorage.getItem('vcpus') || ''
   ram.value = sessionStorage.getItem('ram') || ''
-  getData()
+  getDetailData()
 })
 onUnmounted(() => {
   sessionStorage.removeItem('serviceName')
@@ -171,7 +173,7 @@ onUnmounted(() => {
                 <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
                   <q-date v-model="dateFrom" @update:model-value="selectDate">
                     <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat/>
+                      <q-btn v-close-popup label="确定" color="primary" flat/>
                     </div>
                   </q-date>
                 </q-popup-proxy>
@@ -187,7 +189,7 @@ onUnmounted(() => {
                 <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
                   <q-date v-model="dateTo" @update:model-value="selectDate">
                     <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat/>
+                      <q-btn v-close-popup label="确定" color="primary" flat/>
                     </div>
                   </q-date>
                 </q-popup-proxy>

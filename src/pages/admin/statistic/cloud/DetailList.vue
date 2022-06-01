@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, onUnmounted } from 'vue'
+import { onMounted, ref, onUnmounted, Ref } from 'vue'
 // import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 import { useRoute } from 'vue-router'
@@ -27,7 +27,7 @@ const dateFrom = ref('')
 const dateTo = ref('')
 const isLastMonth = ref(false)
 const isCurrentMonth = ref(true)
-const tableRow: any = ref([])
+const tableRow: Ref = ref([])
 const paginationTable = ref({
   page: 1,
   count: 0,
@@ -39,6 +39,7 @@ let month: number | string = myDate.getMonth() + 1
 let strDate: number | string = myDate.getDate()
 const getNowFormatDate = (type: number) => {
   month = myDate.getMonth() + 1
+  strDate = myDate.getDate()
   const seperator1 = '-'
   if (month >= 1 && month <= 9) {
     month = '0' + month
@@ -54,6 +55,7 @@ const getNowFormatDate = (type: number) => {
 }
 const getLastFormatDate = (type: number) => {
   month = myDate.getMonth()
+  strDate = myDate.getDate()
   const day = new Date(year, month, 0).getDate()
   const seperator1 = '-'
   if (month >= 1 && month <= 9) {
@@ -74,7 +76,7 @@ const startLastDate = getLastFormatDate(0)
 const currentLastDate = getLastFormatDate(1)
 const dateStart = ref('')
 const dateEnd = ref('')
-const query: Record<string, any> = ref({
+const query: Ref = ref({
   page: 1,
   page_size: 10,
   date_start: startDate,

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// import { ref, computed } from "vue"
+// import { ref } from 'vue'
 // import { navigateToUrl } from 'single-spa'
 // import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
@@ -18,16 +18,15 @@
 // const route = useRoute()
 // const router = useRouter()
 // const tc = i18n.global.tc
-
 </script>
 
 <template>
-  <div class="Service2Page">
-    this is Service2Page
+  <div class="StatisticsIndex">
+    this is RechargeIndex
   </div>
 </template>
 
 <style lang="scss" scoped>
-.Service2Page {
+.StatisticsIndex {
 }
 </style>

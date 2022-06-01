@@ -21,10 +21,6 @@ const route = useRoute()
 // const tc = i18n.global.tc
 const breadList = ref()
 
-// const isHome = (route: any) => {
-//   return route.name === 'home'
-// }
-
 const getBreadcrumb = () => {
   const matched = route.matched
   // 如果不是首页
@@ -37,7 +33,7 @@ const changeRouter = (path: string, index: number) => {
   if (index + 1 !== breadList.value.length) {
     if (index === 1 && sessionStorage.getItem('tabStatus') != null) {
       const lastPath = sessionStorage.getItem('tabStatus')
-      const routerPath = path + '/list/' + lastPath
+      const routerPath = path + '/cloud/' + lastPath
       navigateToUrl(routerPath)
     } else {
       navigateToUrl(path)

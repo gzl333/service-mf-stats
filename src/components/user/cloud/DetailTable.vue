@@ -64,10 +64,10 @@ const goToDetail = (serverId: string, serviceName: string, vcpus: string, ram: s
             </q-td>
             <q-td key="service_name" :props="props">{{ props.row.service_name }}</q-td>
             <q-td key="configuration" :props="props">{{props.row.vcpus + '核' + Math.round(props.row.ram / 1024) + 'GB内存' }}</q-td>
-            <q-td key="total_public_ip_hours" :props="props">{{ props.row.total_public_ip_hours / 24 }}</q-td>
-            <q-td key="total_cpu_hours" :props="props">{{ props.row.total_cpu_hours / 24 }}</q-td>
+            <q-td key="total_public_ip_hours" :props="props">{{ Math.round(props.row.total_public_ip_hours / 24) }}</q-td>
+            <q-td key="total_cpu_hours" :props="props">{{ Math.round(props.row.total_cpu_hours / 24) }}</q-td>
             <q-td key="total_ram_hours" :props="props">{{ Math.round(props.row.total_ram_hours / 24) }}</q-td>
-            <q-td key="total_disk_hours" :props="props">{{ props.row.total_disk_hours / 24 }}</q-td>
+            <q-td key="total_disk_hours" :props="props">{{ Math.round(props.row.total_disk_hours / 24) }}</q-td>
             <q-td key="total_original_amount" :props="props">{{ props.row.total_original_amount }}</q-td>
             <q-td key="total_trade_amount" :props="props">{{ props.row.total_trade_amount }}</q-td>
           </q-tr>

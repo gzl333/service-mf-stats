@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import { loadingShow, loadingHide } from 'src/hooks/loadingPluugins'
-import ServerTable from 'components/admin/cloud/ServerTable.vue'
-// import { navigateToUrl } from 'single-spa'
+import { ref, onMounted, onUnmounted, Ref } from 'vue'
 import { useStore } from 'stores/store'
 import { useRoute } from 'vue-router'
+import ServerTable from 'components/admin/cloud/ServerTable.vue'
 import { exportExcel } from 'src/hooks/exportExcel'
+// import { navigateToUrl } from 'single-spa'
 // import { i18n } from 'boot/i18n'
 // const props = defineProps({
 //   foo: {
@@ -20,18 +19,18 @@ const store = useStore()
 const route = useRoute()
 // const router = useRouter()
 // const tc = i18n.global.tc
-const dateFrom: any = ref('')
-const dateTo: any = ref('')
+const dateFrom = ref('')
+const dateTo = ref('')
 const isLastMonth = ref(false)
 const isCurrentMonth = ref(true)
-const tableRow: any = ref([])
-const serviceName: any = ref('')
-const vcpus: any = ref('')
-const ram: any = ref('')
+const tableRow: Ref = ref([])
+const serviceName = ref('')
+const vcpus = ref('')
+const ram = ref('')
 const myDate = new Date()
 const year = myDate.getFullYear()
-let month: any = myDate.getMonth() + 1
-let strDate: any = myDate.getDate()
+let month: number | string = myDate.getMonth() + 1
+let strDate: number | string = myDate.getDate()
 const getNowFormatDate = (type: number) => {
   month = myDate.getMonth() + 1
   const seperator1 = '-'
@@ -67,7 +66,7 @@ const startDate = getNowFormatDate(0)
 const currentDate = getNowFormatDate(1)
 const startLastDate = getLastFormatDate(0)
 const currentLastDate = getLastFormatDate(1)
-const query: any = ref({
+const query: Ref = ref({
   page: 1,
   page_size: 10,
   date_start: startDate,
@@ -79,10 +78,9 @@ const paginationTable = ref({
   count: 0,
   rowsPerPage: 10
 })
-const getData = async () => {
-  loadingShow()
+const getDetailData = async () => {
   tableRow.value = []
-  let obj: any = {}
+  let obj: Record<string, string> = {}
   query.value.server_id = route.params.serverId
   const data = await store.getMachineDetail(query.value)
   for (const elem of data.data.results) {
@@ -97,7 +95,6 @@ const getData = async () => {
     tableRow.value.push(obj)
   }
   paginationTable.value.count = data.data.count
-  loadingHide()
 }
 const changeMonth = (type: number) => {
   if (type === 0) {
@@ -105,16 +102,16 @@ const changeMonth = (type: number) => {
     isCurrentMonth.value = true
     query.value.date_start = startDate
     query.value.date_end = currentDate
-    getData()
+    getDetailData()
   } else {
     isCurrentMonth.value = false
     isLastMonth.value = true
     query.value.date_start = startLastDate
     query.value.date_end = currentLastDate
-    getData()
+    getDetailData()
   }
-  dateFrom.value = null
-  dateTo.value = null
+  dateFrom.value = ''
+  dateTo.value = ''
 }
 const selectDate = () => {
   const dateStart = dateFrom.value.replace(/(\/)/g, '-')
@@ -126,23 +123,23 @@ const changePageSize = async () => {
   query.value.page_size = paginationTable.value.rowsPerPage
   query.value.page = 1
   paginationTable.value.page = 1
-  await getData()
+  await getDetailData()
 }
 const changePagination = async (val: number) => {
   query.value.page = val
-  await getData()
+  await getDetailData()
 }
 const search = async () => {
-  await getData()
+  await getDetailData()
 }
 const exportFile = () => {
   exportExcel('用量明细.xlsx', '#serverTable')
 }
 onMounted(() => {
-  serviceName.value = sessionStorage.getItem('serviceName')
-  vcpus.value = sessionStorage.getItem('vcpus')
-  ram.value = sessionStorage.getItem('ram')
-  getData()
+  serviceName.value = sessionStorage.getItem('serviceName') || ''
+  vcpus.value = sessionStorage.getItem('vcpus') || ''
+  ram.value = sessionStorage.getItem('ram') || ''
+  getDetailData()
 })
 onUnmounted(() => {
   sessionStorage.removeItem('serviceName')

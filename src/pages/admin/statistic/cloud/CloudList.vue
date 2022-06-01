@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { navigateToUrl } from 'single-spa'
+import { onMounted, ref, Ref } from 'vue'
+// import { navigateToUrl } from 'single-spa'
 // import { useStore } from 'stores/store'
-import emitter from 'boot/mitt'
-import { exportExcel } from 'src/hooks/exportExcel'
-// import { useRoute } from 'vue-router'
+// import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
-
+import { exportExcel } from 'src/hooks/exportExcel'
+import emitter from 'boot/mitt'
+import { navigateToUrl } from 'single-spa'
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -38,8 +38,8 @@ const searchQuery = ref({
     value: 0
   }
 })
-const monthOptions: any = ref([])
-const yearOptions: any = ref([])
+const monthOptions: Ref = ref([])
+const yearOptions: Ref = ref([])
 const getNowFormatDate = () => {
   const seperator1 = '-'
   if (monthNew >= 1 && monthNew <= 9) {
@@ -51,7 +51,7 @@ const getNowFormatDate = () => {
   return year + seperator1 + monthNew + seperator1 + strDate
 }
 const currentDate = getNowFormatDate()
-const query: Record<string, any> = ref({
+const query: Ref = ref({
   page: 1,
   page_size: 10,
   date_start: year + '-' + '01-01',
@@ -77,7 +77,6 @@ const initSelectYear = () => {
   }
 }
 const changeYear = (val: Record<string, number>) => {
-  console.log(val)
   monthOptions.value = []
   searchQuery.value.month = {
     label: '全年',
@@ -147,37 +146,6 @@ const initQuery = () => {
     delete query.value.service_id
   }
 }
-const changeTab = async (name: string) => {
-  activeItem.value = name
-  searchQuery.value = {
-    year: {
-      label: year,
-      value: year
-    },
-    month: {
-      label: '全年',
-      value: 0
-    }
-  }
-  searchName.value = ''
-  query.value.date_start = searchQuery.value.year.value + '-' + monthNew + '-' + '01'
-  query.value.date_end = currentDate
-  changeYear(searchQuery.value.year)
-  sessionStorage.setItem('tabStatus', name)
-  if (name === 'user') {
-    isDisable.value = false
-    navigateToUrl('/my/stats/cloud/list/user')
-  } else if (name === 'group') {
-    isDisable.value = false
-    navigateToUrl('/my/stats/cloud/list/group')
-  } else if (name === 'server') {
-    isDisable.value = false
-    navigateToUrl('/my/stats/cloud/list/server')
-  } else if (name === 'service') {
-    isDisable.value = true
-    navigateToUrl('/my/stats/cloud/list/service')
-  }
-}
 const search = async () => {
   if (activeItem.value === 'user') {
     initQuery()
@@ -208,17 +176,40 @@ const exportFile = () => {
     exportExcel('服务用量列表.xlsx', '#serviceTable')
   }
 }
+const changeTab = async (name: string) => {
+  activeItem.value = name
+  searchQuery.value = {
+    year: {
+      label: year,
+      value: year
+    },
+    month: {
+      label: '全年',
+      value: 0
+    }
+  }
+  searchName.value = ''
+  query.value.date_start = searchQuery.value.year.value + '-' + monthNew + '-' + '01'
+  query.value.date_end = currentDate
+  changeYear(searchQuery.value.year)
+  sessionStorage.setItem('tabStatus', name)
+  if (name === 'service') {
+    isDisable.value = true
+  } else {
+    isDisable.value = false
+  }
+  navigateToUrl(`/my/stats/statistic/cloud/${name}`)
+}
 onMounted(async () => {
   if (sessionStorage.getItem('tabStatus') != null) {
     activeItem.value = sessionStorage.getItem('tabStatus') || ''
   }
   initSelectYear()
 })
-
 </script>
 
 <template>
-  <div class="CloudList">
+  <div class="StatisticsList">
     <div class="row q-px-sm q-mt-md q-gutter-x-sm">
       <div class="col-1">
         <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" label="请选择" @update:model-value="changeYear"/>
@@ -234,35 +225,35 @@ onMounted(async () => {
         <q-btn outline text-color="black" label="导出Excel" class="q-px-lg" @click="exportFile()"/>
       </div>
     </div>
-    <div class="q-px-sm q-mt-md">
+    <div class="row q-px-sm q-mt-md">
       <q-tabs
-        v-model="activeItem"
-        inline-label
-        :breakpoint="0"
-        align="justify"
-        indicator-color="blue-grey"
-        class="shadow-2"
-        style="width: 65%"
-      >
-        <q-tab name="user" @click="changeTab('user')" :class="activeItem === 'user' ? 'bg-blue-4' : 'bg-grey-4'">
-          按用户id显示
-        </q-tab>
-        <q-tab name="group" @click="changeTab('group')" :class="activeItem === 'group' ? 'bg-blue-4' : 'bg-grey-4'">
-          按项目组id显示
-        </q-tab>
-        <q-tab name="server" @click="changeTab('server')" :class="activeItem === 'server' ? 'bg-blue-4' : 'bg-grey-4'">
-          按云主机uuid显示
-        </q-tab>
-        <q-tab name="service" @click="changeTab('service')" :class="activeItem === 'service' ? 'bg-blue-4' : 'bg-grey-4'">
-          按服务节点显示
-        </q-tab>
-      </q-tabs>
+          v-model="activeItem"
+          vertical
+          indicator-color="blue-grey"
+          class=""
+          style="width: 10%"
+        >
+          <q-tab name="user" @click="changeTab('user')" :class="activeItem === 'user' ? 'bg-blue-5' : ''">
+            按用户id显示
+          </q-tab>
+          <q-tab name="group" @click="changeTab('group')" :class="activeItem === 'group' ? 'bg-blue-6' : ''">
+            按项目组id显示
+          </q-tab>
+          <q-tab name="server" @click="changeTab('server')" :class="activeItem === 'server' ? 'bg-blue-5' : ''">
+            按云主机uuid显示
+          </q-tab>
+          <q-tab name="service" @click="changeTab('service')" :class="activeItem === 'service' ? 'bg-blue-4' : ''">
+            按服务节点显示
+          </q-tab>
+        </q-tabs>
+      <div style="width: 90%">
+      <router-view></router-view>
+      </div>
     </div>
-    <router-view></router-view>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.CloudList {
+.StatisticsList {
 }
 </style>

@@ -20,7 +20,7 @@ const props = defineProps({
 // const tc = i18n.global.tc
 const columnsTwo = [
   { name: 'creation_time', align: 'center', label: '每日统计时间' },
-  { name: 'public_ip_hours', label: '公网IP(个)', align: 'center' },
+  { name: 'public_ip_hours', label: '公网IP(个*天)', align: 'center' },
   { name: 'cpu_hours', label: 'vCPU(核*天）', align: 'center' },
   { name: 'ram_hours', label: '内存(GB*天)', align: 'center' },
   { name: 'disk_hours', label: '本地硬盘(GB*天)', align: 'center' },
@@ -49,10 +49,10 @@ const columnsTwo = [
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="creation_time" :props="props">{{ dateFormat(props.row.creation_time) }}</q-td>
-            <q-td key="public_ip_hours" :props="props">{{ props.row.public_ip_hours / 24 }}</q-td>
-            <q-td key="cpu_hours" :props="props">{{ props.row.cpu_hours / 24 }}</q-td>
-            <q-td key="ram_hours" :props="props">{{ props.row.ram_hours / 24 }}</q-td>
-            <q-td key="disk_hours" :props="props">{{ props.row.disk_hours / 24 }}</q-td>
+            <q-td key="public_ip_hours" :props="props">{{ Math.round(props.row.public_ip_hours / 24) }}</q-td>
+            <q-td key="cpu_hours" :props="props">{{ Math.round(props.row.cpu_hours / 24) }}</q-td>
+            <q-td key="ram_hours" :props="props">{{ Math.round(props.row.ram_hours / 24) }}</q-td>
+            <q-td key="disk_hours" :props="props">{{ Math.round(props.row.disk_hours / 24) }}</q-td>
             <q-td key="original_amount" :props="props">{{ props.row.original_amount }}</q-td>
             <q-td key="trade_amount" :props="props">{{ props.row.trade_amount }}</q-td>
           </q-tr>

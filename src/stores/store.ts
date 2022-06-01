@@ -175,13 +175,13 @@ export const useStore = defineStore('stats', {
         isLoaded: false
       }
       const user = new schema.Entity('user')
-      respDataCenter.data.results.forEach((data: Record<string, any>) => {
+      for (const data of respDataCenter.data.results) {
         const normalizedData = normalize(data.user, user)
         Object.assign(this.tables.UserNameTable.byId, normalizedData.entities.user)
         // @ts-ignore
         this.tables.UserNameTable.allIds.unshift(Object.keys(normalizedData.entities.user)[0])
         this.tables.UserNameTable.allIds = [...new Set(this.tables.UserNameTable.allIds)]
-      })
+      }
       this.tables.serviceTable.isLoaded = true
       return respDataCenter
     },

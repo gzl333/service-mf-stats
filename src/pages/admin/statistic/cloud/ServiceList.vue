@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, Ref } from 'vue'
 import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
@@ -48,7 +48,7 @@ const getNowFormatDate = () => {
   return year + seperator1 + monthNew + seperator1 + strDate
 }
 const currentDate = getNowFormatDate()
-const query: Record<string, any> = ref({
+const query: Ref = ref({
   page: 1,
   page_size: 10,
   date_start: year + '-' + '01-01',
@@ -81,7 +81,7 @@ const changePagination = async (val: number) => {
   isLoading.value = false
 }
 const goToDetail = (serviceId: string, serviceName: string, serviceCount: string) => {
-  navigateToUrl(`/my/stats/cloud/service/${serviceId}`)
+  navigateToUrl(`/my/stats/statistic/service/${serviceId}`)
   sessionStorage.setItem('serviceName', serviceName)
   sessionStorage.setItem('serviceCount', serviceCount)
 }
@@ -95,7 +95,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="ServiceList">
-    <div class="q-px-sm q-mt-md">
+    <div class="q-px-sm">
       <q-separator/>
       <q-table
         flat

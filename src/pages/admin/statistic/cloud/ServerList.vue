@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, Ref } from 'vue'
 import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 import emitter from 'boot/mitt'
@@ -26,7 +26,7 @@ const serverColumns = [
   { name: 'ipv4', align: 'center', label: 'ip地址' },
   { name: 'service_name', label: '服务节点', align: 'center' },
   { name: 'configuration', label: '初始配置', align: 'center' },
-  { name: 'total_public_ip_hours', label: '公网IP(个)', align: 'center' },
+  { name: 'total_public_ip_hours', label: '公网IP(个*天)', align: 'center' },
   { name: 'total_cpu_hours', label: 'vCPU(核*天）', align: 'center' },
   { name: 'total_ram_hours', label: '内存(GB*天)', align: 'center' },
   { name: 'total_disk_hours', label: '本地硬盘(GB*天)', align: 'center' },
@@ -38,7 +38,7 @@ const paginationTable = ref({
   count: 0,
   rowsPerPage: 10
 })
-const loading = ref(false)
+const isLoading = ref(false)
 const myDate = new Date()
 const year = myDate.getFullYear()
 let monthNew: number | string = myDate.getMonth() + 1
@@ -55,7 +55,7 @@ const getNowFormatDate = () => {
   return year + seperator1 + monthNew + seperator1 + strDate
 }
 const currentDate = getNowFormatDate()
-const query: Record<string, any> = ref({
+const query: Ref = ref({
   page: 1,
   page_size: 10,
   date_start: year + '-' + '01-01',
@@ -68,12 +68,12 @@ emitter.on('server', async (value) => {
   await getServerData()
 })
 const getServerData = async () => {
-  loading.value = true
+  isLoading.value = true
   const data = await store.getServerHostData(query.value)
   serverTableRow.value = data.data.results
   paginationTable.value.page = 1
   paginationTable.value.count = data.data.count
-  loading.value = false
+  isLoading.value = false
 }
 const changePageSize = async () => {
   query.value.page_size = paginationTable.value.rowsPerPage
@@ -82,14 +82,14 @@ const changePageSize = async () => {
   await getServerData()
 }
 const changePagination = async (val: number) => {
-  loading.value = true
+  isLoading.value = true
   query.value.page = val
   const data = await store.getServerHostData(query.value)
   serverTableRow.value = data.data.results
-  loading.value = false
+  isLoading.value = false
 }
 const goToDetail = (serverId: string, serviceName: string, ipv4: string, vcpus: string, ram: string) => {
-  navigateToUrl(`/my/stats/cloud/server/${serverId}`)
+  navigateToUrl(`/my/stats/statistic/server/${serverId}`)
   sessionStorage.setItem('serviceName', serviceName)
   sessionStorage.setItem('ipv4', ipv4)
   sessionStorage.setItem('vcpus', vcpus)
@@ -105,7 +105,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="ServerList">
-    <div class="q-px-sm q-mt-md">
+    <div class="q-px-sm">
       <q-separator/>
       <q-table
         flat

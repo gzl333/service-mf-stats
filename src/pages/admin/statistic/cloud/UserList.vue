@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, Ref } from 'vue'
 import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
@@ -72,7 +72,7 @@ const getNowFormatDate = () => {
   return year + seperator1 + monthNew + seperator1 + strDate
 }
 const currentDate = getNowFormatDate()
-const query: Record<string, any> = ref({
+const query: Ref = ref({
   page: 1,
   page_size: 10,
   date_start: year + '-' + '01-01',
@@ -105,7 +105,7 @@ const changePagination = async (val: number) => {
   isLoading.value = false
 }
 const goToDetail = (userid: string, username: string, count: string) => {
-  navigateToUrl(`/my/stats/cloud/user/${userid}`)
+  navigateToUrl(`/my/stats/statistic/user/${userid}`)
   sessionStorage.setItem('username', username)
   sessionStorage.setItem('userCount', count)
 }
@@ -119,7 +119,7 @@ onBeforeUnmount(() => {
 </script>
 <template>
   <div class="UserList">
-    <div class="q-px-sm q-mt-md">
+    <div class="q-px-sm">
     <q-separator/>
     <q-table
       flat

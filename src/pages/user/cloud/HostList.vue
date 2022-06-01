@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-// import { navigateToUrl } from 'single-spa'
+import { onMounted, Ref, ref } from 'vue'
 import { useStore } from 'stores/store'
 // import { useRoute } from 'vue-router'
+// import { navigateToUrl } from 'single-spa'
 // import { i18n } from 'boot/i18n'
-import { loadingShow, loadingHide } from 'src/hooks/loadingPluugins'
 import DetailTable from 'components/user/cloud/DetailTable.vue'
 import { exportExcel } from 'src/hooks/exportExcel'
 // const props = defineProps({
@@ -20,11 +19,11 @@ const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
 // const tc = i18n.global.tc
-const dateFrom: any = ref('')
-const dateTo: any = ref('')
+const dateFrom = ref('')
+const dateTo = ref('')
 const isLastMonth = ref(false)
 const isCurrentMonth = ref(true)
-const tableRow: any = ref([])
+const tableRow: Ref = ref([])
 const paginationTable = ref({
   page: 1,
   count: 0,
@@ -71,16 +70,15 @@ const startLastDate = getLastFormatDate(0)
 const currentLastDate = getLastFormatDate(1)
 const dateStart = ref('')
 const dateEnd = ref('')
-const query: Record<string, any> = ref({
+const query: Ref = ref({
   page: 1,
   page_size: 10,
   date_start: startDate,
   date_end: currentDate
 })
-const getData = async () => {
-  loadingShow()
+const getDetailData = async () => {
   tableRow.value = []
-  let obj: Record<string, any> = {}
+  let obj: Record<string, string> = {}
   const data = await store.getServerHostData(query.value)
   for (const elem of data.data.results) {
     obj = {}
@@ -100,7 +98,6 @@ const getData = async () => {
   paginationTable.value.count = data.data.count
   dateStart.value = query.value.date_start
   dateEnd.value = query.value.date_end
-  loadingHide()
 }
 const changeMonth = async (type: number) => {
   if (type === 0) {
@@ -108,16 +105,16 @@ const changeMonth = async (type: number) => {
     isCurrentMonth.value = true
     query.value.date_start = startDate
     query.value.date_end = currentDate
-    await getData()
+    await getDetailData()
   } else {
     isCurrentMonth.value = false
     isLastMonth.value = true
     query.value.date_start = startLastDate
     query.value.date_end = currentLastDate
-    await getData()
+    await getDetailData()
   }
-  dateFrom.value = null
-  dateTo.value = null
+  dateFrom.value = ''
+  dateTo.value = ''
 }
 const selectDate = () => {
   const dateStart = dateFrom.value.replace(/(\/)/g, '-')
@@ -127,22 +124,22 @@ const selectDate = () => {
 }
 const changePagination = async (val: number) => {
   query.value.page = val
-  await getData()
+  await getDetailData()
 }
 const changePageSize = async () => {
   query.value.page_size = paginationTable.value.rowsPerPage
   query.value.page = 1
   paginationTable.value.page = 1
-  await getData()
+  await getDetailData()
 }
 const search = async () => {
-  await getData()
+  await getDetailData()
 }
 const exportFile = () => {
   exportExcel('用量列表.xlsx', '#detailTable')
 }
 onMounted(async () => {
-  await getData()
+  await getDetailData()
 })
 </script>
 
@@ -165,7 +162,7 @@ onMounted(async () => {
                 <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
                   <q-date v-model="dateFrom" @update:model-value="selectDate">
                     <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat/>
+                      <q-btn v-close-popup label="确定" color="primary" flat/>
                     </div>
                   </q-date>
                 </q-popup-proxy>
@@ -181,7 +178,7 @@ onMounted(async () => {
                 <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
                   <q-date v-model="dateTo" @update:model-value="selectDate">
                     <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat/>
+                      <q-btn v-close-popup label="确定" color="primary" flat/>
                     </div>
                   </q-date>
                 </q-popup-proxy>

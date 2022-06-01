@@ -19,57 +19,92 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/Home.vue')
       },
       {
-        path: 'cloud',
+        path: 'personal',
+        meta: {
+          icon: 'las la-user',
+          roles: ['federal-admin', 'ordinary']
+        },
+        component: () => import('pages/admin/personal/PersonalIndex.vue')
+      },
+      {
+        path: 'group',
+        meta: {
+          icon: 'las la-user',
+          roles: ['federal-admin', 'ordinary']
+        },
+        component: () => import('pages/admin/group/GroupIndex.vue')
+      },
+      {
+        path: 'storage',
+        meta: {
+          icon: 'las la-user',
+          roles: ['federal-admin', 'ordinary']
+        },
+        component: () => import('pages/admin/storage/StorageIndex.vue')
+      },
+      {
+        path: 'recharge',
+        meta: {
+          icon: 'las la-user',
+          roles: ['federal-admin', 'ordinary']
+        },
+        component: () => import('pages/admin/recharge/RechargeIndex.vue')
+      },
+      {
+        path: 'statistic',
         name: '云主机用量列表',
         meta: {
           icon: 'las la-cloud',
-          roles: ['federal-admin']
+          roles: ['federal-admin', 'ordinary']
         },
-        component: () => import('pages/admin/cloud/CloudIndex.vue'),
-        redirect: '/my/stats/cloud/list',
+        redirect: '/my/stats/statistic/cloud',
+        component: () => import('pages/admin/statistic/StatisticsIndex.vue'),
         children: [
           {
-            path: 'list',
+            path: 'cloud',
             meta: {
-              icon: 'las la-user',
               roles: ['federal-admin']
             },
-            component: () => import('pages/admin/cloud/CloudList.vue'),
-            redirect: '/my/stats/cloud/list/user',
+            redirect: '/my/stats/statistic/cloud/user',
+            component: () => import('pages/admin/statistic/cloud/CloudList.vue'),
             children: [
-              {
-                path: 'user',
-                meta: {
-                  icon: 'las la-user',
-                  roles: ['federal-admin']
-                },
-                component: () => import('pages/admin/cloud/UserList.vue')
-              },
               {
                 path: 'group',
                 meta: {
-                  icon: 'las la-user',
                   roles: ['federal-admin']
                 },
-                component: () => import('pages/admin/cloud/GroupList.vue')
+                component: () => import('pages/admin/statistic/cloud/GroupList.vue')
+              },
+              {
+                path: 'user',
+                meta: {
+                  roles: ['federal-admin']
+                },
+                component: () => import('pages/admin/statistic/cloud/UserList.vue')
               },
               {
                 path: 'server',
                 meta: {
-                  icon: 'las la-user',
                   roles: ['federal-admin']
                 },
-                component: () => import('pages/admin/cloud/ServerList.vue')
+                component: () => import('pages/admin/statistic/cloud/ServerList.vue')
               },
               {
                 path: 'service',
                 meta: {
-                  icon: 'las la-user',
                   roles: ['federal-admin']
                 },
-                component: () => import('pages/admin/cloud/ServiceList.vue')
+                component: () => import('pages/admin/statistic/cloud/ServiceList.vue')
               }
             ]
+          },
+          {
+            path: 'storage',
+            meta: {
+              icon: 'lab la-wpforms',
+              roles: ['federal-admin']
+            },
+            component: () => import('pages/admin/statistic/storage/StorageList.vue')
           },
           {
             path: 'user/:userid',
@@ -79,7 +114,7 @@ const routes: RouteRecordRaw[] = [
               roles: ['federal-admin'],
               type: 'user'
             },
-            component: () => import('pages/admin/cloud/DetailList.vue')
+            component: () => import('pages/admin/statistic/cloud/DetailList.vue')
           },
           {
             path: 'group/:groupId',
@@ -89,7 +124,7 @@ const routes: RouteRecordRaw[] = [
               roles: ['federal-admin'],
               type: 'group'
             },
-            component: () => import('pages/admin/cloud/DetailList.vue')
+            component: () => import('pages/admin/statistic/cloud/DetailList.vue')
           },
           {
             path: 'service/:serviceId',
@@ -99,7 +134,7 @@ const routes: RouteRecordRaw[] = [
               roles: ['federal-admin'],
               type: 'service'
             },
-            component: () => import('pages/admin/cloud/DetailList.vue')
+            component: () => import('pages/admin/statistic/cloud/DetailList.vue')
           },
           {
             path: 'server/:serverId',
@@ -108,9 +143,17 @@ const routes: RouteRecordRaw[] = [
               icon: 'lab la-stack-exchange',
               roles: ['federal-admin']
             },
-            component: () => import('pages/admin/cloud/DetailServer.vue')
+            component: () => import('pages/admin/statistic/cloud/DetailServer.vue')
           }
         ]
+      },
+      {
+        path: 'account',
+        meta: {
+          icon: 'las la-user',
+          roles: ['federal-admin', 'ordinary']
+        },
+        component: () => import('pages/admin/account/AccountIndex.vue')
       },
       {
         path: 'host',
@@ -140,14 +183,6 @@ const routes: RouteRecordRaw[] = [
             component: () => import('pages/user/cloud/DetailServer.vue')
           }
         ]
-      },
-      {
-        path: 'service2',
-        meta: {
-          icon: 'lab las la-user',
-          roles: ['federal-admin', 'ordinary']
-        },
-        component: () => import('pages/admin/service/Service2Page.vue')
       }
     ]
   },

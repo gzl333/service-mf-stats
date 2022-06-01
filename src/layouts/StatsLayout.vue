@@ -53,25 +53,73 @@ store.loadAllTables()
 
             <q-item
               clickable
-              :active="activeItem === 'cloud' || activeItem === 'host'"
-              @click="activeItem = 'cloud'; navigateToUrl(store.items?.fedRole === 'federal-admin' ? '/my/stats/cloud' : '/my/stats/host')"
+              :active="activeItem === 'personal'"
+              @click="activeItem = 'personal'; navigateToUrl('/my/stats/personal')"
               active-class="active-item"
             >
               <q-item-section class="column items-center">
-                <q-icon name="las la-cloud" size="lg"/>
-                <div class="active-text text-center">{{ tc('云主机') }}</div>
+                <q-icon name="las la-user" size="lg"/>
+                <div class="active-text text-center">{{ tc('个人云主机') }}</div>
               </q-item-section>
             </q-item>
 
             <q-item
               clickable
-              :active="activeItem === 'service2'"
-              @click="activeItem = 'service2'; navigateToUrl('/my/stats/service2')"
+              :active="activeItem === 'group'"
+              @click="activeItem = 'group'; navigateToUrl('/my/stats/group')"
+              active-class="active-item"
+            >
+              <q-item-section class="column items-center">
+                <q-icon name="las la-user-friends" size="lg"/>
+                <div class="active-text text-center">{{ tc('项目组云主机') }}</div>
+              </q-item-section>
+            </q-item>
+
+            <q-item
+              clickable
+              :active="activeItem === 'storage'"
+              @click="activeItem = 'storage'; navigateToUrl('/my/stats/storage')"
+              active-class="active-item"
+            >
+              <q-item-section class="column items-center">
+                <q-icon name="las la-object-ungroup" size="lg"/>
+                <div class="active-text text-center">{{ tc('对象存储') }}</div>
+              </q-item-section>
+            </q-item>
+
+            <q-item
+              clickable
+              :active="activeItem === 'recharge'"
+              @click="activeItem = 'recharge'; navigateToUrl('/my/stats/recharge')"
+              active-class="active-item"
+            >
+              <q-item-section class="column items-center">
+                <q-icon name="las la-check-circle" size="lg"/>
+                <div class="active-text text-center">{{ tc('账户与充值') }}</div>
+              </q-item-section>
+            </q-item>
+
+            <q-item
+              clickable
+              :active="activeItem === 'statistic'"
+              @click="activeItem = 'statistic'; navigateToUrl('/my/stats/statistic')"
               active-class="active-item"
             >
               <q-item-section class="column items-center">
                 <q-icon name="las la-server" size="lg"/>
-                <div class="active-text text-center">{{ tc('服务2') }}</div>
+                <div class="active-text text-center">{{ tc('用量管理统计') }}</div>
+              </q-item-section>
+            </q-item>
+
+            <q-item
+              clickable
+              :active="activeItem === 'account'"
+              @click="activeItem = 'account'; navigateToUrl('/my/stats/account')"
+              active-class="active-item"
+            >
+              <q-item-section class="column items-center">
+                <q-icon name="las la-tasks" size="lg"/>
+                <div class="active-text text-center">{{ tc('账户管理') }}</div>
               </q-item-section>
             </q-item>
 
