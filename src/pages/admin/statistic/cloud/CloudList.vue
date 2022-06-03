@@ -198,7 +198,7 @@ const changeTab = async (name: string) => {
   } else {
     isDisable.value = false
   }
-  navigateToUrl(`/my/stats/statistic/cloud/${name}`)
+  navigateToUrl(`/my/stats/statistic/list/cloud/${name}`)
 }
 onMounted(async () => {
   if (sessionStorage.getItem('tabStatus') != null) {
@@ -236,13 +236,13 @@ onMounted(async () => {
           <q-tab name="user" @click="changeTab('user')" :class="activeItem === 'user' ? 'bg-blue-5' : ''">
             按用户id显示
           </q-tab>
-          <q-tab name="group" @click="changeTab('group')" :class="activeItem === 'group' ? 'bg-blue-6' : ''">
+          <q-tab name="group" @click="changeTab('group')" :class="activeItem === 'group' ? 'bg-blue-5' : ''">
             按项目组id显示
           </q-tab>
           <q-tab name="server" @click="changeTab('server')" :class="activeItem === 'server' ? 'bg-blue-5' : ''">
             按云主机uuid显示
           </q-tab>
-          <q-tab name="service" @click="changeTab('service')" :class="activeItem === 'service' ? 'bg-blue-4' : ''">
+          <q-tab name="service" @click="changeTab('service')" :class="activeItem === 'service' ? 'bg-blue-5' : ''">
             按服务节点显示
           </q-tab>
         </q-tabs>

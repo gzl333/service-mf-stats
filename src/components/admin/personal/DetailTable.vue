@@ -31,7 +31,7 @@ const columns = [
   { name: 'total_trade_amount', label: '实际扣费金额(本月)', align: 'center' }
 ]
 const goToDetail = (serverId: string, serviceName: string, vcpus: string, ram: string) => {
-  navigateToUrl(`/my/stats/host/server/${serverId}`)
+  navigateToUrl(`/my/stats/personal/server/${serverId}`)
   sessionStorage.setItem('serviceName', serviceName)
   sessionStorage.setItem('vcpus', vcpus)
   sessionStorage.setItem('ram', ram)

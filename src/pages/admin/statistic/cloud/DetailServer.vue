@@ -3,7 +3,7 @@ import { ref, onMounted, onUnmounted, Ref } from 'vue'
 // import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 import { useRoute } from 'vue-router'
-import ServerTable from 'components/admin/cloud/ServerTable.vue'
+import ServerTable from 'components/admin/statistic/ServerTable.vue'
 import { exportExcel } from 'src/hooks/exportExcel'
 // import { i18n } from 'boot/i18n'
 // const props = defineProps({

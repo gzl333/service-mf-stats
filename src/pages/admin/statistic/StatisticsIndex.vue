@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { navigateToUrl } from 'single-spa'
 // import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
@@ -21,11 +21,13 @@ import { navigateToUrl } from 'single-spa'
 const activeItem = ref('cloud')
 const changeTab = async (name: string) => {
   activeItem.value = name
-  console.log(activeItem.value)
-  navigateToUrl(`/my/stats/statistic/${name}`)
+  navigateToUrl(`/my/stats/statistic/list/${name}`)
+  sessionStorage.setItem('titleTabStatus', name)
 }
-onBeforeUnmount(() => {
-  sessionStorage.removeItem('tabStatus')
+onMounted(async () => {
+  if (sessionStorage.getItem('titleTabStatus') != null) {
+    activeItem.value = sessionStorage.getItem('titleTabStatus') || ''
+  }
 })
 </script>
 
@@ -41,10 +43,10 @@ onBeforeUnmount(() => {
         class="shadow-2"
         style="width: 40%"
       >
-        <q-tab name="cloud" @click="changeTab('cloud')" :class="activeItem === 'cloud' ? 'bg-blue-4' : 'bg-grey-4'">
+        <q-tab name="cloud" @click="changeTab('cloud')" :class="activeItem === 'cloud' ? 'bg-blue-5' : 'bg-grey-4'">
           云主机
         </q-tab>
-        <q-tab name="storage" @click="changeTab('storage')" :class="activeItem === 'storage' ? 'bg-blue-4' : 'bg-grey-4'">
+        <q-tab name="storage" @click="changeTab('storage')" :class="activeItem === 'storage' ? 'bg-blue-5' : 'bg-grey-4'">
           对象存储
         </q-tab>
       </q-tabs>

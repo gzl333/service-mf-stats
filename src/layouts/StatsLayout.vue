@@ -41,18 +41,6 @@ store.loadAllTables()
 
             <q-item
               clickable
-              :active="activeItem === 'home'"
-              @click="activeItem = 'home'; navigateToUrl('/my/stats/home')"
-              active-class="active-item"
-            >
-              <q-item-section class="column items-center">
-                <q-icon name="las la-home" size="lg"/>
-                <div class="active-text text-center">{{ tc('首页') }}</div>
-              </q-item-section>
-            </q-item>
-
-            <q-item
-              clickable
               :active="activeItem === 'personal'"
               @click="activeItem = 'personal'; navigateToUrl('/my/stats/personal')"
               active-class="active-item"

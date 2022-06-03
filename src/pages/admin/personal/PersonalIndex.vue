@@ -22,7 +22,7 @@
 
 <template>
   <div class="StatisticsIndex">
-    this is PersonalIndex
+    <router-view></router-view>
   </div>
 </template>
 

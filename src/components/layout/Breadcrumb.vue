@@ -33,7 +33,7 @@ const changeRouter = (path: string, index: number) => {
   if (index + 1 !== breadList.value.length) {
     if (index === 1 && sessionStorage.getItem('tabStatus') != null) {
       const lastPath = sessionStorage.getItem('tabStatus')
-      const routerPath = path + '/cloud/' + lastPath
+      const routerPath = path + '/statistic/' + lastPath
       navigateToUrl(routerPath)
     } else {
       navigateToUrl(path)

@@ -4,7 +4,7 @@ import { onMounted, ref, onUnmounted, Ref } from 'vue'
 import { useStore } from 'stores/store'
 import { useRoute } from 'vue-router'
 // import { i18n } from 'boot/i18n'
-import DetailTable from 'components/admin/cloud/DetailTable.vue'
+import DetailTable from 'components/admin/statistic/DetailTable.vue'
 import { exportExcel } from 'src/hooks/exportExcel'
 // const props = defineProps({
 //   foo: {
