@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount } from 'vue'
 // import { navigateToUrl } from 'single-spa'
-import { useStore } from 'stores/store'
+// import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
 
@@ -14,8 +14,7 @@ import { useStore } from 'stores/store'
 // })
 // const emits = defineEmits(['change', 'delete'])
 
-const store = useStore()
-console.log('store', store)
+// const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
 // const tc = i18n.global.tc
@@ -26,12 +25,12 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="StatisticsIndex">
+  <div class="Index">
     <router-view></router-view>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.StatisticsIndex {
+.Index {
 }
 </style>

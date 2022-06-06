@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import stats from 'src/api/index'
 import { normalize, schema } from 'normalizr'
+import { i18n } from 'boot/i18n'
 export interface DataCenterInterface {
   // 来自registry接口
   id: string
@@ -54,6 +55,22 @@ export interface UserNameInterface {
   id: string
   username: string
 }
+export interface GroupInterface {
+  id: string
+  name: string
+  company: string
+  description: string
+  creation_time: string
+  owner: {
+    id: string
+    username: string
+  },
+  status: string // 'active' | 'inactive' ?
+
+  // 以下字段自行判断添加
+  // 当前用户在组内权限  owner > leader > member
+  myRole: 'owner' | 'leader' | 'member'
+}
 export const useStore = defineStore('stats', {
   state: () => ({
     items: {
@@ -74,6 +91,11 @@ export const useStore = defineStore('stats', {
         allIds: [],
         isLoaded: false
       },
+      groupTable: {
+        byId: {} as Record<string, GroupInterface>,
+        allIds: [],
+        isLoaded: false
+      },
       UUVirtualMachineTable: {
         byId: {} as Record<string, UUVirtualMachineInterface>,
         allIds: [],
@@ -86,14 +108,53 @@ export const useStore = defineStore('stats', {
       }
     }
   }),
-  getters: {},
+  getters: {
+    getServices (state): { value: string; label: string; }[] {
+      const serviceOptions = []
+      for (const group of Object.values(state.tables.serviceTable.byId)) {
+        serviceOptions.push(
+          {
+            value: group.id,
+            label: group.name
+          }
+        )
+      }
+      serviceOptions.unshift({
+        value: '',
+        label: i18n.global.locale === 'zh' ? '全部服务' : 'All Groups'
+      })
+      return serviceOptions
+    },
+    getGroupOptions (state): { value: string; label: string; }[] {
+      let groupOptions = []
+      for (const group of Object.values(state.tables.groupTable.byId)) {
+        groupOptions.push(
+          {
+            value: group.id,
+            label: group.name,
+            labelEn: group.name
+          }
+        )
+      }
+      // 排序
+      groupOptions = groupOptions.sort((a, b) => -a.label.localeCompare(b.label, 'zh-CN'))
+      groupOptions.unshift({
+        value: '0',
+        label: '全部项目组',
+        labelEn: 'All Groups'
+      })
+      return groupOptions
+    }
+  },
   actions: {
     loadAllTables () {
       if (!this.tables.dataCenterTable.isLoaded) {
         void this.loadDataCenterTable().then(() => { // 1. 基础依赖
           if (!this.tables.serviceTable.isLoaded) {
-            void this.loadServiceTable()
-            this.getUser()
+            void this.loadServiceTable().then(() => {
+              this.getUser()
+              this.loadGroupTable()
+            })
           }
         })
       }
@@ -196,6 +257,33 @@ export const useStore = defineStore('stats', {
     async getServiceHostData (payload: { page: number, page_size: number, date_start: string, date_end: string, 'as-admin': boolean }) {
       const respDataCenter = await stats.stats.api.getAggregationService({ query: payload })
       return respDataCenter
+    },
+    async loadGroupTable () {
+      // 先清空table，避免多次更新时数据累加（凡是需要强制刷新的table，都要先清空再更新）
+      this.tables.groupTable = {
+        byId: {},
+        allIds: [],
+        isLoaded: false
+      }
+      // 发送请求
+      const respGroup = await stats.stats.vo.getVo()
+      // normalize
+      const group = new schema.Entity('group')
+      for (const data of respGroup.data.results) {
+        // 添加role字段
+        // const currentId = this.items.decoded?.email
+        // const myRole = currentId === data.owner.username ? 'owner' : 'member'
+        // Object.assign(data, { myRole })
+        // normalize
+        const normalizedData = normalize(data, group)
+        Object.assign(this.tables.groupTable.byId, normalizedData.entities.group)
+        // @ts-ignore
+        this.tables.groupTable.allIds.unshift(Object.keys(normalizedData.entities.group)[0])
+        this.tables.groupTable.allIds = [...new Set(this.tables.groupTable.allIds)]
+      }
+      // load table的最后再改isLoaded
+      this.tables.groupTable.isLoaded = true
+      return respGroup
     }
   }
 })

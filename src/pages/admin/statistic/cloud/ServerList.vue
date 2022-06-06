@@ -4,6 +4,7 @@ import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 import emitter from 'boot/mitt'
 import useCopyToClipboard from 'src/hooks/useCopyToClipboard'
+import { getNowFormatDate } from 'src/hooks/processTime'
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
 
@@ -41,20 +42,8 @@ const paginationTable = ref({
 const isLoading = ref(false)
 const myDate = new Date()
 const year = myDate.getFullYear()
-let monthNew: number | string = myDate.getMonth() + 1
-let strDate: number | string = myDate.getDate()
 const serverTableRow = ref([])
-const getNowFormatDate = () => {
-  const seperator1 = '-'
-  if (monthNew >= 1 && monthNew <= 9) {
-    monthNew = '0' + monthNew
-  }
-  if (strDate >= 0 && strDate <= 9) {
-    strDate = '0' + strDate
-  }
-  return year + seperator1 + monthNew + seperator1 + strDate
-}
-const currentDate = getNowFormatDate()
+const currentDate = getNowFormatDate(1)
 const query: Ref = ref({
   page: 1,
   page_size: 10,

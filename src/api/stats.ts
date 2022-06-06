@@ -113,5 +113,20 @@ export default {
       }
       return axiosStats.get('/metering/server/aggregation/service', config)
     }
+  },
+  vo: {
+    getVo (payload?: {
+      query?: {
+        page: number;
+        page_size: number;
+        owner: boolean;
+        member: boolean
+      }
+    }) {
+      const config = {
+        params: payload?.query
+      }
+      return axiosStats.get('/vo', config)
+    }
   }
 }

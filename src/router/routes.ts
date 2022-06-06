@@ -25,25 +25,27 @@ const routes: RouteRecordRaw[] = [
               roles: ['federal-admin']
             },
             component: () => import('pages/admin/personal/PersonalList.vue')
-          },
-          {
-            path: 'server/:serverId',
-            name: '个人云主机每月用量明细',
-            meta: {
-              icon: 'lab la-wpforms',
-              roles: ['federal-admin']
-            },
-            component: () => import('pages/admin/personal/PersonalDetail.vue')
           }
         ]
       },
       {
         path: 'group',
+        name: '项目组云主机用量列表',
         meta: {
           icon: 'las la-user',
           roles: ['federal-admin', 'ordinary']
         },
-        component: () => import('pages/admin/group/GroupIndex.vue')
+        redirect: '/my/stats/group/server',
+        component: () => import('pages/admin/group/GroupIndex.vue'),
+        children: [
+          {
+            path: 'server',
+            meta: {
+              roles: ['federal-admin']
+            },
+            component: () => import('pages/admin/group/GrouplList.vue')
+          }
+        ]
       },
       {
         path: 'storage',

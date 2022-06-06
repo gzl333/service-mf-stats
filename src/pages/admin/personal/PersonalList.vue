@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { onMounted, Ref, ref } from 'vue'
+import { onMounted, Ref, ref, computed } from 'vue'
 import { useStore } from 'stores/store'
 // import { useRoute } from 'vue-router'
 // import { navigateToUrl } from 'single-spa'
 // import { i18n } from 'boot/i18n'
-import DetailTable from 'components/admin/personal/DetailTable.vue'
+import DetailTable from 'components/admin/personal/PersonalServerTable.vue'
 import { exportExcel } from 'src/hooks/exportExcel'
+import { getNowFormatDate, getLastFormatDate } from 'src/hooks/processTime'
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -19,6 +20,7 @@ const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
 // const tc = i18n.global.tc
+const filterOptions = computed(() => store.getServices)
 const dateFrom = ref('')
 const dateTo = ref('')
 const isLastMonth = ref(false)
@@ -29,43 +31,10 @@ const paginationTable = ref({
   count: 0,
   rowsPerPage: 10
 })
-const myDate = new Date()
-const year = myDate.getFullYear()
-let month: number | string = myDate.getMonth() + 1
-let strDate: number | string = myDate.getDate()
-const getNowFormatDate = (type: number) => {
-  month = myDate.getMonth() + 1
-  strDate = myDate.getDate()
-  const seperator1 = '-'
-  if (month >= 1 && month <= 9) {
-    month = '0' + month
-  }
-  if (strDate >= 0 && strDate <= 9) {
-    strDate = '0' + strDate
-  }
-  if (type === 0) {
-    return year + seperator1 + month + seperator1 + '01'
-  } else {
-    return year + seperator1 + month + seperator1 + strDate
-  }
-}
-const getLastFormatDate = (type: number) => {
-  month = myDate.getMonth()
-  strDate = myDate.getDate()
-  const day = new Date(year, month, 0).getDate()
-  const seperator1 = '-'
-  if (month >= 1 && month <= 9) {
-    month = '0' + month
-  }
-  if (strDate >= 0 && strDate <= 9) {
-    strDate = '0' + strDate
-  }
-  if (type === 0) {
-    return year + seperator1 + month + seperator1 + '01'
-  } else {
-    return year + seperator1 + month + seperator1 + day
-  }
-}
+const serviceId = ref({
+  label: '全部服务',
+  value: ''
+})
 const startDate = getNowFormatDate(0)
 const currentDate = getNowFormatDate(1)
 const startLastDate = getLastFormatDate(0)
@@ -124,6 +93,13 @@ const selectDate = () => {
   query.value.date_start = dateStart
   query.value.date_end = dateEnd
 }
+const selectService = (val: Record<string, string>) => {
+  if (val.value !== '') {
+    query.value.service_id = val.value
+  } else {
+    delete query.value.service_id
+  }
+}
 const changePagination = async (val: number) => {
   query.value.page = val
   await getDetailData()
@@ -138,7 +114,7 @@ const search = async () => {
   await getDetailData()
 }
 const exportFile = () => {
-  exportExcel('用量列表.xlsx', '#detailTable')
+  exportExcel('用量列表.xlsx', '#personalServerTable')
 }
 onMounted(async () => {
   await getDetailData()
@@ -146,9 +122,9 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="DetailList">
+  <div class="PersonalList">
     <div class="row q-pa-lg q-gutter-x-md">
-      <div class="col-3">
+      <div class="col-2">
         <q-btn-group>
           <q-btn :color="isCurrentMonth ? 'blue-5' : 'white'" label="本月" class="text-subtitle1 q-px-xl text-black"
                  @click="changeMonth(0)"/>
@@ -189,9 +165,12 @@ onMounted(async () => {
           </q-input>
         </div>
       </div>
+      <div class="col-2">
+        <q-select outlined dense v-model="serviceId" :options="filterOptions" @update:model-value="selectService" label="筛选服务" />
+      </div>
       <div class="col-3">
         <q-btn outline color="primary" label="搜索" class="q-px-xl" @click="search"/>
-        <q-btn outline color="primary" label="导出" class="q-px-xl q-ml-sm" @click="exportFile"/>
+        <q-btn outline color="primary" label="导出当页数据" class="q-px-xl q-ml-sm" @click="exportFile"/>
       </div>
     </div>
     <detail-table :tableRow="tableRow"/>
@@ -217,6 +196,6 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
-.DetailList {
+.PersonalList {
 }
 </style>

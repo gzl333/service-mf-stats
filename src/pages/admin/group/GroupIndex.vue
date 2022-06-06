@@ -21,12 +21,12 @@
 </script>
 
 <template>
-  <div class="StatisticsIndex">
-    this is GroupIndex
+  <div class="GroupIndex">
+    <router-view></router-view>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.StatisticsIndex {
+.GroupIndex {
 }
 </style>

@@ -5,6 +5,7 @@ import { useStore } from 'stores/store'
 import { useRoute } from 'vue-router'
 import ServerTable from 'components/admin/statistic/ServerTable.vue'
 import { exportExcel } from 'src/hooks/exportExcel'
+import { getNowFormatDate, getLastFormatDate } from 'src/hooks/processTime'
 // import { i18n } from 'boot/i18n'
 // const props = defineProps({
 //   foo: {
@@ -28,43 +29,6 @@ const serviceName = ref('')
 const ipv4 = ref('')
 const vcpus = ref('')
 const ram = ref('')
-const myDate = new Date()
-const year = myDate.getFullYear()
-let month: number | string = myDate.getMonth() + 1
-let strDate: number | string = myDate.getDate()
-const getNowFormatDate = (type: number) => {
-  month = myDate.getMonth() + 1
-  strDate = myDate.getDate()
-  const seperator1 = '-'
-  if (month >= 1 && month <= 9) {
-    month = '0' + month
-  }
-  if (strDate >= 0 && strDate <= 9) {
-    strDate = '0' + strDate
-  }
-  if (type === 0) {
-    return year + seperator1 + month + seperator1 + '01'
-  } else {
-    return year + seperator1 + month + seperator1 + strDate
-  }
-}
-const getLastFormatDate = (type: number) => {
-  month = myDate.getMonth()
-  strDate = myDate.getDate()
-  const day = new Date(year, month, 0).getDate()
-  const seperator1 = '-'
-  if (month >= 1 && month <= 9) {
-    month = '0' + month
-  }
-  if (strDate >= 0 && strDate <= 9) {
-    strDate = '0' + strDate
-  }
-  if (type === 0) {
-    return year + seperator1 + month + seperator1 + '01'
-  } else {
-    return year + seperator1 + month + seperator1 + day
-  }
-}
 const startDate = getNowFormatDate(0)
 const currentDate = getNowFormatDate(1)
 const startLastDate = getLastFormatDate(0)

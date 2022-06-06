@@ -21,6 +21,8 @@ const tc = i18n.global.tc
 const activeItem = computed(() => store.items.currentPath[0])
 const releaseTime = process.env.releaseTime
 store.loadAllTables()
+console.log(store.items)
+console.log(store.tables)
 </script>
 
 <template>
@@ -77,6 +79,7 @@ store.loadAllTables()
 
             <q-item
               clickable
+              v-if="store.items.fedRole === 'federal-admin' && store.items.vmsAdmin.length > 0"
               :active="activeItem === 'recharge'"
               @click="activeItem = 'recharge'; navigateToUrl('/my/stats/recharge')"
               active-class="active-item"
@@ -89,6 +92,7 @@ store.loadAllTables()
 
             <q-item
               clickable
+              v-if="store.items.fedRole === 'federal-admin' && store.items.vmsAdmin.length > 0"
               :active="activeItem === 'statistic'"
               @click="activeItem = 'statistic'; navigateToUrl('/my/stats/statistic')"
               active-class="active-item"
@@ -101,6 +105,7 @@ store.loadAllTables()
 
             <q-item
               clickable
+              v-if="store.items.fedRole === 'federal-admin' && store.items.vmsAdmin.length > 0"
               :active="activeItem === 'account'"
               @click="activeItem = 'account'; navigateToUrl('/my/stats/account')"
               active-class="active-item"

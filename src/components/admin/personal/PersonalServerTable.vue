@@ -5,8 +5,6 @@
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
 
-import { navigateToUrl } from 'single-spa'
-
 const props = defineProps({
   tableRow: {
     type: Array,
@@ -30,19 +28,13 @@ const columns = [
   { name: 'total_original_amount', label: '计费金额(本月)', align: 'center' },
   { name: 'total_trade_amount', label: '实际扣费金额(本月)', align: 'center' }
 ]
-const goToDetail = (serverId: string, serviceName: string, vcpus: string, ram: string) => {
-  navigateToUrl(`/my/stats/personal/server/${serverId}`)
-  sessionStorage.setItem('serviceName', serviceName)
-  sessionStorage.setItem('vcpus', vcpus)
-  sessionStorage.setItem('ram', ram)
-}
 </script>
 
 <template>
-  <div class="DetailTable">
+  <div class="PersonalServerTable">
     <div class="q-px-sm q-mt-lg">
       <q-table
-        id="detailTable"
+        id="personalServerTable"
         flat
         table-header-class="bg-grey-1 text-grey"
         :rows="props.tableRow"
@@ -57,10 +49,7 @@ const goToDetail = (serverId: string, serviceName: string, vcpus: string, ram: s
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="ipv4" :props="props">
-              <q-btn
-                @click="goToDetail(props.row.server_id, props.row.service_name, props.row.vcpus, props.row.ram)"
-                class="q-ma-none" :label="props.row.ipv4" color="primary" padding="xs" flat dense unelevated>
-              </q-btn>
+              <q-btn class="q-ma-none" :label="props.row.ipv4" color="primary" padding="xs" flat dense unelevated></q-btn>
             </q-td>
             <q-td key="service_name" :props="props">{{ props.row.service_name }}</q-td>
             <q-td key="configuration" :props="props">{{props.row.vcpus + '核' + Math.round(props.row.ram / 1024) + 'GB内存' }}</q-td>
@@ -79,6 +68,6 @@ const goToDetail = (serverId: string, serviceName: string, vcpus: string, ram: s
 </template>
 
 <style lang="scss" scoped>
-.DetailTable {
+.PersonalServerTable {
 }
 </style>

@@ -209,7 +209,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="StatisticsList">
+  <div class="CloudList">
     <div class="row q-px-sm q-mt-md q-gutter-x-sm">
       <div class="col-1">
         <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" label="请选择" @update:model-value="changeYear"/>
@@ -254,6 +254,6 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
-.StatisticsList {
+.CloudList {
 }
 </style>
