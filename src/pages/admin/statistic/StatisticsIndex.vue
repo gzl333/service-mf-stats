@@ -39,14 +39,15 @@ onMounted(async () => {
         inline-label
         :breakpoint="0"
         align="justify"
+        active-color="white"
+        active-bg-color="blue-8"
         indicator-color="blue-grey"
-        class="shadow-2"
         style="width: 40%"
       >
-        <q-tab name="cloud" @click="changeTab('cloud')" :class="activeItem === 'cloud' ? 'bg-blue-5' : 'bg-grey-4'">
+        <q-tab name="cloud" @click="changeTab('cloud')" :style="activeItem === 'cloud' ? '' : 'border: 1px solid grey'">
           云主机
         </q-tab>
-        <q-tab name="storage" @click="changeTab('storage')" :class="activeItem === 'storage' ? 'bg-blue-5' : 'bg-grey-4'">
+        <q-tab name="storage" @click="changeTab('storage')" :style="activeItem === 'storage' ? '' : 'border: 1px solid grey'">
           对象存储
         </q-tab>
       </q-tabs>

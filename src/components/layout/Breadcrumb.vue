@@ -50,7 +50,7 @@ watch(route, () => {
 </script>
 
 <template>
-  <q-breadcrumbs class="text-brown q-py-sm q-px-lg">
+  <q-breadcrumbs class="text-brown q-py-sm q-px-md">
     <template v-slot:separator>
       <q-icon
         size="2.5em"

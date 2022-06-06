@@ -124,7 +124,6 @@ onBeforeUnmount(() => {
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="server_id" :props="props">
-              <div>
                 <q-btn
                   @click="goToDetail(props.row.server_id, props.row.service_name, props.row.server.ipv4, props.row.server.vcpus, props.row.server.ram)"
                   class="q-ma-none" color="primary" padding="xs" flat dense unelevated>
@@ -136,7 +135,6 @@ onBeforeUnmount(() => {
                     复制到剪切板
                   </q-tooltip>
                 </q-btn>
-              </div>
             </q-td>
             <q-td key="ipv4" :props="props">{{ props.row.server !== null ? props.row.server.ipv4 : '暂无' }}</q-td>
             <q-td key="service_name" :props="props">{{ props.row.service_name === null ? '暂无' : props.row.service_name }}</q-td>
@@ -176,7 +174,7 @@ onBeforeUnmount(() => {
 <style lang="scss" scoped>
 .ServerList {
   .text {
-    width: 100px;
+    width: 80px;
     overflow: hidden;/*超出部分隐藏*/
     white-space: nowrap;/*不换行*/
     text-overflow:ellipsis;/*超出部分文字以...显示*/

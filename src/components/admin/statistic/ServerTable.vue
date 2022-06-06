@@ -32,7 +32,7 @@ const columnsTwo = [
 
 <template>
   <div class="ServerTable">
-    <div class="q-px-lg q-mt-md">
+    <div class="q-px-sm q-mt-md">
       <q-table
         flat
         id="serverTable"

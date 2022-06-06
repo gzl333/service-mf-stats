@@ -180,7 +180,7 @@ onUnmounted(() => {
 
 <template>
   <div class="DetailList">
-    <div class="row q-pa-lg q-gutter-x-md">
+    <div class="row q-pa-md q-gutter-x-md">
       <div class="col-3">
         <q-btn-group>
           <q-btn :color="isCurrentMonth ? 'blue-5' : 'white'" label="本月" class="text-subtitle1 q-px-xl text-black"
