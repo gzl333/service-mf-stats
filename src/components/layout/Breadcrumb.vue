@@ -31,9 +31,9 @@ const getBreadcrumb = () => {
 }
 const changeRouter = (path: string, index: number) => {
   if (index + 1 !== breadList.value.length) {
-    if (index === 1 && sessionStorage.getItem('tabStatus') != null) {
+    if (index === 0 && sessionStorage.getItem('tabStatus') != null) {
       const lastPath = sessionStorage.getItem('tabStatus')
-      const routerPath = path + '/statistic/' + lastPath
+      const routerPath = path + '/list/cloud/' + lastPath
       navigateToUrl(routerPath)
     } else {
       navigateToUrl(path)

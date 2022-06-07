@@ -121,7 +121,7 @@ onUnmounted(() => {
 <template>
   <div class="DetailServer">
     <div class="row q-pa-md q-pt-lg q-pb-xs">
-      <div class="col-3">
+      <div class="col-2">
         <q-btn-group>
           <q-btn :color="isCurrentMonth ? 'blue-5' : 'white'" label="本月" class="text-subtitle1 q-px-xl text-black"
                  @click="changeMonth(0)"/>
@@ -164,7 +164,7 @@ onUnmounted(() => {
       </div>
       <div class="col-3">
         <q-btn outline color="primary" label="搜索" class="q-px-xl" @click="search"/>
-        <q-btn outline color="primary" label="导出" class="q-px-xl q-ml-sm" @click="exportFile"/>
+        <q-btn outline color="primary" label="导出当页数据" class="q-px-xl q-ml-sm" @click="exportFile"/>
       </div>
     </div>
     <div class="q-px-lg q-py-md">

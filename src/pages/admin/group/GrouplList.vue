@@ -153,7 +153,6 @@ const changePageSize = async () => {
   await getDetailData()
 }
 const search = async () => {
-  console.log(groupId.value)
   if (groupId.value.value === '0') {
     await getDetailData()
   } else {
@@ -161,7 +160,7 @@ const search = async () => {
   }
 }
 const exportFile = () => {
-  exportExcel('用量列表.xlsx', '#groupServerTable')
+  exportExcel('项目组云主机用量列表.xlsx', '#groupServerTable')
 }
 onMounted(async () => {
   await getDetailData()
@@ -169,17 +168,15 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="GrouplList">
-    <div class="row q-pa-lg q-gutter-x-md">
-      <div class="col-2">
-        <q-btn-group>
-          <q-btn :color="isCurrentMonth ? 'blue-5' : 'white'" label="本月" class="text-subtitle1 q-px-xl text-black"
-                 @click="changeMonth(0)"/>
-          <q-btn :color="isLastMonth ? 'blue-5' : 'white'" label="上月" class="text-subtitle1 q-px-xl text-black"
-                 @click="changeMonth(1)"/>
-        </q-btn-group>
-      </div>
-      <div class="col-4 row items-baseline">
+  <div class="GroupList">
+    <div class="row q-pa-md items-center">
+      <q-btn-group>
+        <q-btn :color="isCurrentMonth ? 'blue-5' : 'white'" label="本月" class="text-subtitle1 q-px-xl text-black"
+               @click="changeMonth(0)"/>
+        <q-btn :color="isLastMonth ? 'blue-5' : 'white'" label="上月" class="text-subtitle1 q-px-xl text-black"
+               @click="changeMonth(1)"/>
+      </q-btn-group>
+      <div class="col-4 row items-baseline q-ml-lg">
         <div class="col-5">
           <q-input filled dense v-model="dateFrom" mask="date">
             <template v-slot:append>
@@ -213,12 +210,13 @@ onMounted(async () => {
         </div>
       </div>
       <div class="col-1">
-        <q-select outlined dense v-model="groupId" :options="groupOptions" label="筛选项目组" />
+        <q-select outlined dense v-model="groupId" :options="groupOptions" label="筛选项目组"/>
       </div>
-      <div class="col-1">
-        <q-select outlined dense v-model="serviceId" :options="filterOptions" @update:model-value="selectService" label="筛选服务" />
+      <div class="col-1 q-ml-sm">
+        <q-select outlined dense v-model="serviceId" :options="filterOptions" @update:model-value="selectService"
+                  label="筛选服务"/>
       </div>
-      <div class="col-3">
+      <div class="col-3 q-ml-sm">
         <q-btn outline color="primary" label="搜索" class="q-px-xl" @click="search"/>
         <q-btn outline color="primary" label="导出当页数据" class="q-px-xl q-ml-sm" @click="exportFile"/>
       </div>
@@ -246,6 +244,6 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
-.GrouplList {
+.GroupList {
 }
 </style>

@@ -20,7 +20,7 @@ import { navigateToUrl } from 'single-spa'
 // const route = useRoute()
 // const router = useRouter()
 // const tc = i18n.global.tc
-const activeItem = ref('user')
+const activeItem = ref('server')
 const isDisable = ref(false)
 const myDate = new Date()
 const year = myDate.getFullYear()
@@ -210,44 +210,53 @@ onMounted(async () => {
 
 <template>
   <div class="CloudList">
-    <div class="row q-px-sm q-mt-md q-gutter-x-sm">
-      <div class="col-1">
-        <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" label="请选择" @update:model-value="changeYear"/>
+    <div class="row q-px-sm q-mt-md justify-between">
+      <div class="row col-6">
+        <div class="col-2">
+          <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" label="请选择" @update:model-value="changeYear"/>
+        </div>
+        <div class="col-2 q-ml-md">
+          <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" label="请选择"/>
+        </div>
+        <div class="col-4 q-ml-md">
+          <q-input outlined dense clearable :disable="isDisable" v-model="searchName" label="搜索服务"/>
+        </div>
+        <div class="col-2 q-ml-md">
+          <q-btn outline text-color="black" label="搜索" class="q-px-xl" @click="search"/>
+        </div>
       </div>
-      <div class="col-1">
-        <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" label="请选择"/>
-      </div>
-      <div class="col-2">
-        <q-input outlined dense clearable :disable="isDisable" v-model="searchName" label="请输入"/>
-      </div>
-      <div class="col-3 row q-gutter-x-xs">
-        <q-btn outline text-color="black" label="搜索" class="q-px-xl" @click="search"/>
-        <q-btn outline text-color="black" label="导出Excel" class="q-px-lg" @click="exportFile()"/>
+      <div class="col-3 q-gutter-x-md">
+        <q-btn outline text-color="black" label="导出当页数据" class="q-px-lg" @click="exportFile()"/>
+        <q-btn outline text-color="black" label="导出全部数据" class="q-px-lg"/>
       </div>
     </div>
     <div class="row q-px-sm q-mt-md">
       <q-tabs
-          v-model="activeItem"
-          vertical
-          indicator-color="blue-grey"
-          class=""
-          style="width: 10%"
-        >
-          <q-tab name="user" @click="changeTab('user')" :class="activeItem === 'user' ? 'bg-blue-5' : ''">
-            按用户id显示
-          </q-tab>
-          <q-tab name="group" @click="changeTab('group')" :class="activeItem === 'group' ? 'bg-blue-5' : ''">
-            按项目组id显示
-          </q-tab>
-          <q-tab name="server" @click="changeTab('server')" :class="activeItem === 'server' ? 'bg-blue-5' : ''">
-            按云主机uuid显示
-          </q-tab>
-          <q-tab name="service" @click="changeTab('service')" :class="activeItem === 'service' ? 'bg-blue-5' : ''">
-            按服务节点显示
-          </q-tab>
-        </q-tabs>
+        v-model="activeItem"
+        vertical
+        inline-label
+        :breakpoint="0"
+        align="justify"
+        active-color="white"
+        active-bg-color="blue-7"
+        indicator-color="blue-grey"
+        style="width: 9%"
+      >
+        <q-tab name="server" @click="changeTab('server')">
+          按云主机uuid
+        </q-tab>
+        <q-tab name="group" @click="changeTab('group')">
+          按项目组id
+        </q-tab>
+        <q-tab name="service" @click="changeTab('service')">
+          按服务节点
+        </q-tab>
+        <q-tab name="user" @click="changeTab('user')">
+          按用户id
+        </q-tab>
+      </q-tabs>
       <div style="width: 90%">
-      <router-view></router-view>
+        <router-view></router-view>
       </div>
     </div>
   </div>

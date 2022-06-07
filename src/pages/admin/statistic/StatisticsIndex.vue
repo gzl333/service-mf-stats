@@ -21,8 +21,18 @@ import { navigateToUrl } from 'single-spa'
 const activeItem = ref('cloud')
 const changeTab = async (name: string) => {
   activeItem.value = name
-  navigateToUrl(`/my/stats/statistic/list/${name}`)
   sessionStorage.setItem('titleTabStatus', name)
+  if (name === 'cloud') {
+    if (sessionStorage.getItem('tabStatus') != null) {
+      const lastPath = sessionStorage.getItem('tabStatus')
+      const routerPath = '/my/stats/statistic/list/cloud/' + lastPath
+      navigateToUrl(routerPath)
+    } else {
+      navigateToUrl(`/my/stats/statistic/list/${name}`)
+    }
+  } else {
+    navigateToUrl(`/my/stats/statistic/list/${name}`)
+  }
 }
 onMounted(async () => {
   if (sessionStorage.getItem('titleTabStatus') != null) {
@@ -40,9 +50,9 @@ onMounted(async () => {
         :breakpoint="0"
         align="justify"
         active-color="white"
-        active-bg-color="blue-8"
+        active-bg-color="blue-7"
         indicator-color="blue-grey"
-        style="width: 40%"
+        style="width: 36%"
       >
         <q-tab name="cloud" @click="changeTab('cloud')" :style="activeItem === 'cloud' ? '' : 'border: 1px solid grey'">
           云主机

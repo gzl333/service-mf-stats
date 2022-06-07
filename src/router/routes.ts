@@ -32,7 +32,7 @@ const routes: RouteRecordRaw[] = [
         path: 'group',
         name: '项目组云主机用量列表',
         meta: {
-          icon: 'las la-user',
+          icon: 'las la-users-cog',
           roles: ['federal-admin', 'ordinary']
         },
         redirect: '/my/stats/group/server',
@@ -86,7 +86,7 @@ const routes: RouteRecordRaw[] = [
                 meta: {
                   roles: ['federal-admin']
                 },
-                redirect: '/my/stats/statistic/list/cloud/user',
+                redirect: '/my/stats/statistic/list/cloud/server',
                 component: () => import('pages/admin/statistic/cloud/CloudList.vue'),
                 children: [
                   {

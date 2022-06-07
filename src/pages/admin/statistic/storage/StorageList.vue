@@ -16,12 +16,12 @@
 </script>
 
 <template>
-  <div class="DetailTable">
-    11111
+  <div class="StorageList">
+    this is StorageList
   </div>
 </template>
 
 <style lang="scss" scoped>
-.DetailTable {
+.StorageList {
 }
 </style>
