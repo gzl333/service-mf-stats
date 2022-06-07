@@ -169,7 +169,7 @@ onMounted(async () => {
       </div>
       <div class="col-3 q-ml-sm">
         <q-btn outline color="primary" label="搜索" class="q-px-xl" @click="search"/>
-        <q-btn outline color="primary" label="导出当页数据" class="q-px-xl q-ml-sm" @click="exportFile"/>
+        <q-btn outline color="primary" label="导出当页数据" class="q-px-lg q-ml-sm" @click="exportFile"/>
       </div>
     </div>
     <detail-table :tableRow="tableRow"/>

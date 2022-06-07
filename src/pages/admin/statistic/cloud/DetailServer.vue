@@ -120,15 +120,13 @@ onUnmounted(() => {
 
 <template>
   <div class="DetailServer">
-    <div class="row q-pa-md q-pt-lg q-pb-xs">
-      <div class="col-2">
-        <q-btn-group>
-          <q-btn :color="isCurrentMonth ? 'blue-5' : 'white'" label="本月" class="text-subtitle1 q-px-xl text-black"
-                 @click="changeMonth(0)"/>
-          <q-btn :color="isLastMonth ? 'blue-5' : 'white'" label="上月" class="text-subtitle1 q-px-xl text-black"
-                 @click="changeMonth(1)"/>
-        </q-btn-group>
-      </div>
+    <div class="row q-pa-md q-gutter-x-md">
+      <q-btn-group>
+        <q-btn :color="isCurrentMonth ? 'blue-5' : 'white'" label="本月" class="text-subtitle1 q-px-xl text-black"
+               @click="changeMonth(0)"/>
+        <q-btn :color="isLastMonth ? 'blue-5' : 'white'" label="上月" class="text-subtitle1 q-px-xl text-black"
+               @click="changeMonth(1)"/>
+      </q-btn-group>
       <div class="col-4 row items-baseline">
         <div class="col-5">
           <q-input filled dense v-model="dateFrom" mask="date">
@@ -174,19 +172,19 @@ onUnmounted(() => {
             <div class="col-4 text-center">
               <div class="text-h6">UUID</div>
               <q-separator size="0.1rem"/>
-              <div class="text-subtitle1 q-mt-xl">{{route.params.serverId}}</div>
+              <div class="text-subtitle1 q-mt-xl">{{ route.params.serverId }}</div>
             </div>
             <div class="col-4 text-center">
               <div class="text-h6">服务节点</div>
               <q-separator size="0.1rem"/>
-              <div class="text-subtitle1 q-mt-xl">{{serviceName}}</div>
+              <div class="text-subtitle1 q-mt-xl">{{ serviceName }}</div>
             </div>
             <div class="col-4 text-center">
               <div class="text-h6">初始配置</div>
               <q-separator size="0.1rem"/>
-              <div class="text-subtitle1 q-mt-md">{{vcpus}}核</div>
-              <div class="text-subtitle1">{{ram / 1024}}GB内存</div>
-              <div class="text-subtitle1">公网ip：{{ipv4}}</div>
+              <div class="text-subtitle1 q-mt-md">{{ vcpus }}核</div>
+              <div class="text-subtitle1">{{ ram / 1024 }}GB内存</div>
+              <div class="text-subtitle1">公网ip：{{ ipv4 }}</div>
             </div>
           </div>
         </q-card-section>

@@ -210,7 +210,7 @@ onMounted(async () => {
 
 <template>
   <div class="CloudList">
-    <div class="row q-px-sm q-mt-md justify-between">
+    <div class="row q-px-sm q-mt-md justify-between items-center">
       <div class="row col-6">
         <div class="col-2">
           <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" label="请选择" @update:model-value="changeYear"/>
@@ -222,7 +222,7 @@ onMounted(async () => {
           <q-input outlined dense clearable :disable="isDisable" v-model="searchName" label="搜索服务"/>
         </div>
         <div class="col-2 q-ml-md">
-          <q-btn outline text-color="black" label="搜索" class="q-px-xl" @click="search"/>
+          <q-btn outline text-color="black" label="搜索" class="q-px-lg" @click="search"/>
         </div>
       </div>
       <div class="col-3 q-gutter-x-md">
