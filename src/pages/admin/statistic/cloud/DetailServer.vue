@@ -161,11 +161,11 @@ onUnmounted(() => {
         </div>
       </div>
       <div class="col-3">
-        <q-btn outline color="primary" label="搜索" class="q-px-xl" @click="search"/>
-        <q-btn outline color="primary" label="导出当页数据" class="q-px-xl q-ml-sm" @click="exportFile"/>
+        <q-btn outline label="搜索" class="q-px-lg" @click="search"/>
+        <q-btn outline label="导出当页数据" class="q-px-lg q-ml-sm" @click="exportFile"/>
       </div>
     </div>
-    <div class="q-px-lg q-py-md">
+    <div class="q-pa-md">
       <q-card class="my-card" flat bordered>
         <q-card-section>
           <div class="row">

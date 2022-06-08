@@ -126,7 +126,7 @@ console.log(store.tables)
     <q-page-container>
       <q-page>
       <q-scroll-area style="height: calc(100vh - 60px)">
-        <breadcrumb v-show="activeItem !== 'home'" v-cloak/>
+        <breadcrumb/>
         <router-view/>
       </q-scroll-area>
       </q-page>
@@ -142,8 +142,5 @@ console.log(store.tables)
   .active-text {
     color: $primary;
   }
-}
-[v-cloak] {
-  display: none !important;
 }
 </style>

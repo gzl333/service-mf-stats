@@ -167,8 +167,8 @@ onMounted(async () => {
         <q-select outlined dense v-model="serviceId" :options="filterOptions" @update:model-value="selectService" label="筛选服务"/>
       </div>
       <div class="col-3 q-ml-md">
-        <q-btn outline color="primary" label="搜索" class="q-px-xl" @click="search"/>
-        <q-btn outline color="primary" label="导出当页数据" class="q-px-lg q-ml-md" @click="exportFile"/>
+        <q-btn outline label="搜索" class="q-px-lg" @click="search"/>
+        <q-btn outline label="导出当页数据" class="q-px-lg q-ml-md" @click="exportFile"/>
       </div>
     </div>
     <detail-table :tableRow="tableRow"/>

@@ -43,7 +43,7 @@ onMounted(async () => {
 
 <template>
   <div class="StatisticsIndex">
-    <div class="q-px-sm q-mt-sm">
+    <div class="q-px-sm">
       <q-tabs
         v-model="activeItem"
         inline-label
@@ -53,10 +53,10 @@ onMounted(async () => {
         active-color="primary"
         style="width: 37.5%"
       >
-        <q-tab no-caps name="cloud" class="q-px-none q-py-md q-mr-md text-weight-bold" icon="computer" @click="changeTab('cloud')" :ripple="false">
+        <q-tab no-caps name="cloud" class="q-px-none q-py-md q-mr-md text-weight-bold text-subtitle1" icon="las la-laptop" @click="changeTab('cloud')" :ripple="false">
           云主机
         </q-tab>
-        <q-tab no-caps name="storage" class="q-px-none q-py-md q-mr-md text-weight-bold" icon="computer" @click="changeTab('storage')" :ripple="false">
+        <q-tab no-caps name="storage" class="q-px-none q-py-md q-mr-md text-weight-bold text-subtitle1" icon="las la-memory" @click="changeTab('storage')" :ripple="false">
           对象存储
         </q-tab>
       </q-tabs>

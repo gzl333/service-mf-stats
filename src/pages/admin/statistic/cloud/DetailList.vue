@@ -57,7 +57,7 @@ const getData = async () => {
   } else if (route.meta.type === 'group') {
     query.value.vo_id = route.params.groupId
   } else if (route.meta.type === 'service') {
-    query.value.service_id = route.params.nodeId
+    query.value.service_id = route.params.serviceId
   }
   const data = await store.getServerHostData(query.value)
   for (const elem of data.data.results) {
@@ -185,19 +185,19 @@ onUnmounted(() => {
         </div>
       </div>
       <div class="col-3">
-        <q-btn outline color="primary" label="搜索" class="q-px-xl" @click="search"/>
-        <q-btn outline color="primary" label="导出当页数据" class="q-px-xl q-ml-sm" @click="exportFile"/>
+        <q-btn outline label="搜索" class="q-px-lg" @click="search"/>
+        <q-btn outline label="导出当页数据" class="q-px-lg q-ml-md" @click="exportFile"/>
       </div>
     </div>
-    <div class="row q-px-lg text-subtitle1 text-bold">
+    <div class="row q-pa-md text-subtitle1 text-bold">
       <!--      <div class="col-2">{{ store.tables.UserNameTable.byId[route.params.userid]?.username }}</div>-->
-      <div class="col-3">
+      <div>
         {{ route.meta.type === 'user' ? '用户名：' : route.meta.type === 'group' ? '组名称：' : '服务名称：' }}{{ userName }}
       </div>
-      <div class="col-2">云主机数量合计：{{ count }}</div>
-      <div class="col-3">计费周期：{{ dateStart }}-{{ dateEnd }}</div>
-      <div class="col-2">计费金额合计：{{ totalAmount.toFixed(2) }}点</div>
-      <div class="col-2">实际扣费金额合计：{{ actualAmount.toFixed(2) }}点</div>
+      <div class="q-ml-xl">云主机数量合计：{{ count }}</div>
+      <div class="q-ml-xl">计费周期：{{ dateStart }}-{{ dateEnd }}</div>
+      <div class="q-ml-xl">计费金额合计：{{ totalAmount.toFixed(2) }}点</div>
+      <div class="q-ml-xl">实际扣费金额合计：{{ actualAmount.toFixed(2) }}点</div>
     </div>
     <detail-table :tableRow="tableRow"/>
     <div class="row q-pa-md text-grey justify-between items-center">

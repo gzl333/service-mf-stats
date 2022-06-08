@@ -222,12 +222,12 @@ onMounted(async () => {
           <q-input outlined dense clearable :disable="isDisable" v-model="searchName" label="搜索服务"/>
         </div>
         <div class="col-2 q-ml-md">
-          <q-btn outline text-color="black" label="搜索" class="q-px-lg" @click="search"/>
+          <q-btn outline label="搜索" class="q-px-lg" @click="search"/>
         </div>
       </div>
       <div class="col-3 q-gutter-x-md">
-        <q-btn outline text-color="black" label="导出当页数据" class="q-px-lg" @click="exportFile()"/>
-        <q-btn outline text-color="black" label="导出全部数据" class="q-px-lg"/>
+        <q-btn outline label="导出当页数据" class="q-px-lg" @click="exportFile()"/>
+        <q-btn outline label="导出全部数据" class="q-px-lg"/>
       </div>
     </div>
     <div class="row q-px-sm q-mt-md">
