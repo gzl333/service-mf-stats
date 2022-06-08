@@ -108,7 +108,7 @@ onBeforeUnmount(() => {
 </script>
 <template>
   <div class="UserList">
-    <div class="q-px-sm">
+    <div class="q-px-md">
     <q-separator/>
     <q-table
       flat

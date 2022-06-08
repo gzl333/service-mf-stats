@@ -43,24 +43,24 @@ onMounted(async () => {
 
 <template>
   <div class="StatisticsIndex">
-    <div class="q-px-sm q-mt-md">
+    <div class="q-px-sm q-mt-sm">
       <q-tabs
         v-model="activeItem"
         inline-label
         :breakpoint="0"
         align="justify"
-        active-color="white"
-        active-bg-color="blue-7"
-        indicator-color="blue-grey"
-        style="width: 36%"
+        indicator-color="primary"
+        active-color="primary"
+        style="width: 37.5%"
       >
-        <q-tab name="cloud" @click="changeTab('cloud')" :style="activeItem === 'cloud' ? '' : 'border: 1px solid grey'">
+        <q-tab no-caps name="cloud" class="q-px-none q-py-md q-mr-md text-weight-bold" icon="computer" @click="changeTab('cloud')" :ripple="false">
           云主机
         </q-tab>
-        <q-tab name="storage" @click="changeTab('storage')" :style="activeItem === 'storage' ? '' : 'border: 1px solid grey'">
+        <q-tab no-caps name="storage" class="q-px-none q-py-md q-mr-md text-weight-bold" icon="computer" @click="changeTab('storage')" :ripple="false">
           对象存储
         </q-tab>
       </q-tabs>
+      <q-separator/>
     </div>
     <router-view></router-view>
   </div>

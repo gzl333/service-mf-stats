@@ -234,24 +234,21 @@ onMounted(async () => {
       <q-tabs
         v-model="activeItem"
         vertical
-        inline-label
-        :breakpoint="0"
         align="justify"
-        active-color="white"
-        active-bg-color="blue-7"
-        indicator-color="blue-grey"
-        style="width: 9%"
+        active-color="primary"
+        active-bg-color="grey-3"
+        style="width: 8.4%"
       >
-        <q-tab name="server" @click="changeTab('server')">
+        <q-tab no-caps name="server" class="q-pl-none text-weight-bold" @click="changeTab('server')" :ripple="false">
           按云主机uuid
         </q-tab>
-        <q-tab name="group" @click="changeTab('group')">
+        <q-tab no-caps name="group"  class="q-pl-none text-weight-bold" @click="changeTab('group')" :ripple="false">
           按项目组id
         </q-tab>
-        <q-tab name="service" @click="changeTab('service')">
+        <q-tab no-caps name="service"  class="q-pl-none text-weight-bold" @click="changeTab('service')" :ripple="false">
           按服务节点
         </q-tab>
-        <q-tab name="user" @click="changeTab('user')">
+        <q-tab no-caps name="user"  class="q-pl-none text-weight-bold" @click="changeTab('user')" :ripple="false">
           按用户id
         </q-tab>
       </q-tabs>
