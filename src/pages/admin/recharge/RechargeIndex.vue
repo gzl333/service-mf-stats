@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onBeforeUnmount, ref } from 'vue'
 import { navigateToUrl } from 'single-spa'
-// import { useStore } from 'stores/store'
+import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
 
@@ -14,15 +14,14 @@ import { navigateToUrl } from 'single-spa'
 // })
 // const emits = defineEmits(['change', 'delete'])
 
-// const store = useStore()
+const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
 // const tc = i18n.global.tc
 
-const activeItem = ref('personal')
+const activeItem = ref(store.items.currentPath[1]) // keep selection when reloading
 const changeTab = async (name: string) => {
   activeItem.value = name
-  console.log(name)
   navigateToUrl(`/my/stats/recharge/${name}`)
   // sessionStorage.setItem('titleTabStatus', name)
   // if (name === 'cloud') {
@@ -35,6 +34,9 @@ const changeTab = async (name: string) => {
   //   }
   // }
 }
+onBeforeUnmount(() => {
+  sessionStorage.removeItem('groupTabStatus')
+})
 </script>
 
 <template>

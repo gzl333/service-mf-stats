@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import stats from 'src/api/index'
 import { normalize, schema } from 'normalizr'
 import { i18n } from 'boot/i18n'
+
 export interface DataCenterInterface {
   // 来自registry接口
   id: string
@@ -24,6 +25,7 @@ export interface DataCenterInterface {
   services: string[] // 全部services汇总
   // personalServices: string[] // 用户可用services汇总
 }
+
 export interface ServiceInterface {
   // 来自service接口
   id: string
@@ -37,12 +39,16 @@ export interface ServiceInterface {
   longitude: number
   latitude: number
 }
+
 export interface UserNameInterface {
   id: string
   username: string
 }
+
 export interface GroupInterface {
   id: string
+  // 从余额接口添加余额id
+  balanceId: string
   name: string
   company: string
   description: string
@@ -57,6 +63,7 @@ export interface GroupInterface {
   // 当前用户在组内权限  owner > leader > member
   myRole: 'owner' | 'leader' | 'member'
 }
+
 export interface BalanceInterface {
   id: string
   balance: number
@@ -65,6 +72,16 @@ export interface BalanceInterface {
     id: string
   }
 }
+
+export interface GroupBalanceInterface {
+  id: string
+  balance: number
+  creation_time: string
+  vo: {
+    id: string
+  }
+}
+
 export const useStore = defineStore('stats', {
   state: () => ({
     items: {
@@ -97,6 +114,11 @@ export const useStore = defineStore('stats', {
       },
       balanceTable: {
         byId: {} as Record<string, BalanceInterface>,
+        isLoaded: false
+      },
+      groupBalanceTable: {
+        byId: {} as Record<string, GroupBalanceInterface>,
+        allIds: [],
         isLoaded: false
       }
     }
@@ -144,9 +166,10 @@ export const useStore = defineStore('stats', {
         groupTabs.push(
           {
             voId: Object.values(state.tables.groupTable.byId)[i].id,
+            balanceId: Object.values(state.tables.groupTable.byId)[i].balanceId,
             name: Object.values(state.tables.groupTable.byId)[i].name,
             nameEn: Object.values(state.tables.groupTable.byId)[i].name,
-            label: i
+            label: i.toString()
           }
         )
       }
@@ -161,9 +184,15 @@ export const useStore = defineStore('stats', {
         void this.loadDataCenterTable().then(() => { // 1. 基础依赖
           if (!this.tables.serviceTable.isLoaded) {
             void this.loadServiceTable().then(() => {
-              this.getUser()
-              this.loadGroupTable().then(() => {
-                this.loadBalanceTable()
+              this.getUser().then(() => {
+                this.loadGroupTable().then(() => {
+                  if (!this.tables.balanceTable.isLoaded) {
+                    this.loadBalanceTable()
+                  }
+                  if (!this.tables.groupBalanceTable.isLoaded) {
+                    this.loadGroupBalanceTable()
+                  }
+                })
               })
             })
           }
@@ -304,6 +333,28 @@ export const useStore = defineStore('stats', {
       const respBalance = await stats.stats.account.getBalanceUser()
       Object.assign(this.tables.balanceTable.byId, respBalance.data)
       this.tables.balanceTable.isLoaded = true
+      return respBalance
+    },
+    async loadGroupBalanceTable () {
+      this.tables.groupBalanceTable = {
+        byId: {},
+        allIds: [],
+        isLoaded: false
+      }
+      for (const id of this.tables.groupTable.allIds) {
+        const respBalance = await stats.stats.account.getBalanceVo({ path: { vo_id: id } })
+        const group = new schema.Entity('group')
+        const normalizedData = normalize(respBalance.data, group)
+        Object.assign(this.tables.groupBalanceTable.byId, normalizedData.entities.group)
+        this.tables.groupTable.byId[respBalance.data.vo.id].balanceId = respBalance.data.id
+        // @ts-ignore
+        this.tables.groupBalanceTable.allIds.unshift(respBalance.data.id)
+        this.tables.groupBalanceTable.allIds = [...new Set(this.tables.groupBalanceTable.allIds)]
+        // console.log(respBalance.data)
+      }
+    },
+    async getGroupBalance (voId: string) {
+      const respBalance = await stats.stats.account.getBalanceVo({ path: { vo_id: voId } })
       return respBalance
     }
   }

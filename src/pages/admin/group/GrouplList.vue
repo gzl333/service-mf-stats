@@ -56,9 +56,6 @@ const getDetailData = async () => {
   tableRow.value = []
   paginationTable.value.count = 0
   let obj: Record<string, string> = {}
-  if (store.tables.groupTable.allIds.length === 0) {
-    await store.loadGroupTable()
-  }
   for (const id of store.tables.groupTable.allIds) {
     query.value.vo_id = id
     const data = await store.getServerHostData(query.value)
@@ -163,6 +160,9 @@ const exportFile = () => {
   exportExcel('项目组云主机用量列表.xlsx', '#groupServerTable')
 }
 onMounted(async () => {
+  if (store.tables.groupTable.allIds.length === 0) {
+    await store.loadGroupTable()
+  }
   await getDetailData()
 })
 </script>

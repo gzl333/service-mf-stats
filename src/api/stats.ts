@@ -3,6 +3,7 @@
 /* eslint-disable camelcase */
 
 import { axiosStats } from 'boot/axios'
+
 export const apiBaseHarbor = axiosStats.defaults.baseURL
 export default {
   // stats apis
@@ -132,6 +133,13 @@ export default {
   account: {
     getBalanceUser () {
       return axiosStats.get('/account/balance/user')
+    },
+    getBalanceVo (payload: {
+      path: {
+        vo_id : string;
+      }
+    }) {
+      return axiosStats.get('/account/balance/vo/' + payload.path.vo_id)
     }
   }
 }

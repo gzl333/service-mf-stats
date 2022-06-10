@@ -47,7 +47,7 @@ const tab = ref('mails')
           </q-tabs>
         </div>
         <div class="row col-4 q-gutter-x-md items-center">
-          <div class="text-subtitle1">科技云券兑换入口</div>
+          <div class="text-subtitle1">科技云券兑换</div>
           <q-input dense outlined label="输入兑换码" class="col-5"/>
           <q-btn outline label="兑换" class="q-px-md"/>
         </div>
