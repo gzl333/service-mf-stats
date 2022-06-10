@@ -49,19 +49,18 @@ onMounted(async () => {
         align="justify"
         active-color="primary"
         active-bg-color="grey-3"
-        style="width: 9%"
       >
         <q-tab no-caps :name="item.label" class="text-weight-bold" @click="changeTab(item.label, item.voId)" :ripple="false" v-for="(item, index) in groupTabs" :key="index">
           {{item.name}}
         </q-tab>
       </q-tabs>
       <div class="col-10">
-        <div class="row q-ml-xl">
+        <div class="row q-ml-lg">
           <div class="text-h6 text-weight-bold">账户余额</div>
-          <div class="text-h6 q-ml-xl">{{ `${balance}点` }}</div>
+          <div class="text-h6 q-ml-lg">{{ `${balance}点` }}</div>
           <q-btn outline label="充值" class="q-px-lg q-ml-xl"/>
         </div>
-        <div class="row justify-between items-center q-mt-lg q-ml-xl">
+        <div class="row justify-between items-center q-mt-lg q-ml-lg">
           <div class="row items-center">
             <div class="text-h6 text-weight-bold">科技云券</div>
             <q-tabs
@@ -70,7 +69,7 @@ onMounted(async () => {
               dense
               align="justify"
               active-color="primary"
-              class="q-ml-xl"
+              class="q-ml-md"
             >
               <q-tab :ripple="false" name="mails" label="可用（0）" />
               <q-tab :ripple="false" name="alarms" label="即将到期（0）" />
@@ -78,7 +77,7 @@ onMounted(async () => {
               <q-tab :ripple="false" name="done" label="已用完（0）" />
             </q-tabs>
           </div>
-          <div class="row col-4 q-gutter-x-md items-center">
+          <div class="row col-5 q-gutter-x-md items-center">
             <div class="text-subtitle1">科技云券兑换</div>
             <q-input dense outlined label="输入兑换码" class="col-5"/>
             <q-btn outline label="兑换" class="q-px-md"/>

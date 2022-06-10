@@ -23,7 +23,7 @@ const tab = ref('mails')
 
 <template>
   <div class="PersonalIndex">
-    <div class="q-px-lg q-py-lg">
+    <div class="q-py-lg">
       <div class="row">
         <div class="text-h6 text-weight-bold">个人账户余额</div>
         <div class="text-h6 q-ml-md">{{ `${store.tables.balanceTable.byId?.balance}点` }}</div>

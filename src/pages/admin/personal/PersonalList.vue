@@ -123,11 +123,11 @@ onMounted(async () => {
 
 <template>
   <div class="PersonalList">
-    <div class="row q-pa-md items-center">
+    <div class="row q-mt-xl items-center">
       <q-btn-group>
-        <q-btn :color="isCurrentMonth ? 'blue-5' : 'white'" label="本月" class="text-subtitle1 q-px-xl text-black"
+        <q-btn :color="isCurrentMonth ? 'blue-4' : 'white'" label="本月" class="text-subtitle1 q-px-lg text-black"
                @click="changeMonth(0)"/>
-        <q-btn :color="isLastMonth ? 'blue-5' : 'white'" label="上月" class="text-subtitle1 q-px-xl text-black"
+        <q-btn :color="isLastMonth ? 'blue-5' : 'white'" label="上月" class="text-subtitle1 q-px-lg text-black"
                @click="changeMonth(1)"/>
       </q-btn-group>
       <div class="col-4 row items-baseline q-ml-lg">
@@ -168,11 +168,11 @@ onMounted(async () => {
       </div>
       <div class="col-3 q-ml-md">
         <q-btn outline label="搜索" class="q-px-lg" @click="search"/>
-        <q-btn outline label="导出当页数据" class="q-px-lg q-ml-md" @click="exportFile"/>
+        <q-btn outline label="导出当页数据" class="q-ml-md" @click="exportFile"/>
       </div>
     </div>
     <detail-table :tableRow="tableRow"/>
-    <div class="row q-pa-md text-grey justify-between items-center">
+    <div class="row q-py-md text-grey justify-between items-center">
       <div class="row items-center">
         <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>
         <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense

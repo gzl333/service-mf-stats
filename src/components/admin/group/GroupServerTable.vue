@@ -33,7 +33,7 @@ const columns = [
 
 <template>
   <div class="GroupServerTable">
-    <div class="q-px-sm q-mt-lg">
+    <div class="q-mt-xl">
       <q-table
         id="groupServerTable"
         flat

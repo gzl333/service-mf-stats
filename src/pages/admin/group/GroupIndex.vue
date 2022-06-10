@@ -22,7 +22,11 @@
 
 <template>
   <div class="GroupIndex">
-    <router-view></router-view>
+    <div class="row justify-center">
+      <div class="content-fixed-width">
+        <router-view></router-view>
+      </div>
+    </div>
   </div>
 </template>
 

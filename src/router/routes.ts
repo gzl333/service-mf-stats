@@ -4,7 +4,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/my/stats',
     component: () => import('layouts/StatsLayout.vue'),
-    redirect: '/my/stats/personal',
+    redirect: '/my/stats/recharge',
     meta: {
       icon: 'las la-house-damage'
     },
@@ -89,7 +89,7 @@ const routes: RouteRecordRaw[] = [
           roles: ['federal-admin', 'ordinary']
         },
         redirect: '/my/stats/statistic/list',
-        component: () => import('pages/admin/statistic/Index.vue'),
+        component: () => import('pages/admin/statistic/MeteringIndex.vue'),
         children: [
           {
             path: 'list',

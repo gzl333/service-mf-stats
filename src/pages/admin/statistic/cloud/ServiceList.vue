@@ -84,7 +84,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="ServiceList">
-    <div class="q-px-sm">
+    <div class="q-ml-md">
       <q-separator/>
       <q-table
         flat
@@ -116,7 +116,7 @@ onBeforeUnmount(() => {
         </template>
       </q-table>
       <q-separator/>
-      <div class="row q-pa-sm text-grey justify-between items-center">
+      <div class="row text-grey justify-between items-center q-mt-md">
         <div class="row items-center">
           <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>
           <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense

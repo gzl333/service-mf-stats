@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, Ref } from 'vue'
 // import { navigateToUrl } from 'single-spa'
-// import { useStore } from 'stores/store'
+import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
 import { exportExcel } from 'src/hooks/exportExcel'
@@ -16,11 +16,11 @@ import { navigateToUrl } from 'single-spa'
 // })
 // const emits = defineEmits(['change', 'delete'])
 
-// const store = useStore()
+const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
 // const tc = i18n.global.tc
-const activeItem = ref('server')
+const activeItem = ref(store.items.currentPath[3])
 const isDisable = ref(false)
 const myDate = new Date()
 const year = myDate.getFullYear()
@@ -201,16 +201,13 @@ const changeTab = async (name: string) => {
   navigateToUrl(`/my/stats/statistic/list/cloud/${name}`)
 }
 onMounted(async () => {
-  if (sessionStorage.getItem('tabStatus') != null) {
-    activeItem.value = sessionStorage.getItem('tabStatus') || ''
-  }
   initSelectYear()
 })
 </script>
 
 <template>
   <div class="CloudList">
-    <div class="row q-px-sm q-mt-md justify-between items-center">
+    <div class="row q-mt-md justify-between items-center">
       <div class="row col-6">
         <div class="col-2">
           <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" label="请选择" @update:model-value="changeYear"/>
@@ -226,11 +223,11 @@ onMounted(async () => {
         </div>
       </div>
       <div class="col-3 q-gutter-x-md">
-        <q-btn outline label="导出当页数据" class="q-px-lg" @click="exportFile()"/>
-        <q-btn outline label="导出全部数据" class="q-px-lg"/>
+        <q-btn outline label="导出当页数据" @click="exportFile()"/>
+        <q-btn outline label="导出全部数据"/>
       </div>
     </div>
-    <div class="row q-px-sm q-mt-md">
+    <div class="row q-mt-md">
       <q-tabs
         v-model="activeItem"
         vertical

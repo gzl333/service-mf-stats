@@ -32,7 +32,7 @@ const columns = [
 
 <template>
   <div class="DetailTable">
-    <div class="q-px-md q-mt-lg">
+    <div class="q-mt-xl">
       <q-table
         id="detailTable"
         flat

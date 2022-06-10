@@ -120,14 +120,14 @@ onUnmounted(() => {
 
 <template>
   <div class="DetailServer">
-    <div class="row q-pa-md q-gutter-x-md">
+    <div class="row q-gutter-x-md q-mt-xl">
       <q-btn-group>
-        <q-btn :color="isCurrentMonth ? 'blue-5' : 'white'" label="本月" class="text-subtitle1 q-px-xl text-black"
+        <q-btn :color="isCurrentMonth ? 'blue-5' : 'white'" label="本月" class="text-subtitle1 q-px-lg text-black"
                @click="changeMonth(0)"/>
-        <q-btn :color="isLastMonth ? 'blue-5' : 'white'" label="上月" class="text-subtitle1 q-px-xl text-black"
+        <q-btn :color="isLastMonth ? 'blue-5' : 'white'" label="上月" class="text-subtitle1 q-px-lg text-black"
                @click="changeMonth(1)"/>
       </q-btn-group>
-      <div class="col-4 row items-baseline">
+      <div class="col-4 row items-baseline q-ml-xl">
         <div class="col-5">
           <q-input filled dense v-model="dateFrom" mask="date">
             <template v-slot:append>
@@ -162,10 +162,10 @@ onUnmounted(() => {
       </div>
       <div class="col-3">
         <q-btn outline label="搜索" class="q-px-lg" @click="search"/>
-        <q-btn outline label="导出当页数据" class="q-px-lg q-ml-sm" @click="exportFile"/>
+        <q-btn outline label="导出当页数据" class="q-ml-lg" @click="exportFile"/>
       </div>
     </div>
-    <div class="q-pa-md">
+    <div class="q-mt-xl">
       <q-card class="my-card" flat bordered>
         <q-card-section>
           <div class="row">
@@ -191,7 +191,7 @@ onUnmounted(() => {
       </q-card>
     </div>
     <server-table :tableRow="tableRow"/>
-    <div class="row q-pa-md text-grey justify-between items-center">
+    <div class="row text-grey justify-between items-center q-mt-md">
       <div class="row items-center">
         <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>
         <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense

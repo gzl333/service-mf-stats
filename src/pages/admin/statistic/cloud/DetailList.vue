@@ -144,14 +144,14 @@ onUnmounted(() => {
 
 <template>
   <div class="DetailList">
-    <div class="row q-pa-md q-gutter-x-md">
+    <div class="row q-mt-xl">
       <q-btn-group>
-        <q-btn :color="isCurrentMonth ? 'blue-5' : 'white'" label="本月" class="text-subtitle1 q-px-xl text-black"
+        <q-btn :color="isCurrentMonth ? 'blue-5' : 'white'" label="本月" class="text-subtitle1 q-px-lg text-black"
                @click="changeMonth(0)"/>
-        <q-btn :color="isLastMonth ? 'blue-5' : 'white'" label="上月" class="text-subtitle1 q-px-xl text-black"
+        <q-btn :color="isLastMonth ? 'blue-5' : 'white'" label="上月" class="text-subtitle1 q-px-lg text-black"
                @click="changeMonth(1)"/>
       </q-btn-group>
-      <div class="col-4 row items-baseline">
+      <div class="col-4 row items-baseline q-ml-xl">
         <div class="col-5">
           <q-input filled dense v-model="dateFrom" mask="date">
             <template v-slot:append>
@@ -186,21 +186,21 @@ onUnmounted(() => {
       </div>
       <div class="col-3">
         <q-btn outline label="搜索" class="q-px-lg" @click="search"/>
-        <q-btn outline label="导出当页数据" class="q-px-lg q-ml-md" @click="exportFile"/>
+        <q-btn outline label="导出当页数据" class="q-px-lg q-ml-lg" @click="exportFile"/>
       </div>
     </div>
-    <div class="row q-pa-md text-subtitle1 text-bold">
+    <div class="row q-mt-xl text-subtitle1 text-bold">
       <!--      <div class="col-2">{{ store.tables.UserNameTable.byId[route.params.userid]?.username }}</div>-->
       <div>
         {{ route.meta.type === 'user' ? '用户名：' : route.meta.type === 'group' ? '组名称：' : '服务名称：' }}{{ userName }}
       </div>
-      <div class="q-ml-xl">云主机数量合计：{{ count }}</div>
-      <div class="q-ml-xl">计费周期：{{ dateStart }}-{{ dateEnd }}</div>
-      <div class="q-ml-xl">计费金额合计：{{ totalAmount.toFixed(2) }}点</div>
-      <div class="q-ml-xl">实际扣费金额合计：{{ actualAmount.toFixed(2) }}点</div>
+      <div class="q-ml-lg">云主机数量合计：{{ count }}</div>
+      <div class="q-ml-lg">计费周期：{{ dateStart }}-{{ dateEnd }}</div>
+      <div class="q-ml-lg">计费金额合计：{{ totalAmount.toFixed(2) }}点</div>
+      <div class="q-ml-lg">实际扣费金额合计：{{ actualAmount.toFixed(2) }}点</div>
     </div>
     <detail-table :tableRow="tableRow"/>
-    <div class="row q-pa-md text-grey justify-between items-center">
+    <div class="row q-mt-lg text-grey justify-between items-center">
       <div class="row items-center">
         <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>
         <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense

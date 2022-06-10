@@ -94,7 +94,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="ServerList">
-    <div class="q-px-sm">
+    <div class="q-ml-md">
       <q-separator/>
       <q-table
         flat
@@ -113,22 +113,31 @@ onBeforeUnmount(() => {
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="server_id" :props="props">
-                <q-btn
-                  @click="goToDetail(props.row.server_id, props.row.service_name, props.row.server.ipv4, props.row.server.vcpus, props.row.server.ram)"
-                  class="q-ma-none" color="primary" padding="xs" flat dense unelevated>
-                  <div class="text">{{props.row.server_id === '' ? '暂无' : props.row.server_id}}</div>
-                </q-btn>
-                <q-btn class="col-shrink q-px-xs q-ma-none" flat dense icon="content_copy" size="xs" color="primary"
-                       @click="clickToCopy(props.row.server_id)">
-                  <q-tooltip>
-                    复制到剪切板
-                  </q-tooltip>
-                </q-btn>
+              <q-btn
+                @click="goToDetail(props.row.server_id, props.row.service_name, props.row.server.ipv4, props.row.server.vcpus, props.row.server.ram)"
+                class="q-ma-none" color="primary" padding="xs" flat dense unelevated>
+                <div class="text">{{ props.row.server_id === '' ? '暂无' : props.row.server_id }}</div>
+              </q-btn>
+              <q-btn class="col-shrink q-px-xs q-ma-none" flat dense icon="content_copy" size="xs" color="primary"
+                     @click="clickToCopy(props.row.server_id)">
+                <q-tooltip>
+                  复制到剪切板
+                </q-tooltip>
+              </q-btn>
             </q-td>
             <q-td key="ipv4" :props="props">{{ props.row.server !== null ? props.row.server.ipv4 : '暂无' }}</q-td>
-            <q-td key="service_name" :props="props">{{ props.row.service_name === null ? '暂无' : props.row.service_name }}</q-td>
-            <q-td key="configuration" :props="props">{{props.row.server !== null ? props.row.server.vcpus + '核' + Math.round(props.row.server.ram / 1024) + 'GB内存' : '暂无' }}</q-td>
-            <q-td key="total_public_ip_hours" :props="props">{{ Math.round(props.row.total_public_ip_hours / 24)}}</q-td>
+            <q-td key="service_name" :props="props">{{
+                props.row.service_name === null ? '暂无' : props.row.service_name
+              }}
+            </q-td>
+            <q-td key="configuration" :props="props">{{
+                props.row.server !== null ? props.row.server.vcpus + '核' + Math.round(props.row.server.ram / 1024) + 'GB内存' : '暂无'
+              }}
+            </q-td>
+            <q-td key="total_public_ip_hours" :props="props">{{
+                Math.round(props.row.total_public_ip_hours / 24)
+              }}
+            </q-td>
             <q-td key="total_cpu_hours" :props="props">{{ Math.round(props.row.total_cpu_hours / 24) }}</q-td>
             <q-td key="total_ram_hours" :props="props">{{ Math.round(props.row.total_ram_hours / 24) }}</q-td>
             <q-td key="total_disk_hours" :props="props">{{ Math.round(props.row.total_disk_hours / 24) }}</q-td>
@@ -138,7 +147,7 @@ onBeforeUnmount(() => {
         </template>
       </q-table>
       <q-separator/>
-      <div class="row q-pa-sm text-grey justify-between items-center">
+      <div class="row text-grey justify-between items-center q-mt-md">
         <div class="row items-center">
           <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>
           <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense
@@ -164,9 +173,9 @@ onBeforeUnmount(() => {
 .ServerList {
   .text {
     width: 80px;
-    overflow: hidden;/*超出部分隐藏*/
-    white-space: nowrap;/*不换行*/
-    text-overflow:ellipsis;/*超出部分文字以...显示*/
+    overflow: hidden; /*超出部分隐藏*/
+    white-space: nowrap; /*不换行*/
+    text-overflow: ellipsis; /*超出部分文字以...显示*/
   }
 }
 </style>

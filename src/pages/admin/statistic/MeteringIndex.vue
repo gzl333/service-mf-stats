@@ -20,13 +20,16 @@ import { onBeforeUnmount } from 'vue'
 // const tc = i18n.global.tc
 onBeforeUnmount(() => {
   sessionStorage.removeItem('tabStatus')
-  sessionStorage.removeItem('titleTabStatus')
 })
 </script>
 
 <template>
   <div class="Index">
-    <router-view></router-view>
+    <div class="row justify-center">
+      <div class="content-fixed-width">
+        <router-view></router-view>
+      </div>
+    </div>
   </div>
 </template>
 
