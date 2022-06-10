@@ -128,5 +128,10 @@ export default {
       }
       return axiosStats.get('/vo', config)
     }
+  },
+  account: {
+    getBalanceUser () {
+      return axiosStats.get('/account/balance/user')
+    }
   }
 }

@@ -37,20 +37,6 @@ export interface ServiceInterface {
   longitude: number
   latitude: number
 }
-export interface UUVirtualMachineInterface {
-  server_id: string
-  total_cpu_hours: number
-  total_ram_hours: number
-  total_disk_hours: number
-  total_public_ip_hours: number
-  total_original_amount_hours: number
-  ipv4: never
-  archive_ipv4: string
-  vcpus: number
-  ram: number
-  disk_size: number
-  pay_type: string
-}
 export interface UserNameInterface {
   id: string
   username: string
@@ -70,6 +56,14 @@ export interface GroupInterface {
   // 以下字段自行判断添加
   // 当前用户在组内权限  owner > leader > member
   myRole: 'owner' | 'leader' | 'member'
+}
+export interface BalanceInterface {
+  id: string
+  balance: number
+  creation_time: string
+  user: {
+    id: string
+  }
 }
 export const useStore = defineStore('stats', {
   state: () => ({
@@ -96,14 +90,13 @@ export const useStore = defineStore('stats', {
         allIds: [],
         isLoaded: false
       },
-      UUVirtualMachineTable: {
-        byId: {} as Record<string, UUVirtualMachineInterface>,
-        allIds: [],
-        isLoaded: false
-      },
       UserNameTable: {
         byId: {} as Record<string, UserNameInterface>,
         allIds: [],
+        isLoaded: false
+      },
+      balanceTable: {
+        byId: {} as Record<string, BalanceInterface>,
         isLoaded: false
       }
     }
@@ -144,6 +137,22 @@ export const useStore = defineStore('stats', {
         labelEn: 'All Groups'
       })
       return groupOptions
+    },
+    getGroupTabs (state): { voId: string; name: string; }[] {
+      let groupTabs = []
+      for (let i = 0; i < Object.values(state.tables.groupTable.byId).length; i++) {
+        groupTabs.push(
+          {
+            voId: Object.values(state.tables.groupTable.byId)[i].id,
+            name: Object.values(state.tables.groupTable.byId)[i].name,
+            nameEn: Object.values(state.tables.groupTable.byId)[i].name,
+            label: i
+          }
+        )
+      }
+      // 排序
+      groupTabs = groupTabs.sort((a, b) => -a.name.localeCompare(b.name, 'zh-CN'))
+      return groupTabs
     }
   },
   actions: {
@@ -153,7 +162,9 @@ export const useStore = defineStore('stats', {
           if (!this.tables.serviceTable.isLoaded) {
             void this.loadServiceTable().then(() => {
               this.getUser()
-              this.loadGroupTable()
+              this.loadGroupTable().then(() => {
+                this.loadBalanceTable()
+              })
             })
           }
         })
@@ -284,6 +295,16 @@ export const useStore = defineStore('stats', {
       // load table的最后再改isLoaded
       this.tables.groupTable.isLoaded = true
       return respGroup
+    },
+    async loadBalanceTable () {
+      this.tables.balanceTable = {
+        byId: {},
+        isLoaded: false
+      }
+      const respBalance = await stats.stats.account.getBalanceUser()
+      Object.assign(this.tables.balanceTable.byId, respBalance.data)
+      this.tables.balanceTable.isLoaded = true
+      return respBalance
     }
   }
 })

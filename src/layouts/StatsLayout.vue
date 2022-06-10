@@ -78,7 +78,6 @@ console.log(store.tables)
 
             <q-item
               clickable
-              v-if="store.items.fedRole === 'federal-admin' && store.items.vmsAdmin.length > 0"
               :active="activeItem === 'recharge'"
               @click="activeItem = 'recharge'; navigateToUrl('/my/stats/recharge')"
               active-class="active-item"

@@ -242,11 +242,11 @@ onMounted(async () => {
         <q-tab no-caps name="server" class="q-pl-none text-weight-bold" @click="changeTab('server')" :ripple="false">
           按云主机uuid
         </q-tab>
-        <q-tab no-caps name="group"  class="q-pl-none text-weight-bold" @click="changeTab('group')" :ripple="false">
-          按项目组id
-        </q-tab>
         <q-tab no-caps name="service"  class="q-pl-none text-weight-bold" @click="changeTab('service')" :ripple="false">
           按服务节点
+        </q-tab>
+        <q-tab no-caps name="group"  class="q-pl-none text-weight-bold" @click="changeTab('group')" :ripple="false">
+          按项目组id
         </q-tab>
         <q-tab no-caps name="user"  class="q-pl-none text-weight-bold" @click="changeTab('user')" :ripple="false">
           按用户id

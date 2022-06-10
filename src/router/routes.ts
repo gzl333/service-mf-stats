@@ -57,11 +57,29 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: 'recharge',
+        name: '账户与充值',
         meta: {
-          icon: 'las la-user',
+          icon: 'las la-user-plus',
           roles: ['federal-admin', 'ordinary']
         },
-        component: () => import('pages/admin/recharge/RechargeIndex.vue')
+        redirect: '/my/stats/recharge/personal',
+        component: () => import('pages/admin/recharge/RechargeIndex.vue'),
+        children: [
+          {
+            path: 'personal',
+            meta: {
+              roles: ['federal-admin']
+            },
+            component: () => import('pages/admin/recharge/personal/PersonalIndex.vue')
+          },
+          {
+            path: 'group',
+            meta: {
+              roles: ['federal-admin']
+            },
+            component: () => import('pages/admin/recharge/group/GroupIndex.vue')
+          }
+        ]
       },
       {
         path: 'statistic',
