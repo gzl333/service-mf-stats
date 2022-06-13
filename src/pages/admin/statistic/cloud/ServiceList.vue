@@ -70,7 +70,7 @@ const changePagination = async (val: number) => {
   isLoading.value = false
 }
 const goToDetail = (serviceId: string, serviceName: string, serviceCount: string) => {
-  navigateToUrl(`/my/stats/statistic/service/${serviceId}`)
+  navigateToUrl(`/my/stats/statistic/list/service/${serviceId}`)
   sessionStorage.setItem('serviceName', serviceName)
   sessionStorage.setItem('serviceCount', serviceCount)
 }

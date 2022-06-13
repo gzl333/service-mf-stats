@@ -2,7 +2,7 @@
 import { ref, onMounted, onUnmounted, Ref } from 'vue'
 // import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import ServerTable from 'components/admin/statistic/ServerTable.vue'
 import { exportExcel } from 'src/hooks/exportExcel'
 import { getNowFormatDate, getLastFormatDate } from 'src/hooks/processTime'
@@ -18,7 +18,7 @@ import { getNowFormatDate, getLastFormatDate } from 'src/hooks/processTime'
 
 const store = useStore()
 const route = useRoute()
-// const router = useRouter()
+const router = useRouter()
 // const tc = i18n.global.tc
 const dateFrom = ref('')
 const dateTo = ref('')
@@ -120,7 +120,12 @@ onUnmounted(() => {
 
 <template>
   <div class="DetailServer">
-    <div class="row q-gutter-x-md q-mt-xl">
+    <div class="row items-center title-area q-mt-xl">
+      <q-btn icon="arrow_back_ios" color="primary" flat unelevated dense
+             @click="router.back()"/>
+      <span class="text-primary text-h6 text-weight-bold">云主机用量统计</span>
+    </div>
+    <div class="row q-gutter-x-md q-mt-lg">
       <q-btn-group>
         <q-btn :color="isCurrentMonth ? 'blue-5' : 'white'" label="本月" class="text-subtitle1 q-px-lg text-black"
                @click="changeMonth(0)"/>

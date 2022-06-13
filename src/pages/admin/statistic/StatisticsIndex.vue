@@ -48,7 +48,7 @@ const changeTab = async (name: string) => {
       align="justify"
       indicator-color="primary"
       active-color="primary"
-      style="width: 41%"
+      style="width: 40%"
     >
       <q-tab no-caps name="cloud" class="q-px-none q-py-md q-mr-md text-weight-bold text-subtitle1" icon="las la-laptop"
              @click="changeTab('cloud')" :ripple="false">

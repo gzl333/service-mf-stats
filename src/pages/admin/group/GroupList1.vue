@@ -5,7 +5,8 @@ import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
 import emitter from 'boot/mitt'
-import { getNowFormatDate } from 'src/hooks/processTime'
+import { getLastFormatDate, getNowFormatDate } from 'src/hooks/processTime'
+import { exportExcel } from 'src/hooks/exportExcel'
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -28,26 +29,67 @@ const groupColumns = [
   { name: 'total_server', label: '云主机数量合计', align: 'center' }
 ]
 const isLoading = ref(false)
+const dateFrom = ref('')
+const dateTo = ref('')
+const isLastMonth = ref(false)
+const isCurrentMonth = ref(true)
 const paginationTable = ref({
   page: 1,
   count: 0,
   rowsPerPage: 10
 })
-const myDate = new Date()
-const year = myDate.getFullYear()
-const groupTableRow = ref([])
+const startDate = getNowFormatDate(0)
 const currentDate = getNowFormatDate(1)
+const startLastDate = getLastFormatDate(0)
+const currentLastDate = getLastFormatDate(1)
+// const dateStart = ref('')
+// const dateEnd = ref('')
 const query: Ref = ref({
   page: 1,
   page_size: 10,
-  date_start: year + '-' + '01-01',
-  date_end: currentDate,
-  'as-admin': true
+  date_start: startDate,
+  date_end: currentDate
 })
+// const myDate = new Date()
+// const year = myDate.getFullYear()
+const groupTableRow = ref([])
 emitter.on('group', async (value) => {
   query.value = value
   await getGroupData()
 })
+const changeMonth = async (type: number) => {
+  if (type === 0) {
+    isLastMonth.value = false
+    isCurrentMonth.value = true
+    query.value.date_start = startDate
+    query.value.date_end = currentDate
+    // await getDetailData()
+  } else {
+    isCurrentMonth.value = false
+    isLastMonth.value = true
+    query.value.date_start = startLastDate
+    query.value.date_end = currentLastDate
+    // await getDetailData()
+  }
+  dateFrom.value = ''
+  dateTo.value = ''
+}
+const search = async () => {
+  // if (groupId.value.value === '0') {
+  //   await getDetailData()
+  // } else {
+  //   await getSingleDetailData()
+  // }
+}
+const exportFile = () => {
+  exportExcel('项目组云主机用量列表.xlsx', '#groupServerTable')
+}
+const selectDate = () => {
+  const dateStart = dateFrom.value.replace(/(\/)/g, '-')
+  const dateEnd = dateTo.value.replace(/(\/)/g, '-')
+  query.value.date_start = dateStart
+  query.value.date_end = dateEnd
+}
 const getGroupData = async () => {
   isLoading.value = true
   const data = await store.getGroupHostData(query.value)
@@ -85,7 +127,50 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="GroupList">
-    <div class="q-ml-md">
+    <div class="row q-mt-xl items-center">
+      <q-btn-group>
+        <q-btn label="本月" class="text-subtitle1 q-px-lg" :style="isCurrentMonth ? 'background-color: #1976D2; color: #ffffff' : ''" @click="changeMonth(0)"/>
+        <q-btn label="上月" class="text-subtitle1 q-px-lg" :style="isLastMonth ? 'background-color: #1976D2; color: #ffffff' : ''" @click="changeMonth(1)"/>
+      </q-btn-group>
+      <div class="col-4 row items-baseline q-ml-lg">
+        <div class="col-5">
+          <q-input filled dense v-model="dateFrom" mask="date">
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
+                  <q-date v-model="dateFrom" @update:model-value="selectDate">
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="确定" color="primary" flat/>
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
+        </div>
+        <div class="col-1 text-center">至</div>
+        <div class="col-5">
+          <q-input filled dense v-model="dateTo" mask="date">
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
+                  <q-date v-model="dateTo" @update:model-value="selectDate">
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="确定" color="primary" flat/>
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
+        </div>
+      </div>
+      <div class="col-2">
+        <q-btn outline label="搜索" class="q-px-lg" @click="search"/>
+        <q-btn outline label="导出当页数据" class="q-ml-sm" @click="exportFile"/>
+      </div>
+    </div>
+    <div class="q-ml-md q-mt-xl">
       <q-separator/>
       <q-table
         flat

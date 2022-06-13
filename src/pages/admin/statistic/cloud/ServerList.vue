@@ -78,7 +78,7 @@ const changePagination = async (val: number) => {
   isLoading.value = false
 }
 const goToDetail = (serverId: string, serviceName: string, ipv4: string, vcpus: string, ram: string) => {
-  navigateToUrl(`/my/stats/statistic/server/${serverId}`)
+  navigateToUrl(`/my/stats/statistic/list/server/${serverId}`)
   sessionStorage.setItem('serviceName', serviceName)
   sessionStorage.setItem('ipv4', ipv4)
   sessionStorage.setItem('vcpus', vcpus)

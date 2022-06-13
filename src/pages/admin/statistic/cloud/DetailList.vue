@@ -2,7 +2,7 @@
 import { onMounted, ref, onUnmounted, Ref } from 'vue'
 // import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
 import DetailTable from 'components/admin/statistic/DetailTable.vue'
 import { exportExcel } from 'src/hooks/exportExcel'
@@ -18,7 +18,7 @@ import { getNowFormatDate, getLastFormatDate } from 'src/hooks/processTime'
 
 const store = useStore()
 const route = useRoute()
-// const router = useRouter()
+const router = useRouter()
 // const tc = i18n.global.tc
 const count = ref('')
 const userName = ref('')
@@ -144,7 +144,12 @@ onUnmounted(() => {
 
 <template>
   <div class="DetailList">
-    <div class="row q-mt-xl">
+    <div class="row items-center title-area q-mt-xl">
+      <q-btn icon="arrow_back_ios" color="primary" flat unelevated dense
+             @click="router.back()"/>
+      <span class="text-primary text-h6 text-weight-bold">云主机用量统计</span>
+    </div>
+    <div class="row q-mt-lg">
       <q-btn-group>
         <q-btn :color="isCurrentMonth ? 'blue-5' : 'white'" label="本月" class="text-subtitle1 q-px-lg text-black"
                @click="changeMonth(0)"/>
@@ -186,7 +191,7 @@ onUnmounted(() => {
       </div>
       <div class="col-3">
         <q-btn outline label="搜索" class="q-px-lg" @click="search"/>
-        <q-btn outline label="导出当页数据" class="q-px-lg q-ml-lg" @click="exportFile"/>
+        <q-btn outline label="导出当页数据" class="q-ml-lg" @click="exportFile"/>
       </div>
     </div>
     <div class="row q-mt-xl text-subtitle1 text-bold">

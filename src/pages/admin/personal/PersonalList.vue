@@ -125,10 +125,8 @@ onMounted(async () => {
   <div class="PersonalList">
     <div class="row q-mt-xl items-center">
       <q-btn-group>
-        <q-btn :color="isCurrentMonth ? 'blue-4' : 'white'" label="本月" class="text-subtitle1 q-px-lg text-black"
-               @click="changeMonth(0)"/>
-        <q-btn :color="isLastMonth ? 'blue-5' : 'white'" label="上月" class="text-subtitle1 q-px-lg text-black"
-               @click="changeMonth(1)"/>
+        <q-btn label="本月" class="text-subtitle1 q-px-lg" @click="changeMonth(0)" :style="isCurrentMonth ? 'background-color: #1976D2; color: #ffffff' : ''"/>
+        <q-btn label="上月" class="text-subtitle1 q-px-lg" @click="changeMonth(1)" :style="isLastMonth ? 'background-color: #1976D2; color: #ffffff' : ''"/>
       </q-btn-group>
       <div class="col-4 row items-baseline q-ml-lg">
         <div class="col-5">

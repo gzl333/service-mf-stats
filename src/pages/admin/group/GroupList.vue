@@ -171,10 +171,8 @@ onMounted(async () => {
   <div class="GroupList">
     <div class="row q-mt-xl items-center">
       <q-btn-group>
-        <q-btn :color="isCurrentMonth ? 'blue-5' : 'white'" label="本月" class="text-subtitle1 q-px-lg text-black"
-               @click="changeMonth(0)"/>
-        <q-btn :color="isLastMonth ? 'blue-5' : 'white'" label="上月" class="text-subtitle1 q-px-lg text-black"
-               @click="changeMonth(1)"/>
+        <q-btn label="本月" class="text-subtitle1 q-px-lg" :style="isCurrentMonth ? 'background-color: #1976D2; color: #ffffff' : ''" @click="changeMonth(0)"/>
+        <q-btn label="上月" class="text-subtitle1 q-px-lg" :style="isLastMonth ? 'background-color: #1976D2; color: #ffffff' : ''" @click="changeMonth(1)"/>
       </q-btn-group>
       <div class="col-4 row items-baseline q-ml-lg">
         <div class="col-5">
