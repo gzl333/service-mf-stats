@@ -262,6 +262,7 @@ export const useStore = defineStore('stats', {
       this.$patch(state => {
         state.items.fedRole = payload.fedRole
         state.items.vmsAdmin = payload.vmsAdmin
+        // sessionStorage.setItem('role', JSON.stringify(payload.vmsAdmin))
       })
     },
     async getMachineDetail (payload: { page: number, page_size: number, date_start: string, date_end: string, vo_id: string, user_id: string, server_id: string, service_id: string, 'as-admin': boolean }) {
@@ -297,6 +298,26 @@ export const useStore = defineStore('stats', {
     async getServiceHostData (payload: { page: number, page_size: number, date_start: string, date_end: string, 'as-admin': boolean }) {
       const respDataCenter = await stats.stats.api.getAggregationService({ query: payload })
       return respDataCenter
+    },
+    async getServerHostFile (payload: { date_start: string, date_end: string, 'as-admin': boolean, download: boolean }) {
+      const resServer = await stats.stats.api.getAggregationServerFile({ query: payload })
+      return resServer
+    },
+    async getServiceHostFile (payload: { date_start: string, date_end: string, 'as-admin': boolean, download: boolean }) {
+      const resServer = await stats.stats.api.getAggregationServiceFile({ query: payload })
+      return resServer
+    },
+    async getGroupHostFile (payload: { date_start: string, date_end: string, 'as-admin': boolean, download: boolean }) {
+      const resServer = await stats.stats.api.getAggregationVoFile({ query: payload })
+      return resServer
+    },
+    async getUserHostFile (payload: { date_start: string, date_end: string, 'as-admin': boolean, download: boolean }) {
+      const resServer = await stats.stats.api.getAggregationUserFile({ query: payload })
+      return resServer
+    },
+    async getServerDetailFile (payload: { date_start: string, date_end: string, 'as-admin': boolean, download: boolean }) {
+      const resServer = await stats.stats.api.getMeteringServerFile({ query: payload })
+      return resServer
     },
     async loadGroupTable () {
       // 先清空table，避免多次更新时数据累加（凡是需要强制刷新的table，都要先清空再更新）

@@ -47,6 +47,12 @@ const query: Ref = ref({
   date_end: currentDate,
   'as-admin': true
 })
+const exportQuery: Ref = ref({
+  date_start: startDate,
+  date_end: currentDate,
+  'as-admin': true,
+  download: true
+})
 const getData = async () => {
   tableRow.value = []
   totalAmount.value = 0
@@ -54,10 +60,13 @@ const getData = async () => {
   let obj: Record<string, string> = {}
   if (route.meta.type === 'user') {
     query.value.user_id = route.params.userid
+    exportQuery.value.user_id = route.params.userid
   } else if (route.meta.type === 'group') {
     query.value.vo_id = route.params.groupId
+    exportQuery.value.vo_id = route.params.groupId
   } else if (route.meta.type === 'service') {
     query.value.service_id = route.params.serviceId
+    exportQuery.value.service_id = route.params.serviceId
   }
   const data = await store.getServerHostData(query.value)
   for (const elem of data.data.results) {
@@ -86,12 +95,16 @@ const changeMonth = async (type: number) => {
     isCurrentMonth.value = true
     query.value.date_start = startDate
     query.value.date_end = currentDate
+    exportQuery.value.date_start = startDate
+    exportQuery.value.date_end = currentDate
     await getData()
   } else {
     isCurrentMonth.value = false
     isLastMonth.value = true
     query.value.date_start = startLastDate
     query.value.date_end = currentLastDate
+    exportQuery.value.date_start = startLastDate
+    exportQuery.value.date_end = currentLastDate
     await getData()
   }
   dateFrom.value = ''
@@ -102,6 +115,8 @@ const selectDate = () => {
   const dateEnd = dateTo.value.replace(/(\/)/g, '-')
   query.value.date_start = dateStart
   query.value.date_end = dateEnd
+  exportQuery.value.date_start = dateStart
+  exportQuery.value.date_end = dateEnd
 }
 const changePagination = async (val: number) => {
   query.value.page = val
@@ -118,6 +133,18 @@ const search = async () => {
 }
 const exportFile = () => {
   exportExcel('用量列表.xlsx', '#detailTable')
+}
+const exportAll = async () => {
+  const fileData = await store.getServerHostFile(exportQuery.value)
+  const link = document.createElement('a')
+  const blob = new Blob([fileData.data], { type: 'text/csv,charset=UTF-8' })
+  link.style.display = 'none'
+  link.href = URL.createObjectURL(blob)
+  link.download = fileData.headers['content-disposition']
+  link.download = '云主机用量统计'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
 }
 onMounted(async () => {
   if (route.meta.type === 'user') {
@@ -151,12 +178,10 @@ onUnmounted(() => {
     </div>
     <div class="row q-mt-lg">
       <q-btn-group>
-        <q-btn :color="isCurrentMonth ? 'blue-5' : 'white'" label="本月" class="text-subtitle1 q-px-lg text-black"
-               @click="changeMonth(0)"/>
-        <q-btn :color="isLastMonth ? 'blue-5' : 'white'" label="上月" class="text-subtitle1 q-px-lg text-black"
-               @click="changeMonth(1)"/>
+        <q-btn :style="isCurrentMonth ? 'background-color: #1976D2; color: #ffffff' : ''" label="本月" class="text-subtitle1 q-px-lg" @click="changeMonth(0)"/>
+        <q-btn :style="isLastMonth ? 'background-color: #1976D2; color: #ffffff' : ''" label="上月" class="text-subtitle1 q-px-lg" @click="changeMonth(1)"/>
       </q-btn-group>
-      <div class="col-4 row items-baseline q-ml-xl">
+      <div class="col-4 row items-baseline q-ml-lg">
         <div class="col-5">
           <q-input filled dense v-model="dateFrom" mask="date">
             <template v-slot:append>
@@ -189,9 +214,10 @@ onUnmounted(() => {
           </q-input>
         </div>
       </div>
-      <div class="col-3">
-        <q-btn outline label="搜索" class="q-px-lg" @click="search"/>
-        <q-btn outline label="导出当页数据" class="q-ml-lg" @click="exportFile"/>
+      <div class="col-4">
+        <q-btn outline label="搜索" @click="search"/>
+        <q-btn outline label="导出当页数据" class="q-ml-md" @click="exportFile"/>
+        <q-btn outline label="导出全部数据" class="q-ml-md" @click="exportAll"/>
       </div>
     </div>
     <div class="row q-mt-xl text-subtitle1 text-bold">

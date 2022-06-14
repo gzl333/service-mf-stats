@@ -6,6 +6,7 @@ import {
   createWebHistory
 } from 'vue-router'
 import routes from './routes'
+// import { Notify } from 'quasar'
 import { useStore } from 'stores/store'
 
 /*
@@ -41,6 +42,25 @@ export default route(function (/* { store, ssrContext } */) {
     const store = useStore()
     // 根据当前path更新store.items.currentPath
     store.items.currentPath = to.path.split('/').slice(3)
+
+    // console.log('store', store.items.vmsAdmin)
+    // console.log('to', to.meta)
+    // console.log(sessionStorage.getItem('role'))
+    // console.log(JSON.parse(sessionStorage.getItem('role')))
+    // @ts-ignore
+    // if (to.meta.requireServiceAdmin && JSON.parse(sessionStorage.getItem('role')).length === 0) {
+    // next(from.fullPath)
+    // Notify.create({
+    //   classes: 'notification-negative shadow-15',
+    //   icon: 'mdi-alert-circle',
+    //   textColor: 'negative',
+    //   message: '访问目标页面需要服务管理员权限',
+    //   position: 'bottom',
+    //   closeBtn: true,
+    //   timeout: 5000,
+    //   multiLine: false
+    // })
+    // }
 
     next()
   })

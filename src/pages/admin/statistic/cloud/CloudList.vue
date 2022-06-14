@@ -58,6 +58,12 @@ const query: Ref = ref({
   date_end: currentDate,
   'as-admin': true
 })
+const exportQuery: Ref = ref({
+  date_start: year + '-' + '01-01',
+  date_end: currentDate,
+  'as-admin': true,
+  download: true
+})
 const initSelectYear = () => {
   monthOptions.value.push({
     value: 0,
@@ -140,10 +146,14 @@ const initQuery = () => {
   }
   query.value.date_start = dateStart
   query.value.date_end = dateEnd
+  exportQuery.value.date_start = dateStart
+  exportQuery.value.date_end = dateEnd
   if (searchName.value !== '' && searchName.value !== null) {
     query.value.service_id = searchName.value
+    exportQuery.value.service_id = searchName.value
   } else {
     delete query.value.service_id
+    delete exportQuery.value.service_id
   }
 }
 const search = async () => {
@@ -176,6 +186,53 @@ const exportFile = () => {
     exportExcel('服务用量列表.xlsx', '#serviceTable')
   }
 }
+const exportAll = async () => {
+  if (activeItem.value === 'user') {
+    const fileData = await store.getUserHostFile(exportQuery.value)
+    const link = document.createElement('a')
+    const blob = new Blob([fileData.data], { type: 'text/csv,charset=UTF-8' })
+    link.style.display = 'none'
+    link.href = URL.createObjectURL(blob)
+    link.download = fileData.headers['content-disposition']
+    link.download = '按用户计量计费聚合统计'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  } else if (activeItem.value === 'group') {
+    const fileData = await store.getGroupHostFile(exportQuery.value)
+    const link = document.createElement('a')
+    const blob = new Blob([fileData.data], { type: 'text/csv,charset=UTF-8' })
+    link.style.display = 'none'
+    link.href = URL.createObjectURL(blob)
+    link.download = fileData.headers['content-disposition']
+    link.download = '按项目组计量计费聚合统计'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  } else if (activeItem.value === 'server') {
+    const fileData = await store.getServerHostFile(exportQuery.value)
+    const link = document.createElement('a')
+    const blob = new Blob([fileData.data], { type: 'text/csv,charset=UTF-8' })
+    link.style.display = 'none'
+    link.href = URL.createObjectURL(blob)
+    link.download = fileData.headers['content-disposition']
+    link.download = '按云主机计量计费聚合统计'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  } else if (activeItem.value === 'service') {
+    const fileData = await store.getServiceHostFile(exportQuery.value)
+    const link = document.createElement('a')
+    const blob = new Blob([fileData.data], { type: 'text/csv,charset=UTF-8' })
+    link.style.display = 'none'
+    link.href = URL.createObjectURL(blob)
+    link.download = fileData.headers['content-disposition']
+    link.download = '按服务计量计费聚合统计'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+}
 const changeTab = async (name: string) => {
   activeItem.value = name
   searchQuery.value = {
@@ -191,6 +248,8 @@ const changeTab = async (name: string) => {
   searchName.value = ''
   query.value.date_start = searchQuery.value.year.value + '-' + monthNew + '-' + '01'
   query.value.date_end = currentDate
+  exportQuery.value.date_start = searchQuery.value.year.value + '-' + monthNew + '-' + '01'
+  exportQuery.value.date_end = currentDate
   changeYear(searchQuery.value.year)
   sessionStorage.setItem('tabStatus', name)
   if (name === 'service') {
@@ -224,7 +283,7 @@ onMounted(async () => {
       </div>
       <div class="col-3 q-gutter-x-md">
         <q-btn outline label="导出当页数据" @click="exportFile()"/>
-        <q-btn outline label="导出全部数据"/>
+        <q-btn outline label="导出全部数据" @click="exportAll"/>
       </div>
     </div>
     <div class="row q-mt-md">

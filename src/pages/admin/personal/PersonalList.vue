@@ -47,6 +47,11 @@ const query: Ref = ref({
   date_start: startDate,
   date_end: currentDate
 })
+const exportQuery: Ref = ref({
+  date_start: startDate,
+  date_end: currentDate,
+  download: true
+})
 const getDetailData = async () => {
   tableRow.value = []
   let obj: Record<string, string> = {}
@@ -76,12 +81,16 @@ const changeMonth = async (type: number) => {
     isCurrentMonth.value = true
     query.value.date_start = startDate
     query.value.date_end = currentDate
+    exportQuery.value.date_start = startDate
+    exportQuery.value.date_end = currentDate
     await getDetailData()
   } else {
     isCurrentMonth.value = false
     isLastMonth.value = true
     query.value.date_start = startLastDate
     query.value.date_end = currentLastDate
+    exportQuery.value.date_start = startDate
+    exportQuery.value.date_end = currentDate
     await getDetailData()
   }
   dateFrom.value = ''
@@ -92,12 +101,16 @@ const selectDate = () => {
   const dateEnd = dateTo.value.replace(/(\/)/g, '-')
   query.value.date_start = dateStart
   query.value.date_end = dateEnd
+  exportQuery.value.date_start = dateStart
+  exportQuery.value.date_end = dateEnd
 }
 const selectService = (val: Record<string, string>) => {
   if (val.value !== '') {
     query.value.service_id = val.value
+    exportQuery.value.service_id = val.value
   } else {
     delete query.value.service_id
+    delete exportQuery.value.service_id
   }
 }
 const changePagination = async (val: number) => {
@@ -115,6 +128,18 @@ const search = async () => {
 }
 const exportFile = () => {
   exportExcel('个人云主机用量列表.xlsx', '#personalServerTable')
+}
+const exportAll = async () => {
+  const fileData = await store.getServerHostFile(exportQuery.value)
+  const link = document.createElement('a')
+  const blob = new Blob([fileData.data], { type: 'text/csv,charset=UTF-8' })
+  link.style.display = 'none'
+  link.href = URL.createObjectURL(blob)
+  link.download = fileData.headers['content-disposition']
+  link.download = '云主机用量统计'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
 }
 onMounted(async () => {
   await getDetailData()
@@ -164,9 +189,10 @@ onMounted(async () => {
       <div class="col-2">
         <q-select outlined dense v-model="serviceId" :options="filterOptions" @update:model-value="selectService" label="筛选服务"/>
       </div>
-      <div class="col-3 q-ml-md">
+      <div class="col-4 q-ml-md">
         <q-btn outline label="搜索" class="q-px-lg" @click="search"/>
         <q-btn outline label="导出当页数据" class="q-ml-md" @click="exportFile"/>
+        <q-btn outline label="导出全部数据" class="q-ml-md" @click="exportAll"/>
       </div>
     </div>
     <detail-table :tableRow="tableRow"/>

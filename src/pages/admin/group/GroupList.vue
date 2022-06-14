@@ -84,9 +84,6 @@ const getSingleDetailData = async () => {
   tableRow.value = []
   paginationTable.value.count = 0
   let obj: Record<string, string> = {}
-  if (store.tables.groupTable.allIds.length === 0) {
-    await store.loadGroupTable()
-  }
   query.value.vo_id = groupId.value.value
   const data = await store.getServerHostData(query.value)
   for (const elem of data.data.results) {

@@ -41,6 +41,13 @@ const query: Ref = ref({
   server_id: '',
   'as-admin': true
 })
+const exportQuery: Ref = ref({
+  date_start: startDate,
+  date_end: currentDate,
+  server_id: '',
+  'as-admin': true,
+  download: true
+})
 const paginationTable = ref({
   page: 1,
   count: 0,
@@ -50,6 +57,7 @@ const getDetailData = async () => {
   tableRow.value = []
   let obj: Record<string, string> = {}
   query.value.server_id = route.params.serverId
+  exportQuery.value.server_id = route.params.serverId
   const data = await store.getMachineDetail(query.value)
   for (const elem of data.data.results) {
     obj = {}
@@ -70,12 +78,16 @@ const changeMonth = (type: number) => {
     isCurrentMonth.value = true
     query.value.date_start = startDate
     query.value.date_end = currentDate
+    exportQuery.value.date_start = startDate
+    exportQuery.value.date_end = currentDate
     getDetailData()
   } else {
     isCurrentMonth.value = false
     isLastMonth.value = true
     query.value.date_start = startLastDate
     query.value.date_end = currentLastDate
+    exportQuery.value.date_start = startLastDate
+    exportQuery.value.date_end = currentLastDate
     getDetailData()
   }
   dateFrom.value = ''
@@ -86,6 +98,8 @@ const selectDate = () => {
   const dateEnd = dateTo.value.replace(/(\/)/g, '-')
   query.value.date_start = dateStart
   query.value.date_end = dateEnd
+  exportQuery.value.date_start = dateStart
+  exportQuery.value.date_end = dateEnd
 }
 const changePageSize = async () => {
   query.value.page_size = paginationTable.value.rowsPerPage
@@ -102,6 +116,18 @@ const search = async () => {
 }
 const exportFile = () => {
   exportExcel('用量明细.xlsx', '#serverTable')
+}
+const exportAll = async () => {
+  const fileData = await store.getServerDetailFile(exportQuery.value)
+  const link = document.createElement('a')
+  const blob = new Blob([fileData.data], { type: 'text/csv,charset=UTF-8' })
+  link.style.display = 'none'
+  link.href = URL.createObjectURL(blob)
+  link.download = fileData.headers['content-disposition']
+  link.download = '云主机用量统计'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
 }
 onMounted(() => {
   serviceName.value = sessionStorage.getItem('serviceName') || ''
@@ -127,10 +153,8 @@ onUnmounted(() => {
     </div>
     <div class="row q-gutter-x-md q-mt-lg">
       <q-btn-group>
-        <q-btn :color="isCurrentMonth ? 'blue-5' : 'white'" label="本月" class="text-subtitle1 q-px-lg text-black"
-               @click="changeMonth(0)"/>
-        <q-btn :color="isLastMonth ? 'blue-5' : 'white'" label="上月" class="text-subtitle1 q-px-lg text-black"
-               @click="changeMonth(1)"/>
+        <q-btn :style="isCurrentMonth ? 'background-color: #1976D2; color: #ffffff' : ''" label="本月" class="text-subtitle1 q-px-lg" @click="changeMonth(0)"/>
+        <q-btn :style="isLastMonth ? 'background-color: #1976D2; color: #ffffff' : ''" label="上月" class="text-subtitle1 q-px-lg" @click="changeMonth(1)"/>
       </q-btn-group>
       <div class="col-4 row items-baseline q-ml-xl">
         <div class="col-5">
@@ -165,9 +189,10 @@ onUnmounted(() => {
           </q-input>
         </div>
       </div>
-      <div class="col-3">
-        <q-btn outline label="搜索" class="q-px-lg" @click="search"/>
-        <q-btn outline label="导出当页数据" class="q-ml-lg" @click="exportFile"/>
+      <div class="col-4">
+        <q-btn outline label="搜索" @click="search"/>
+        <q-btn outline label="导出当页数据" class="q-ml-md" @click="exportFile"/>
+        <q-btn outline label="导出全部数据" class="q-ml-md" @click="exportAll"/>
       </div>
     </div>
     <div class="q-mt-xl">
