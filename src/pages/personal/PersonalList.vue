@@ -4,8 +4,9 @@ import { useStore } from 'stores/store'
 // import { useRoute } from 'vue-router'
 // import { navigateToUrl } from 'single-spa'
 // import { i18n } from 'boot/i18n'
-import DetailTable from 'components/admin/personal/PersonalServerTable.vue'
+import DetailTable from 'components/personal/PersonalServerTable.vue'
 import { exportExcel } from 'src/hooks/exportExcel'
+import { Notify } from 'quasar'
 import { getNowFormatDate, getLastFormatDate } from 'src/hooks/processTime'
 // const props = defineProps({
 //   foo: {
@@ -127,19 +128,45 @@ const search = async () => {
   await getDetailData()
 }
 const exportFile = () => {
-  exportExcel('个人云主机用量列表.xlsx', '#personalServerTable')
+  if (tableRow.value.length === 0) {
+    Notify.create({
+      classes: 'notification-negative shadow-15',
+      icon: 'mdi-alert',
+      textColor: 'negative',
+      message: '暂无数据',
+      position: 'bottom',
+      closeBtn: true,
+      timeout: 5000,
+      multiLine: false
+    })
+  } else {
+    exportExcel('个人云主机用量统计.xlsx', '#personalServerTable')
+  }
 }
 const exportAll = async () => {
-  const fileData = await store.getServerHostFile(exportQuery.value)
-  const link = document.createElement('a')
-  const blob = new Blob([fileData.data], { type: 'text/csv,charset=UTF-8' })
-  link.style.display = 'none'
-  link.href = URL.createObjectURL(blob)
-  link.download = fileData.headers['content-disposition']
-  link.download = '云主机用量统计'
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
+  if (tableRow.value.length === 0) {
+    Notify.create({
+      classes: 'notification-negative shadow-15',
+      icon: 'mdi-alert',
+      textColor: 'negative',
+      message: '暂无数据',
+      position: 'bottom',
+      closeBtn: true,
+      timeout: 5000,
+      multiLine: false
+    })
+  } else {
+    const fileData = await store.getServerHostFile(exportQuery.value)
+    const link = document.createElement('a')
+    const blob = new Blob([fileData.data], { type: 'text/csv,charset=UTF-8' })
+    link.style.display = 'none'
+    link.href = URL.createObjectURL(blob)
+    link.download = fileData.headers['content-disposition']
+    link.download = '个人云主机用量统计'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
 }
 onMounted(async () => {
   await getDetailData()

@@ -24,7 +24,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="Index">
+  <div class="MeteringIndex">
     <div class="row justify-center">
       <div class="content-fixed-width">
         <router-view></router-view>
@@ -34,6 +34,6 @@ onBeforeUnmount(() => {
 </template>
 
 <style lang="scss" scoped>
-.Index {
+.MeteringIndex {
 }
 </style>

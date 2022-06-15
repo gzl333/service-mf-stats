@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, Ref } from 'vue'
+import { onMounted, ref, onUnmounted, Ref } from 'vue'
 // import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 import { useRoute, useRouter } from 'vue-router'
-import ServerTable from 'components/admin/statistic/ServerTable.vue'
+// import { i18n } from 'boot/i18n'
+import DetailTable from 'components/statistic/DetailTable.vue'
 import { exportExcel } from 'src/hooks/exportExcel'
 import { getNowFormatDate, getLastFormatDate } from 'src/hooks/processTime'
-// import { i18n } from 'boot/i18n'
+import { Notify } from 'quasar'
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -20,59 +21,76 @@ const store = useStore()
 const route = useRoute()
 const router = useRouter()
 // const tc = i18n.global.tc
+const count = ref('')
+const userName = ref('')
+const totalAmount = ref(0)
+const actualAmount = ref(0)
 const dateFrom = ref('')
 const dateTo = ref('')
 const isLastMonth = ref(false)
 const isCurrentMonth = ref(true)
 const tableRow: Ref = ref([])
-const serviceName = ref('')
-const ipv4 = ref('')
-const vcpus = ref('')
-const ram = ref('')
-const startDate = getNowFormatDate(0)
-const currentDate = getNowFormatDate(1)
-const startLastDate = getLastFormatDate(0)
-const currentLastDate = getLastFormatDate(1)
-const query: Ref = ref({
-  page: 1,
-  page_size: 10,
-  date_start: startDate,
-  date_end: currentDate,
-  server_id: '',
-  'as-admin': true
-})
-const exportQuery: Ref = ref({
-  date_start: startDate,
-  date_end: currentDate,
-  server_id: '',
-  'as-admin': true,
-  download: true
-})
 const paginationTable = ref({
   page: 1,
   count: 0,
   rowsPerPage: 10
 })
-const getDetailData = async () => {
+const startDate = getNowFormatDate(0)
+const currentDate = getNowFormatDate(1)
+const startLastDate = getLastFormatDate(0)
+const currentLastDate = getLastFormatDate(1)
+const dateStart = ref('')
+const dateEnd = ref('')
+const query: Ref = ref({
+  page: 1,
+  page_size: 10,
+  date_start: startDate,
+  date_end: currentDate,
+  'as-admin': true
+})
+const exportQuery: Ref = ref({
+  date_start: startDate,
+  date_end: currentDate,
+  'as-admin': true,
+  download: true
+})
+const getData = async () => {
   tableRow.value = []
+  totalAmount.value = 0
+  actualAmount.value = 0
   let obj: Record<string, string> = {}
-  query.value.server_id = route.params.serverId
-  exportQuery.value.server_id = route.params.serverId
-  const data = await store.getMachineDetail(query.value)
+  if (route.meta.type === 'user') {
+    query.value.user_id = route.params.userid
+    exportQuery.value.user_id = route.params.userid
+  } else if (route.meta.type === 'group') {
+    query.value.vo_id = route.params.groupId
+    exportQuery.value.vo_id = route.params.groupId
+  } else if (route.meta.type === 'service') {
+    query.value.service_id = route.params.serviceId
+    exportQuery.value.service_id = route.params.serviceId
+  }
+  const data = await store.getServerHostData(query.value)
   for (const elem of data.data.results) {
     obj = {}
-    obj.creation_time = elem.creation_time
-    obj.public_ip_hours = elem.public_ip_hours
-    obj.cpu_hours = elem.cpu_hours
-    obj.ram_hours = elem.ram_hours
-    obj.disk_hours = elem.disk_hours
-    obj.original_amount = elem.original_amount
-    obj.trade_amount = elem.trade_amount
+    obj.ipv4 = elem.server.ipv4
+    obj.service_name = elem.service_name
+    obj.vcpus = elem.server.vcpus
+    obj.ram = elem.server.ram
+    obj.total_public_ip_hours = elem.total_public_ip_hours
+    obj.total_cpu_hours = elem.total_cpu_hours
+    obj.total_ram_hours = elem.total_ram_hours
+    obj.total_disk_hours = elem.total_disk_hours
+    obj.total_original_amount = elem.total_original_amount
+    obj.total_trade_amount = elem.total_trade_amount
+    totalAmount.value = totalAmount.value + elem.total_original_amount
+    actualAmount.value = actualAmount.value + elem.total_trade_amount
     tableRow.value.push(obj)
   }
   paginationTable.value.count = data.data.count
+  dateStart.value = query.value.date_start
+  dateEnd.value = query.value.date_end
 }
-const changeMonth = (type: number) => {
+const changeMonth = async (type: number) => {
   if (type === 0) {
     isLastMonth.value = false
     isCurrentMonth.value = true
@@ -80,7 +98,7 @@ const changeMonth = (type: number) => {
     query.value.date_end = currentDate
     exportQuery.value.date_start = startDate
     exportQuery.value.date_end = currentDate
-    getDetailData()
+    await getData()
   } else {
     isCurrentMonth.value = false
     isLastMonth.value = true
@@ -88,7 +106,7 @@ const changeMonth = (type: number) => {
     query.value.date_end = currentLastDate
     exportQuery.value.date_start = startLastDate
     exportQuery.value.date_end = currentLastDate
-    getDetailData()
+    await getData()
   }
   dateFrom.value = ''
   dateTo.value = ''
@@ -101,62 +119,96 @@ const selectDate = () => {
   exportQuery.value.date_start = dateStart
   exportQuery.value.date_end = dateEnd
 }
+const changePagination = async (val: number) => {
+  query.value.page = val
+  await getData()
+}
 const changePageSize = async () => {
   query.value.page_size = paginationTable.value.rowsPerPage
   query.value.page = 1
   paginationTable.value.page = 1
-  await getDetailData()
-}
-const changePagination = async (val: number) => {
-  query.value.page = val
-  await getDetailData()
+  await getData()
 }
 const search = async () => {
-  await getDetailData()
+  await getData()
 }
 const exportFile = () => {
-  exportExcel('用量明细.xlsx', '#serverTable')
+  if (tableRow.value.length === 0) {
+    Notify.create({
+      classes: 'notification-negative shadow-15',
+      icon: 'mdi-alert',
+      textColor: 'negative',
+      message: '暂无数据',
+      position: 'bottom',
+      closeBtn: true,
+      timeout: 5000,
+      multiLine: false
+    })
+  } else {
+    exportExcel('云主机用量统计.xlsx', '#detailTable')
+  }
 }
 const exportAll = async () => {
-  const fileData = await store.getServerDetailFile(exportQuery.value)
-  const link = document.createElement('a')
-  const blob = new Blob([fileData.data], { type: 'text/csv,charset=UTF-8' })
-  link.style.display = 'none'
-  link.href = URL.createObjectURL(blob)
-  link.download = fileData.headers['content-disposition']
-  link.download = '云主机用量统计'
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
+  if (tableRow.value.length === 0) {
+    Notify.create({
+      classes: 'notification-negative shadow-15',
+      icon: 'mdi-alert',
+      textColor: 'negative',
+      message: '暂无数据',
+      position: 'bottom',
+      closeBtn: true,
+      timeout: 5000,
+      multiLine: false
+    })
+  } else {
+    const fileData = await store.getServerHostFile(exportQuery.value)
+    const link = document.createElement('a')
+    const blob = new Blob([fileData.data], { type: 'text/csv,charset=UTF-8' })
+    link.style.display = 'none'
+    link.href = URL.createObjectURL(blob)
+    link.download = fileData.headers['content-disposition']
+    link.download = '云主机用量统计'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
 }
-onMounted(() => {
-  serviceName.value = sessionStorage.getItem('serviceName') || ''
-  ipv4.value = sessionStorage.getItem('ipv4') || ''
-  vcpus.value = sessionStorage.getItem('vcpus') || ''
-  ram.value = sessionStorage.getItem('ram') || ''
-  getDetailData()
+onMounted(async () => {
+  if (route.meta.type === 'user') {
+    count.value = sessionStorage.getItem('userCount') || ''
+    userName.value = sessionStorage.getItem('username') || ''
+  } else if (route.meta.type === 'group') {
+    count.value = sessionStorage.getItem('groupCount') || ''
+    userName.value = sessionStorage.getItem('voName') || ''
+  } else if (route.meta.type === 'service') {
+    count.value = sessionStorage.getItem('serviceCount') || ''
+    userName.value = sessionStorage.getItem('serviceName') || ''
+  }
+  await getData()
 })
 onUnmounted(() => {
+  sessionStorage.removeItem('username')
+  sessionStorage.removeItem('userCount')
+  sessionStorage.removeItem('voName')
+  sessionStorage.removeItem('groupCount')
   sessionStorage.removeItem('serviceName')
-  sessionStorage.removeItem('ipv4')
-  sessionStorage.removeItem('vcpus')
-  sessionStorage.removeItem('ram')
+  sessionStorage.removeItem('serviceCount')
 })
 </script>
 
 <template>
-  <div class="DetailServer">
+  <div class="DetailList">
     <div class="row items-center title-area q-mt-xl">
       <q-btn icon="arrow_back_ios" color="primary" flat unelevated dense
              @click="router.back()"/>
       <span class="text-primary text-h6 text-weight-bold">云主机用量统计</span>
     </div>
-    <div class="row q-gutter-x-md q-mt-lg">
+    <div class="row q-mt-lg">
       <q-btn-group>
         <q-btn :style="isCurrentMonth ? 'background-color: #1976D2; color: #ffffff' : ''" label="本月" class="text-subtitle1 q-px-lg" @click="changeMonth(0)"/>
         <q-btn :style="isLastMonth ? 'background-color: #1976D2; color: #ffffff' : ''" label="上月" class="text-subtitle1 q-px-lg" @click="changeMonth(1)"/>
       </q-btn-group>
-      <div class="col-4 row items-baseline q-ml-xl">
+      <div class="col-4 row items-baseline q-ml-lg">
         <div class="col-5">
           <q-input filled dense v-model="dateFrom" mask="date">
             <template v-slot:append>
@@ -195,33 +247,18 @@ onUnmounted(() => {
         <q-btn outline label="导出全部数据" class="q-ml-md" @click="exportAll"/>
       </div>
     </div>
-    <div class="q-mt-xl">
-      <q-card class="my-card" flat bordered>
-        <q-card-section>
-          <div class="row">
-            <div class="col-4 text-center">
-              <div class="text-h6">UUID</div>
-              <q-separator size="0.1rem"/>
-              <div class="text-subtitle1 q-mt-xl">{{ route.params.serverId }}</div>
-            </div>
-            <div class="col-4 text-center">
-              <div class="text-h6">服务节点</div>
-              <q-separator size="0.1rem"/>
-              <div class="text-subtitle1 q-mt-xl">{{ serviceName }}</div>
-            </div>
-            <div class="col-4 text-center">
-              <div class="text-h6">初始配置</div>
-              <q-separator size="0.1rem"/>
-              <div class="text-subtitle1 q-mt-md">{{ vcpus }}核</div>
-              <div class="text-subtitle1">{{ ram / 1024 }}GB内存</div>
-              <div class="text-subtitle1">公网ip：{{ ipv4 }}</div>
-            </div>
-          </div>
-        </q-card-section>
-      </q-card>
+    <div class="row q-mt-xl text-subtitle1 text-bold">
+      <!--      <div class="col-2">{{ store.tables.UserNameTable.byId[route.params.userid]?.username }}</div>-->
+      <div>
+        {{ route.meta.type === 'user' ? '用户名：' : route.meta.type === 'group' ? '组名称：' : '服务名称：' }}{{ userName }}
+      </div>
+      <div class="q-ml-lg">云主机数量合计：{{ count }}</div>
+      <div class="q-ml-lg">计费周期：{{ dateStart }}-{{ dateEnd }}</div>
+      <div class="q-ml-lg">计费金额合计：{{ totalAmount.toFixed(2) }}点</div>
+      <div class="q-ml-lg">实际扣费金额合计：{{ actualAmount.toFixed(2) }}点</div>
     </div>
-    <server-table :tableRow="tableRow"/>
-    <div class="row text-grey justify-between items-center q-mt-md">
+    <detail-table :tableRow="tableRow"/>
+    <div class="row q-mt-lg text-grey justify-between items-center">
       <div class="row items-center">
         <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>
         <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense
@@ -243,6 +280,6 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss" scoped>
-.DetailServer {
+.DetailList {
 }
 </style>

@@ -42,7 +42,7 @@ onMounted(async () => {
 
 <template>
   <div class="GroupIndex">
-    <div class="q-py-lg row">
+    <div class="q-mt-xl row">
       <q-tabs
         v-model="activeItem"
         vertical
@@ -84,6 +84,9 @@ onMounted(async () => {
           </div>
         </div>
       </div>
+    </div>
+    <div class="q-mt-xl q-pt-xl text-h6 text-weight-bold row justify-center">
+      <div>暂无科技云券</div>
     </div>
   </div>
 </template>

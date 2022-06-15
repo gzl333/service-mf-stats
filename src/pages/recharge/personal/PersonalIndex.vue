@@ -23,7 +23,7 @@ const tab = ref('mails')
 
 <template>
   <div class="PersonalIndex">
-    <div class="q-py-lg">
+    <div class="q-mt-xl">
       <div class="row">
         <div class="text-h6 text-weight-bold">个人账户余额</div>
         <div class="text-h6 q-ml-md">{{ `${store.tables.balanceTable.byId?.balance}点` }}</div>
@@ -51,6 +51,9 @@ const tab = ref('mails')
           <q-input dense outlined label="输入兑换码" class="col-5"/>
           <q-btn outline label="兑换" class="q-px-md"/>
         </div>
+      </div>
+      <div class="q-mt-xl q-pt-xl text-h6 text-weight-bold row justify-center">
+        <div>暂无科技云券</div>
       </div>
     </div>
   </div>

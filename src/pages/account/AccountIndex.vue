@@ -21,12 +21,12 @@
 </script>
 
 <template>
-  <div class="StatisticsIndex">
+  <div class="AccountIndex">
     this is AccountIndex
   </div>
 </template>
 
 <style lang="scss" scoped>
-.StatisticsIndex {
+.AccountIndex {
 }
 </style>

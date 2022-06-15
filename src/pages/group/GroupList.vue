@@ -4,7 +4,7 @@ import { useStore } from 'stores/store'
 // import { useRoute } from 'vue-router'
 // import { navigateToUrl } from 'single-spa'
 // import { i18n } from 'boot/i18n'
-import GroupServerTable from 'components/admin/group/GroupServerTable.vue'
+import GroupServerTable from 'components/group/GroupServerTable.vue'
 import { exportExcel } from 'src/hooks/exportExcel'
 import { getNowFormatDate, getLastFormatDate } from 'src/hooks/processTime'
 // const props = defineProps({
@@ -204,9 +204,9 @@ onMounted(async () => {
           </q-input>
         </div>
       </div>
-      <div class="col-3 row q-gutter-x-md">
+      <div class="col-4 row">
         <q-select class="col-5" outlined dense v-model="groupId" :options="groupOptions" label="筛选项目组"/>
-        <q-select class="col-5" outlined dense v-model="serviceId" :options="filterOptions" @update:model-value="selectService" label="筛选服务"/>
+        <q-select class="col-6 q-ml-md" outlined dense v-model="serviceId" :options="filterOptions" @update:model-value="selectService" label="筛选服务"/>
       </div>
       <div class="col-2">
         <q-btn outline label="搜索" class="q-px-lg" @click="search"/>

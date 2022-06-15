@@ -30,7 +30,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="StatisticsIndex">
+  <div class="RechargeIndex">
     <div class="row justify-center">
       <div class="content-fixed-width q-mt-md">
         <q-tabs
@@ -59,6 +59,6 @@ onBeforeUnmount(() => {
 </template>
 
 <style lang="scss" scoped>
-.StatisticsIndex {
+.RechargeIndex {
 }
 </style>

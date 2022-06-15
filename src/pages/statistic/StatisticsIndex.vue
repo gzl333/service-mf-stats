@@ -22,14 +22,11 @@ const activeItem = ref(store.items.currentPath[2]) // keep selection when reload
 const changeTab = async (name: string) => {
   activeItem.value = name
   if (name === 'cloud') {
-    console.log(sessionStorage.getItem('tabStatus'))
     if (sessionStorage.getItem('tabStatus') != null) {
-      console.log(11)
       const lastPath = sessionStorage.getItem('tabStatus')
       const routerPath = '/my/stats/statistic/list/cloud/' + lastPath
       navigateToUrl(routerPath)
     } else {
-      console.log(222)
       navigateToUrl(`/my/stats/statistic/list/${name}`)
     }
   } else {
