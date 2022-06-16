@@ -3,7 +3,6 @@
 /* eslint-disable camelcase */
 
 import { axiosStats } from 'boot/axios'
-
 export const apiBaseHarbor = axiosStats.defaults.baseURL
 export default {
   // stats apis

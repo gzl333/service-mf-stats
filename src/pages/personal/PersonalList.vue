@@ -90,10 +90,12 @@ const changeMonth = async (type: number) => {
     isLastMonth.value = true
     query.value.date_start = startLastDate
     query.value.date_end = currentLastDate
-    exportQuery.value.date_start = startDate
-    exportQuery.value.date_end = currentDate
+    exportQuery.value.date_start = startLastDate
+    exportQuery.value.date_end = currentLastDate
     await getDetailData()
   }
+  console.log(query.value)
+  console.log(exportQuery.value)
   dateFrom.value = ''
   dateTo.value = ''
 }
@@ -158,7 +160,7 @@ const exportAll = async () => {
   } else {
     const fileData = await store.getServerHostFile(exportQuery.value)
     const link = document.createElement('a')
-    const blob = new Blob([fileData.data], { type: 'text/csv,charset=UTF-8' })
+    const blob = new Blob(['\ufeff' + fileData.data], { type: 'text/csv,charset=UTF-8' })
     link.style.display = 'none'
     link.href = URL.createObjectURL(blob)
     link.download = fileData.headers['content-disposition']

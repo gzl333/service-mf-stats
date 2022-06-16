@@ -146,7 +146,7 @@ const exportAll = async () => {
   } else {
     const fileData = await store.getServerDetailFile(exportQuery.value)
     const link = document.createElement('a')
-    const blob = new Blob([fileData.data], { type: 'text/csv,charset=UTF-8' })
+    const blob = new Blob(['\ufeff' + fileData.data], { type: 'text/csv,charset=UTF-8' })
     link.style.display = 'none'
     link.href = URL.createObjectURL(blob)
     link.download = fileData.headers['content-disposition']

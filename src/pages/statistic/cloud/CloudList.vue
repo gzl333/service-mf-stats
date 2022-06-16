@@ -187,10 +187,11 @@ const exportFile = () => {
   }
 }
 const exportAll = async () => {
+  console.log(exportQuery.value)
   if (activeItem.value === 'user') {
     const fileData = await store.getUserHostFile(exportQuery.value)
     const link = document.createElement('a')
-    const blob = new Blob([fileData.data], { type: 'text/csv,charset=UTF-8' })
+    const blob = new Blob(['\ufeff' + fileData.data], { type: 'text/csv,charset=UTF-8' })
     link.style.display = 'none'
     link.href = URL.createObjectURL(blob)
     link.download = fileData.headers['content-disposition']
@@ -201,7 +202,7 @@ const exportAll = async () => {
   } else if (activeItem.value === 'group') {
     const fileData = await store.getGroupHostFile(exportQuery.value)
     const link = document.createElement('a')
-    const blob = new Blob([fileData.data], { type: 'text/csv,charset=UTF-8' })
+    const blob = new Blob(['\ufeff' + fileData.data], { type: 'text/csv,charset=UTF-8' })
     link.style.display = 'none'
     link.href = URL.createObjectURL(blob)
     link.download = fileData.headers['content-disposition']
@@ -212,7 +213,7 @@ const exportAll = async () => {
   } else if (activeItem.value === 'server') {
     const fileData = await store.getServerHostFile(exportQuery.value)
     const link = document.createElement('a')
-    const blob = new Blob([fileData.data], { type: 'text/csv,charset=UTF-8' })
+    const blob = new Blob(['\ufeff' + fileData.data], { type: 'text/csv,charset=UTF-8' })
     link.style.display = 'none'
     link.href = URL.createObjectURL(blob)
     link.download = fileData.headers['content-disposition']
@@ -223,7 +224,7 @@ const exportAll = async () => {
   } else if (activeItem.value === 'service') {
     const fileData = await store.getServiceHostFile(exportQuery.value)
     const link = document.createElement('a')
-    const blob = new Blob([fileData.data], { type: 'text/csv,charset=UTF-8' })
+    const blob = new Blob(['\ufeff' + fileData.data], { type: 'text/csv,charset=UTF-8' })
     link.style.display = 'none'
     link.href = URL.createObjectURL(blob)
     link.download = fileData.headers['content-disposition']
@@ -246,10 +247,14 @@ const changeTab = async (name: string) => {
     }
   }
   searchName.value = ''
-  query.value.date_start = searchQuery.value.year.value + '-' + monthNew + '-' + '01'
+  query.value.date_start = searchQuery.value.year.value + '-01-01'
   query.value.date_end = currentDate
-  exportQuery.value.date_start = searchQuery.value.year.value + '-' + monthNew + '-' + '01'
+  exportQuery.value.date_start = searchQuery.value.year.value + '-01-01'
   exportQuery.value.date_end = currentDate
+  // exportQuery.value.date_start = searchQuery.value.year.value + '-' + monthNew + '-' + '01'
+  // exportQuery.value.date_end = currentDate
+  console.log(query.value)
+  console.log(exportQuery.value)
   changeYear(searchQuery.value.year)
   sessionStorage.setItem('tabStatus', name)
   if (name === 'service') {
