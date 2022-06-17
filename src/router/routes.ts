@@ -25,12 +25,20 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'personal',
         name: '个人云主机用量列表',
-        redirect: '/my/stats/personal/server',
+        redirect: '/my/stats/personal/month',
         component: () => import('pages/personal/PersonalIndex.vue'),
         children: [
           {
-            path: 'server',
-            component: () => import('pages/personal/PersonalList.vue')
+            path: 'month',
+            component: () => import('pages/personal/ThisMonthList.vue')
+          },
+          {
+            path: 'last',
+            component: () => import('pages/personal/LastMonthList.vue')
+          },
+          {
+            path: 'history',
+            component: () => import('pages/personal/HistoryList.vue')
           }
         ]
       },

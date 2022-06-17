@@ -47,7 +47,6 @@ export default route(function (/* { store, ssrContext } */) {
     // console.log('to', to.meta)
     // console.log(sessionStorage.getItem('role'))
     // console.log(JSON.parse(sessionStorage.getItem('role')))
-    // @ts-ignore
     // if (to.meta.requireServiceAdmin && JSON.parse(sessionStorage.getItem('role')).length === 0) {
     // next(from.fullPath)
     // Notify.create({

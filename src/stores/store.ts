@@ -82,6 +82,31 @@ export interface GroupBalanceInterface {
   }
 }
 
+export interface CashCouponInterface {
+  id: string
+  face_value: string
+  creation_time: string
+  effective_time: string
+  expiration_time: string
+  balance: string
+  status: string
+  granted_time: string
+  owner_type: string
+  service: string
+  user: {
+    id: string
+    name: string
+  }
+  vo: {
+    id: string
+    name: string
+  } | null
+  activity: {
+    id: string
+    name: string
+  } | null
+}
+
 export const useStore = defineStore('stats', {
   state: () => ({
     items: {
@@ -118,6 +143,11 @@ export const useStore = defineStore('stats', {
       },
       groupBalanceTable: {
         byId: {} as Record<string, GroupBalanceInterface>,
+        allIds: [],
+        isLoaded: false
+      },
+      cashCouponTable: {
+        byId: {} as Record<string, CashCouponInterface>,
         allIds: [],
         isLoaded: false
       }
@@ -176,6 +206,16 @@ export const useStore = defineStore('stats', {
       // 排序
       groupTabs = groupTabs.sort((a, b) => -a.name.localeCompare(b.name, 'zh-CN'))
       return groupTabs
+    },
+    getCashByTime: (state) => (): CashCouponInterface[] => {
+      // 排序函数，按照组创建时间降序排列
+      const sortFn = (a: CashCouponInterface, b: CashCouponInterface) => new Date(b.effective_time).getTime() - new Date(a.effective_time).getTime()
+      // sort方法修改数组本身，所以需要建立新数组再排序
+      const newArr: CashCouponInterface[] = []
+      state.tables.cashCouponTable.allIds.forEach((item) => {
+        newArr.unshift(state.tables.cashCouponTable.byId[item])
+      })
+      return newArr.sort(sortFn)
     }
   },
   actions: {
@@ -191,6 +231,9 @@ export const useStore = defineStore('stats', {
                   }
                   if (!this.tables.groupBalanceTable.isLoaded) {
                     this.loadGroupBalanceTable()
+                  }
+                  if (!this.tables.cashCouponTable.isLoaded) {
+                    this.loadCashCouponTable()
                   }
                 })
               })
@@ -371,12 +414,31 @@ export const useStore = defineStore('stats', {
         // @ts-ignore
         this.tables.groupBalanceTable.allIds.unshift(respBalance.data.id)
         this.tables.groupBalanceTable.allIds = [...new Set(this.tables.groupBalanceTable.allIds)]
-        // console.log(respBalance.data)
       }
     },
     async getGroupBalance (voId: string) {
       const respBalance = await stats.stats.account.getBalanceVo({ path: { vo_id: voId } })
       return respBalance
+    },
+    async loadCashCouponTable () {
+      this.tables.cashCouponTable = {
+        byId: {},
+        allIds: [],
+        isLoaded: false
+      }
+      const respCash = await stats.stats.cashcoupon.getCashCoupon()
+      console.log(respCash.data)
+      const service = new schema.Entity('service')
+      // const vo = new schema.Entity('vo')
+      const cach = new schema.Entity('cach', { service })
+      for (const data of respCash.data.results) {
+        const normalizedData = normalize(data, cach)
+        console.log(normalizedData)
+        Object.assign(this.tables.cashCouponTable.byId, normalizedData.entities.cach)
+        // @ts-ignore
+        this.tables.cashCouponTable.allIds.unshift(data.id)
+        this.tables.cashCouponTable.allIds = [...new Set(this.tables.cashCouponTable.allIds)]
+      }
     }
   }
 })

@@ -37,27 +37,33 @@ const changeTab = async (name: string) => {
 
 <template>
   <div class="StatisticsIndex">
-    <div class="q-mt-md">
-    <q-tabs
-      v-model="activeItem"
-      inline-label
-      :breakpoint="0"
-      align="justify"
-      indicator-color="primary"
-      active-color="primary"
-      style="width: 40%"
-    >
-      <q-tab no-caps name="cloud" class="q-px-none q-py-md q-mr-md text-weight-bold text-subtitle1" icon="las la-laptop"
-             @click="changeTab('cloud')" :ripple="false">
-        云主机
-      </q-tab>
-      <q-tab no-caps name="storage" class="q-px-none q-py-md q-mr-md text-weight-bold text-subtitle1"
-             icon="las la-memory" @click="changeTab('storage')" :ripple="false">
-        对象存储
-      </q-tab>
-    </q-tabs>
-    <q-separator/>
-    <router-view></router-view>
+    <div class="column">
+      <div class="row justify-center">
+        <div class="content-fixed-width">
+          <div class="text-h6 q-pt-lg q-px-none">用量管理统计</div>
+          <q-tabs
+            v-model="activeItem"
+            inline-label
+            :breakpoint="0"
+            align="left"
+            indicator-color="primary"
+            active-color="primary"
+          >
+            <q-tab no-caps name="cloud" class="q-px-none q-py-md q-mr-md text-weight-bold text-subtitle1" icon="las la-laptop"
+                   @click="changeTab('cloud')" :ripple="false">
+              云主机
+            </q-tab>
+            <q-tab no-caps name="storage" class="q-px-none q-py-md q-mr-md text-weight-bold text-subtitle1"
+                   icon="las la-memory" @click="changeTab('storage')" :ripple="false">
+              对象存储
+            </q-tab>
+          </q-tabs>
+        </div>
+      </div>
+      <q-separator/>
+      <div class="row justify-center">
+        <router-view class="content-fixed-width"/>
+      </div>
     </div>
   </div>
 </template>

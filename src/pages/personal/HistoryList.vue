@@ -7,7 +7,7 @@ import { useStore } from 'stores/store'
 import DetailTable from 'components/personal/PersonalServerTable.vue'
 import { exportExcel } from 'src/hooks/exportExcel'
 import { Notify } from 'quasar'
-import { getNowFormatDate, getLastFormatDate } from 'src/hooks/processTime'
+import { getHistoryStartFormatDate, getNowFormatDate } from 'src/hooks/processTime'
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -22,10 +22,6 @@ const store = useStore()
 // const router = useRouter()
 // const tc = i18n.global.tc
 const filterOptions = computed(() => store.getServices)
-const dateFrom = ref('')
-const dateTo = ref('')
-const isLastMonth = ref(false)
-const isCurrentMonth = ref(true)
 const tableRow: Ref = ref([])
 const paginationTable = ref({
   page: 1,
@@ -36,12 +32,10 @@ const serviceId = ref({
   label: '全部服务',
   value: ''
 })
-const startDate = getNowFormatDate(0)
+const startDate = getHistoryStartFormatDate()
 const currentDate = getNowFormatDate(1)
-const startLastDate = getLastFormatDate(0)
-const currentLastDate = getLastFormatDate(1)
-const dateStart = ref('')
-const dateEnd = ref('')
+const dateFrom = ref(startDate)
+const dateTo = ref(currentDate)
 const query: Ref = ref({
   page: 1,
   page_size: 10,
@@ -73,37 +67,12 @@ const getDetailData = async () => {
     tableRow.value.push(obj)
   }
   paginationTable.value.count = data.data.count
-  dateStart.value = query.value.date_start
-  dateEnd.value = query.value.date_end
-}
-const changeMonth = async (type: number) => {
-  if (type === 0) {
-    isLastMonth.value = false
-    isCurrentMonth.value = true
-    query.value.date_start = startDate
-    query.value.date_end = currentDate
-    exportQuery.value.date_start = startDate
-    exportQuery.value.date_end = currentDate
-    await getDetailData()
-  } else {
-    isCurrentMonth.value = false
-    isLastMonth.value = true
-    query.value.date_start = startLastDate
-    query.value.date_end = currentLastDate
-    exportQuery.value.date_start = startLastDate
-    exportQuery.value.date_end = currentLastDate
-    await getDetailData()
-  }
-  dateFrom.value = ''
-  dateTo.value = ''
 }
 const selectDate = () => {
-  const dateStart = dateFrom.value.replace(/(\/)/g, '-')
-  const dateEnd = dateTo.value.replace(/(\/)/g, '-')
-  query.value.date_start = dateStart
-  query.value.date_end = dateEnd
-  exportQuery.value.date_start = dateStart
-  exportQuery.value.date_end = dateEnd
+  query.value.date_start = dateFrom.value.replace(/(\/)/g, '-')
+  query.value.date_end = dateTo.value.replace(/(\/)/g, '-')
+  exportQuery.value.date_start = dateFrom.value.replace(/(\/)/g, '-')
+  exportQuery.value.date_end = dateTo.value.replace(/(\/)/g, '-')
 }
 const selectService = (val: Record<string, string>) => {
   if (val.value !== '') {
@@ -175,13 +144,9 @@ onMounted(async () => {
 
 <template>
   <div class="PersonalList">
-    <div class="row q-mt-xl items-center">
-      <q-btn-group>
-        <q-btn label="本月" class="text-subtitle1 q-px-lg" @click="changeMonth(0)" :style="isCurrentMonth ? 'background-color: #1976D2; color: #ffffff' : ''"/>
-        <q-btn label="上月" class="text-subtitle1 q-px-lg" @click="changeMonth(1)" :style="isLastMonth ? 'background-color: #1976D2; color: #ffffff' : ''"/>
-      </q-btn-group>
-      <div class="col-4 row items-baseline q-ml-lg">
-        <div class="col-5">
+    <div class="row items-center justify-between">
+      <div class="col-9 row items-center q-gutter-x-md">
+        <div class="col-3">
           <q-input filled dense v-model="dateFrom" mask="date">
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
@@ -196,8 +161,8 @@ onMounted(async () => {
             </template>
           </q-input>
         </div>
-        <div class="col-1 text-center">至</div>
-        <div class="col-5">
+        <div class="text-center">至</div>
+        <div class="col-3">
           <q-input filled dense v-model="dateTo" mask="date">
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
@@ -212,13 +177,11 @@ onMounted(async () => {
             </template>
           </q-input>
         </div>
-      </div>
-      <div class="col-2">
-        <q-select outlined dense v-model="serviceId" :options="filterOptions" @update:model-value="selectService" label="筛选服务"/>
-      </div>
-      <div class="col-4 q-ml-md">
+        <q-select outlined dense v-model="serviceId" :options="filterOptions" @update:model-value="selectService" label="筛选服务" class="col-3"/>
         <q-btn outline label="搜索" class="q-px-lg" @click="search"/>
-        <q-btn outline label="导出当页数据" class="q-ml-md" @click="exportFile"/>
+      </div>
+      <div class="col-3 q-ml-md">
+        <q-btn outline label="导出当页数据" @click="exportFile"/>
         <q-btn outline label="导出全部数据" class="q-ml-md" @click="exportAll"/>
       </div>
     </div>

@@ -31,28 +31,29 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="RechargeIndex">
-    <div class="row justify-center">
-      <div class="content-fixed-width q-mt-md">
-        <q-tabs
-          v-model="activeItem"
-          inline-label
-          :breakpoint="0"
-          align="justify"
-          indicator-color="primary"
-          active-color="primary"
-          style="width: 37.5%"
-        >
-          <q-tab no-caps name="personal" class="q-px-none q-py-md q-mr-md text-weight-bold text-subtitle1"
-                 icon="las la-user-circle" @click="changeTab('personal')" :ripple="false">
-            个人账户
-          </q-tab>
-          <q-tab no-caps name="group" class="q-px-none q-py-md q-mr-md text-weight-bold text-subtitle1"
-                 icon="las la-people-carry" @click="changeTab('group')" :ripple="false">
-            项目组账户
-          </q-tab>
-        </q-tabs>
-        <q-separator/>
-        <router-view></router-view>
+    <div class="column">
+      <div class="row justify-center">
+        <div class="content-fixed-width">
+          <div class="text-h6 q-pt-lg q-px-none">账户与充值</div>
+          <q-tabs
+            v-model="activeItem"
+            inline-label
+            align="left"
+            indicator-color="primary"
+            active-color="primary"
+          >
+            <q-tab no-caps name="personal" class="q-px-none q-py-md q-mr-md" :ripple="false" label="个人账户"
+                   icon="las la-user-circle" @click="changeTab('personal')">
+            </q-tab>
+            <q-tab no-caps name="group" class="q-px-none q-py-md q-mr-md" :ripple="false" label="项目组账户"
+                   icon="las la-people-carry" @click="changeTab('group')">
+            </q-tab>
+          </q-tabs>
+        </div>
+      </div>
+      <q-separator/>
+      <div class="row justify-center q-pt-xl">
+        <router-view class="content-fixed-width"/>
       </div>
     </div>
   </div>

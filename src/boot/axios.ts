@@ -21,7 +21,6 @@ declare module '@vue/runtime-core' {
 
 // axios instance with base url configured
 export const baseURLStats = window.location.protocol + '//vms.cstcloud.cn/api' // todo 改成该服务的后端api地址
-// console.log(window.location.protocol)
 // export const baseURLStats = window.location.protocol + '//159.226.235.4:2000/api'
 // export const baseURLStats = process.env.DEV ? '//159.226.235.78:88/api' : '//159.226.235.4:2000/api'
 const axiosStats = axios.create({

@@ -1,5 +1,6 @@
 const myDate = new Date()
 const year = myDate.getFullYear()
+const historyYear = myDate.getFullYear() - 1
 let month: number | string = myDate.getMonth() + 1
 let strDate: number | string = myDate.getDate()
 export const getNowFormatDate = (type: number) => {
@@ -33,5 +34,37 @@ export const getLastFormatDate = (type: number) => {
     return year + seperator1 + month + seperator1 + '01'
   } else {
     return year + seperator1 + month + seperator1 + day
+  }
+}
+export const getHistoryStartFormatDate = () => {
+  month = myDate.getMonth() + 1
+  strDate = myDate.getDate()
+  let currentYear
+  const seperator1 = '-'
+  if (month > 5) {
+    month = month - 5
+    currentYear = year
+  } else {
+    currentYear = historyYear
+    if (month - 5 === 0) {
+      month = 12
+    } else if (month - 5 === -1) {
+      month = 11
+    } else if (month - 5 === -2) {
+      month = 10
+    } else if (month - 5 === -3) {
+      month = 9
+    } else {
+      month = 8
+    }
+  }
+  if (strDate >= 0 && strDate <= 9) {
+    strDate = '0' + strDate
+  }
+  if (month <= 9) {
+    month = '0' + month
+    return currentYear + seperator1 + month + seperator1 + '01'
+  } else {
+    return currentYear + seperator1 + month + seperator1 + '01'
   }
 }

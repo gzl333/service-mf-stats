@@ -42,7 +42,7 @@ onMounted(async () => {
 
 <template>
   <div class="GroupIndex">
-    <div class="q-mt-xl row">
+    <div class="row">
       <q-tabs
         v-model="activeItem"
         vertical
@@ -55,14 +55,14 @@ onMounted(async () => {
         </q-tab>
       </q-tabs>
       <div class="col-10">
-        <div class="row q-ml-md">
-          <div class="text-h6 text-weight-bold">账户余额</div>
-          <div class="text-h6 q-ml-lg">{{ `${balance}点` }}</div>
-          <q-btn outline label="充值" class="q-px-lg q-ml-xl"/>
+        <div class="row q-ml-md items-center">
+          <div class="text-subtitle1 text-weight-bold">账户余额</div>
+          <div class="text-subtitle1 text-weight-bold q-ml-lg">{{ `${balance}点` }}</div>
+          <q-btn outline label="充值" class="q-ml-xl"/>
         </div>
         <div class="row justify-between items-center q-mt-lg q-ml-md">
           <div class="row items-center">
-            <div class="text-h6 text-weight-bold">科技云券</div>
+            <div class="text-subtitle1 text-weight-bold">科技云券</div>
             <q-tabs
               v-model="tab"
               narrow-indicator
@@ -80,7 +80,7 @@ onMounted(async () => {
           <div class="row q-gutter-x-md items-center">
             <div class="text-subtitle1">科技云券兑换</div>
             <q-input dense outlined label="输入兑换码" class="q-ml-md"/>
-            <q-btn outline label="兑换" class="q-px-md q-ml-md"/>
+            <q-btn outline label="兑换" class="q-ml-md"/>
           </div>
         </div>
       </div>

@@ -187,7 +187,6 @@ const exportFile = () => {
   }
 }
 const exportAll = async () => {
-  console.log(exportQuery.value)
   if (activeItem.value === 'user') {
     const fileData = await store.getUserHostFile(exportQuery.value)
     const link = document.createElement('a')
@@ -251,10 +250,6 @@ const changeTab = async (name: string) => {
   query.value.date_end = currentDate
   exportQuery.value.date_start = searchQuery.value.year.value + '-01-01'
   exportQuery.value.date_end = currentDate
-  // exportQuery.value.date_start = searchQuery.value.year.value + '-' + monthNew + '-' + '01'
-  // exportQuery.value.date_end = currentDate
-  console.log(query.value)
-  console.log(exportQuery.value)
   changeYear(searchQuery.value.year)
   sessionStorage.setItem('tabStatus', name)
   if (name === 'service') {

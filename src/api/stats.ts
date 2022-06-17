@@ -205,5 +205,20 @@ export default {
     }) {
       return axiosStats.get('/account/balance/vo/' + payload.path.vo_id)
     }
+  },
+  cashcoupon: {
+    getCashCoupon (payload?: {
+      query?: {
+        page: number;
+        page_size: number;
+        vo_id: boolean;
+        available: boolean
+      }
+    }) {
+      const config = {
+        params: payload?.query
+      }
+      return axiosStats.get('/cashcoupon', config)
+    }
   }
 }
