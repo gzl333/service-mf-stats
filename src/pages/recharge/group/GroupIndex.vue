@@ -54,13 +54,13 @@ onMounted(async () => {
           {{item.name}}
         </q-tab>
       </q-tabs>
-      <div class="col-10">
-        <div class="row q-ml-md items-center">
+      <div class="col-10 q-ml-xl">
+        <div class="row items-center">
           <div class="text-subtitle1 text-weight-bold">账户余额</div>
           <div class="text-subtitle1 text-weight-bold q-ml-lg">{{ `${balance}点` }}</div>
           <q-btn outline label="充值" class="q-ml-xl"/>
         </div>
-        <div class="row justify-between items-center q-mt-lg q-ml-md">
+        <div class="row justify-between items-center q-mt-lg">
           <div class="row items-center">
             <div class="text-subtitle1 text-weight-bold">科技云券</div>
             <q-tabs

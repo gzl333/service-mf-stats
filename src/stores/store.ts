@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import stats from 'src/api/index'
 import { normalize, schema } from 'normalizr'
 import { i18n } from 'boot/i18n'
+import dateFormat from 'src/utils'
 
 export interface DataCenterInterface {
   // 来自registry接口
@@ -207,13 +208,61 @@ export const useStore = defineStore('stats', {
       groupTabs = groupTabs.sort((a, b) => -a.name.localeCompare(b.name, 'zh-CN'))
       return groupTabs
     },
-    getCashByTime: (state) => (): CashCouponInterface[] => {
-      // 排序函数，按照组创建时间降序排列
-      const sortFn = (a: CashCouponInterface, b: CashCouponInterface) => new Date(b.effective_time).getTime() - new Date(a.effective_time).getTime()
-      // sort方法修改数组本身，所以需要建立新数组再排序
+    getAvailableCash: (state) => (): CashCouponInterface[] => {
       const newArr: CashCouponInterface[] = []
+      const now = new Date()
+      const sortFn = (a: CashCouponInterface, b: CashCouponInterface) => new Date(b.effective_time).getTime() - new Date(a.effective_time).getTime()
       state.tables.cashCouponTable.allIds.forEach((item) => {
-        newArr.unshift(state.tables.cashCouponTable.byId[item])
+        const startTime = dateFormat(state.tables.cashCouponTable.byId[item].expiration_time)
+        const end = new Date(startTime.replace(/-/g, '/'))
+        // if (now.getTime() < end.getTime()) {
+        //   console.log('未过期')
+        // } else {
+        //   console.log('已过期')
+        // }
+        if (state.tables.cashCouponTable.byId[item].balance !== '0.00' && now.getTime() < end.getTime()) {
+          newArr.unshift(state.tables.cashCouponTable.byId[item])
+        }
+      })
+      return newArr.sort(sortFn)
+    },
+    getExpiredCash: (state) => (): CashCouponInterface[] => {
+      const newArr: CashCouponInterface[] = []
+      const now = new Date()
+      const sortFn = (a: CashCouponInterface, b: CashCouponInterface) => new Date(b.effective_time).getTime() - new Date(a.effective_time).getTime()
+      state.tables.cashCouponTable.allIds.forEach((item) => {
+        const startTime = dateFormat(state.tables.cashCouponTable.byId[item].expiration_time)
+        const end = new Date(startTime.replace(/-/g, '/'))
+        const total = (end.getTime() - now.getTime()) / 1000
+        const spacing = parseInt(String(total / (60 * 60)))
+        if (state.tables.cashCouponTable.byId[item].balance !== '0.00' && spacing < 0) {
+          newArr.unshift(state.tables.cashCouponTable.byId[item])
+        }
+      })
+      return newArr.sort(sortFn)
+    },
+    getExpiringCash: (state) => (): CashCouponInterface[] => {
+      const newArr: CashCouponInterface[] = []
+      const now = new Date()
+      const sortFn = (a: CashCouponInterface, b: CashCouponInterface) => new Date(b.effective_time).getTime() - new Date(a.effective_time).getTime()
+      state.tables.cashCouponTable.allIds.forEach((item) => {
+        const startTime = dateFormat(state.tables.cashCouponTable.byId[item].expiration_time)
+        const end = new Date(startTime.replace(/-/g, '/'))
+        const total = (end.getTime() - now.getTime()) / 1000
+        const spacing = parseInt(String(total / (60 * 60)))
+        if (state.tables.cashCouponTable.byId[item].balance !== '0.00' && spacing > 0 && spacing <= 24) {
+          newArr.unshift(state.tables.cashCouponTable.byId[item])
+        }
+      })
+      return newArr.sort(sortFn)
+    },
+    getOutCash: (state) => (): CashCouponInterface[] => {
+      const newArr: CashCouponInterface[] = []
+      const sortFn = (a: CashCouponInterface, b: CashCouponInterface) => new Date(b.effective_time).getTime() - new Date(a.effective_time).getTime()
+      state.tables.cashCouponTable.allIds.forEach((item) => {
+        if (state.tables.cashCouponTable.byId[item].balance === '0.00') {
+          newArr.unshift(state.tables.cashCouponTable.byId[item])
+        }
       })
       return newArr.sort(sortFn)
     }
@@ -427,13 +476,11 @@ export const useStore = defineStore('stats', {
         isLoaded: false
       }
       const respCash = await stats.stats.cashcoupon.getCashCoupon()
-      console.log(respCash.data)
       const service = new schema.Entity('service')
       // const vo = new schema.Entity('vo')
       const cach = new schema.Entity('cach', { service })
       for (const data of respCash.data.results) {
         const normalizedData = normalize(data, cach)
-        console.log(normalizedData)
         Object.assign(this.tables.cashCouponTable.byId, normalizedData.entities.cach)
         // @ts-ignore
         this.tables.cashCouponTable.allIds.unshift(data.id)

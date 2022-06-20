@@ -281,7 +281,7 @@ onMounted(async () => {
           <q-btn outline label="搜索" class="q-px-lg" @click="search"/>
         </div>
       </div>
-      <div class="col-3 q-gutter-x-md">
+      <div class="col-3 q-gutter-x-lg">
         <q-btn outline label="导出当页数据" @click="exportFile()"/>
         <q-btn outline label="导出全部数据" @click="exportAll"/>
       </div>

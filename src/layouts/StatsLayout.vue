@@ -89,7 +89,7 @@ console.log(store.tables)
 
             <q-item
               clickable
-              v-if="store.items.fedRole === 'federal-admin' && store.items.vmsAdmin.length > 0"
+              v-if="store.items.fedRole === 'federal-admin' || store.items.vmsAdmin.length > 0"
               :active="activeItem === 'statistic'"
               @click="activeItem = 'statistic'; navigateToUrl('/my/stats/statistic')"
               active-class="active-item"
@@ -102,7 +102,7 @@ console.log(store.tables)
 
             <q-item
               clickable
-              v-if="store.items.fedRole === 'federal-admin' && store.items.vmsAdmin.length > 0"
+              v-if="store.items.fedRole === 'federal-admin' || store.items.vmsAdmin.length > 0"
               :active="activeItem === 'account'"
               @click="activeItem = 'account'; navigateToUrl('/my/stats/account')"
               active-class="active-item"

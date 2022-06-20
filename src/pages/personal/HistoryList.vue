@@ -177,10 +177,11 @@ onMounted(async () => {
             </template>
           </q-input>
         </div>
-        <q-select outlined dense v-model="serviceId" :options="filterOptions" @update:model-value="selectService" label="筛选服务" class="col-3"/>
+        <q-select outlined dense v-model="serviceId" :options="filterOptions" @update:model-value="selectService"
+                  label="筛选服务" class="col-3"/>
         <q-btn outline label="搜索" class="q-px-lg" @click="search"/>
       </div>
-      <div class="col-3 q-ml-md">
+      <div class="col-3 row justify-end">
         <q-btn outline label="导出当页数据" @click="exportFile"/>
         <q-btn outline label="导出全部数据" class="q-ml-md" @click="exportAll"/>
       </div>
