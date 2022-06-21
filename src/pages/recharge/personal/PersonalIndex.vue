@@ -28,151 +28,148 @@ const outCashCoupon = computed(() => store.getOutCash())
 
 <template>
   <div class="PersonalIndex">
-    <div>
-      <!--      <div>{{availableCashCoupon.length}}</div>-->
-      <div class="row items-center">
-        <div class="text-subtitle1 text-weight-bold">个人账户余额</div>
-        <div class="text-subtitle1 text-weight-bold q-ml-md">{{ `${store.tables.balanceTable.byId?.balance}点` }}</div>
-        <q-btn outline label="充值" class="q-ml-xl"/>
-      </div>
-      <div class="row justify-between items-center q-mt-lg">
-        <div class="row items-center">
-          <div class="text-subtitle1 text-weight-bold">科技云券</div>
-          <q-tabs
-            v-model="tab"
-            narrow-indicator
-            dense
-            align="center"
-            active-color="primary"
-            class="q-ml-lg"
-          >
-            <q-tab :ripple="false" name="available">
-              <div>{{ `可用（${availableCashCoupon.length}）` }}</div>
-            </q-tab>
-            <q-tab :ripple="false" name="expiring">
-              <div>{{ `即将到期（${expiringCashCoupon.length}）` }}</div>
-            </q-tab>
-            <q-tab :ripple="false" name="expired">
-              <div>{{ `已到期（${expiredCashCoupon.length}）` }}</div>
-            </q-tab>
-            <q-tab :ripple="false" name="out">
-              <div>{{ `已用完（${outCashCoupon.length}）` }}</div>
-            </q-tab>
-          </q-tabs>
-        </div>
-        <div class="row col-4 q-gutter-x-md items-center justify-end">
-          <div class="text-subtitle1">科技云券兑换</div>
-          <q-input dense outlined label="输入兑换码" class="col-5"/>
-          <q-btn outline label="兑换"/>
-        </div>
-      </div>
-      <q-tab-panels v-model="tab" animated>
-        <q-tab-panel name="available">
-          <div class="row justify-between q-mt-xl" v-if="availableCashCoupon.length !== 0">
-            <div class="col-5 q-mt-lg" v-for="(item, index) in availableCashCoupon" :key="index">
-              <q-card flat bordered class="my-card">
-                <q-card-section>
-                  <div class="text-h6 text-weight-bold text-center">
-                    {{ store.tables.serviceTable.byId[item.service]?.name }}
-                  </div>
-                </q-card-section>
-                <q-card-section class="text-center text-subtitle1">
-                  <span class="text-weight-bold">{{ item.face_value }}</span>
-                  <span>{{ `(剩余${item.balance}点)` }}</span>
-                </q-card-section>
-                <q-separator inset/>
-                <q-card-section>
-                  <div class="text-subtitle1 text-center">
-                    {{ `${dateFormat(item.effective_time)} ~ ${dateFormat(item.expiration_time)}` }}
-                  </div>
-                </q-card-section>
-              </q-card>
-            </div>
-          </div>
-          <div class="q-mt-xl q-pt-xl text-h6 text-weight-bold row justify-center" v-else>
-            <div>暂无科技云券</div>
-          </div>
-        </q-tab-panel>
-        <q-tab-panel name="expiring">
-          <div class="row justify-between q-mt-xl" v-if="expiringCashCoupon.length !== 0">
-            <div class="col-5 q-mt-lg" v-for="(item, index) in expiringCashCoupon" :key="index">
-              <q-card flat bordered class="my-card">
-                <q-card-section>
-                  <div class="text-h6 text-weight-bold text-center">
-                    {{ store.tables.serviceTable.byId[item.service]?.name }}
-                  </div>
-                </q-card-section>
-                <q-card-section class="text-center text-subtitle1">
-                  <span class="text-weight-bold">{{ item.face_value }}</span>
-                  <span>{{ `(剩余${item.balance}点)` }}</span>
-                </q-card-section>
-                <q-separator inset/>
-                <q-card-section>
-                  <div class="text-subtitle1 text-center">
-                    {{ `${dateFormat(item.effective_time)} ~ ${dateFormat(item.expiration_time)}` }}
-                  </div>
-                </q-card-section>
-              </q-card>
-            </div>
-          </div>
-          <div class="q-mt-xl q-pt-xl text-h6 text-weight-bold row justify-center" v-else>
-            <div>暂无科技云券</div>
-          </div>
-        </q-tab-panel>
-        <q-tab-panel name="expired">
-          <div class="row justify-between q-mt-xl" v-if="expiredCashCoupon.length !== 0">
-            <div class="col-5 q-mt-lg" v-for="(item, index) in expiredCashCoupon" :key="index">
-              <q-card flat bordered class="my-card">
-                <q-card-section>
-                  <div class="text-h6 text-weight-bold text-center">
-                    {{ store.tables.serviceTable.byId[item.service]?.name }}
-                  </div>
-                </q-card-section>
-                <q-card-section class="text-center text-subtitle1">
-                  <span class="text-weight-bold">{{ item.face_value }}</span>
-                  <span>{{ `(剩余${item.balance}点)` }}</span>
-                </q-card-section>
-                <q-separator inset/>
-                <q-card-section>
-                  <div class="text-subtitle1 text-center">
-                    {{ `${dateFormat(item.effective_time)} ~ ${dateFormat(item.expiration_time)}` }}
-                  </div>
-                </q-card-section>
-              </q-card>
-            </div>
-          </div>
-          <div class="q-mt-xl q-pt-xl text-h6 text-weight-bold row justify-center" v-else>
-            <div>暂无科技云券</div>
-          </div>
-        </q-tab-panel>
-        <q-tab-panel name="out">
-          <div class="row justify-between q-mt-xl" v-if="outCashCoupon.length !== 0">
-            <div class="col-5 q-mt-lg" v-for="(item, index) in outCashCoupon" :key="index">
-              <q-card flat bordered class="my-card">
-                <q-card-section>
-                  <div class="text-h6 text-weight-bold text-center">
-                    {{ store.tables.serviceTable.byId[item.service]?.name }}
-                  </div>
-                </q-card-section>
-                <q-card-section class="text-center text-subtitle1">
-                  <span class="text-weight-bold">{{ item.face_value }}</span>
-                  <span>{{ `(剩余${item.balance}点)` }}</span>
-                </q-card-section>
-                <q-separator inset/>
-                <q-card-section>
-                  <div class="text-subtitle1 text-center">
-                    {{ `${dateFormat(item.effective_time)} ~ ${dateFormat(item.expiration_time)}` }}
-                  </div>
-                </q-card-section>
-              </q-card>
-            </div>
-          </div>
-          <div class="q-mt-xl q-pt-xl text-h6 text-weight-bold row justify-center" v-else>
-            <div>暂无科技云券</div>
-          </div>
-        </q-tab-panel>
-      </q-tab-panels>
+    <div class="row items-center">
+      <div class="text-subtitle1 text-weight-bold">个人账户余额</div>
+      <div class="text-subtitle1 text-weight-bold q-ml-md">{{ `${store.tables.balanceTable.byId?.balance}点` }}</div>
+<!--      <q-btn outline label="充值" class="q-ml-xl"/>-->
     </div>
+    <div class="row justify-between items-center q-mt-lg">
+      <div class="row items-center">
+        <div class="text-subtitle1 text-weight-bold">科技云券</div>
+        <q-tabs
+          v-model="tab"
+          narrow-indicator
+          dense
+          align="center"
+          active-color="primary"
+          class="q-ml-lg"
+        >
+          <q-tab :ripple="false" name="available">
+            <div>{{ `可用（${availableCashCoupon.length}）` }}</div>
+          </q-tab>
+          <q-tab :ripple="false" name="expiring">
+            <div>{{ `即将到期（${expiringCashCoupon.length}）` }}</div>
+          </q-tab>
+          <q-tab :ripple="false" name="expired">
+            <div>{{ `已到期（${expiredCashCoupon.length}）` }}</div>
+          </q-tab>
+          <q-tab :ripple="false" name="out">
+            <div>{{ `已用完（${outCashCoupon.length}）` }}</div>
+          </q-tab>
+        </q-tabs>
+      </div>
+      <div class="row col-4 q-gutter-x-md items-center justify-end">
+        <div class="text-subtitle1">科技云券兑换</div>
+        <q-input dense outlined label="输入兑换码" class="col-5"/>
+        <q-btn outline label="兑换"/>
+      </div>
+    </div>
+    <q-tab-panels v-model="tab" animated>
+      <q-tab-panel name="available">
+        <div class="row justify-between q-mt-xl" v-if="availableCashCoupon.length !== 0">
+          <div class="col-5 q-mt-lg" v-for="(item, index) in availableCashCoupon" :key="index">
+            <q-card flat bordered class="my-card">
+              <q-card-section>
+                <div class="text-h6 text-weight-bold text-center">
+                  {{ store.tables.serviceTable.byId[item.service]?.name }}
+                </div>
+              </q-card-section>
+              <q-card-section class="text-center text-subtitle1">
+                <span class="text-weight-bold">{{ item.face_value }}</span>
+                <span>{{ `(剩余${item.balance}点)` }}</span>
+              </q-card-section>
+              <q-separator inset/>
+              <q-card-section>
+                <div class="text-subtitle1 text-center">
+                  {{ `${dateFormat(item.effective_time)} ~ ${dateFormat(item.expiration_time)}` }}
+                </div>
+              </q-card-section>
+            </q-card>
+          </div>
+        </div>
+        <div class="q-mt-xl q-pt-xl text-h6 text-weight-bold row justify-center" v-else>
+          <div>暂无科技云券</div>
+        </div>
+      </q-tab-panel>
+      <q-tab-panel name="expiring">
+        <div class="row justify-between q-mt-xl" v-if="expiringCashCoupon.length !== 0">
+          <div class="col-5 q-mt-lg" v-for="(item, index) in expiringCashCoupon" :key="index">
+            <q-card flat bordered class="my-card">
+              <q-card-section>
+                <div class="text-h6 text-weight-bold text-center">
+                  {{ store.tables.serviceTable.byId[item.service]?.name }}
+                </div>
+              </q-card-section>
+              <q-card-section class="text-center text-subtitle1">
+                <span class="text-weight-bold">{{ item.face_value }}</span>
+                <span>{{ `(剩余${item.balance}点)` }}</span>
+              </q-card-section>
+              <q-separator inset/>
+              <q-card-section>
+                <div class="text-subtitle1 text-center">
+                  {{ `${dateFormat(item.effective_time)} ~ ${dateFormat(item.expiration_time)}` }}
+                </div>
+              </q-card-section>
+            </q-card>
+          </div>
+        </div>
+        <div class="q-mt-xl q-pt-xl text-h6 text-weight-bold row justify-center" v-else>
+          <div>暂无科技云券</div>
+        </div>
+      </q-tab-panel>
+      <q-tab-panel name="expired">
+        <div class="row justify-between q-mt-xl" v-if="expiredCashCoupon.length !== 0">
+          <div class="col-5" v-for="(item, index) in expiredCashCoupon" :key="index">
+            <q-card flat bordered class="my-card">
+              <q-card-section>
+                <div class="text-h6 text-weight-bold text-center">
+                  {{ store.tables.serviceTable.byId[item.service]?.name }}
+                </div>
+              </q-card-section>
+              <q-card-section class="text-center text-subtitle1">
+                <span class="text-weight-bold">{{ item.face_value }}</span>
+                <span>{{ `(剩余${item.balance}点)` }}</span>
+              </q-card-section>
+              <q-separator inset/>
+              <q-card-section>
+                <div class="text-subtitle1 text-center">
+                  {{ `${dateFormat(item.effective_time)} ~ ${dateFormat(item.expiration_time)}` }}
+                </div>
+              </q-card-section>
+            </q-card>
+          </div>
+        </div>
+        <div class="q-mt-xl q-pt-xl text-h6 text-weight-bold row justify-center" v-else>
+          <div>暂无科技云券</div>
+        </div>
+      </q-tab-panel>
+      <q-tab-panel name="out">
+        <div class="row justify-between q-mt-xl" v-if="outCashCoupon.length !== 0">
+          <div class="col-5 q-mt-lg" v-for="(item, index) in outCashCoupon" :key="index">
+            <q-card flat bordered class="my-card">
+              <q-card-section>
+                <div class="text-h6 text-weight-bold text-center">
+                  {{ store.tables.serviceTable.byId[item.service]?.name }}
+                </div>
+              </q-card-section>
+              <q-card-section class="text-center text-subtitle1">
+                <span class="text-weight-bold">{{ item.face_value }}</span>
+                <span>{{ `(剩余${item.balance}点)` }}</span>
+              </q-card-section>
+              <q-separator inset/>
+              <q-card-section>
+                <div class="text-subtitle1 text-center">
+                  {{ `${dateFormat(item.effective_time)} ~ ${dateFormat(item.expiration_time)}` }}
+                </div>
+              </q-card-section>
+            </q-card>
+          </div>
+        </div>
+        <div class="q-mt-xl q-pt-xl text-h6 text-weight-bold row justify-center" v-else>
+          <div>暂无科技云券</div>
+        </div>
+      </q-tab-panel>
+    </q-tab-panels>
   </div>
 </template>
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // import { ref } from 'vue'
-// import { navigateToUrl } from 'single-spa'
+import { navigateToUrl } from 'single-spa'
 // import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
@@ -28,6 +28,14 @@ const columns = [
   { name: 'total_original_amount', label: '计费金额(本月)', align: 'center' },
   { name: 'total_trade_amount', label: '实际扣费金额(本月)', align: 'center' }
 ]
+console.log(props)
+const goToDetail = (serverId: string, serviceName: string, ipv4: string, vcpus: string, ram: string) => {
+  navigateToUrl(`/my/stats/personal/detail/${serverId}`)
+  sessionStorage.setItem('serviceName', serviceName)
+  sessionStorage.setItem('ipv4', ipv4)
+  sessionStorage.setItem('vcpus', vcpus)
+  sessionStorage.setItem('ram', ram)
+}
 </script>
 
 <template>
@@ -49,11 +57,18 @@ const columns = [
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="ipv4" :props="props">
-              <q-btn class="q-ma-none" :label="props.row.ipv4" color="primary" padding="xs" flat dense unelevated></q-btn>
+              <q-btn class="q-ma-none" :label="props.row.ipv4" color="primary" padding="xs"
+                     @click="goToDetail(props.row.server_id, props.row.service_name, props.row.ipv4, props.row.vcpus, props.row.ram)"
+                     flat dense unelevated></q-btn>
             </q-td>
             <q-td key="service_name" :props="props">{{ props.row.service_name }}</q-td>
-            <q-td key="configuration" :props="props">{{props.row.vcpus + '核' + Math.round(props.row.ram / 1024) + 'GB内存' }}</q-td>
-            <q-td key="total_public_ip_hours" :props="props">{{ Math.round(props.row.total_public_ip_hours / 24) }}</q-td>
+            <q-td key="configuration" :props="props">
+              {{ props.row.vcpus + '核' + Math.round(props.row.ram / 1024) + 'GB内存' }}
+            </q-td>
+            <q-td key="total_public_ip_hours" :props="props">{{
+                Math.round(props.row.total_public_ip_hours / 24)
+              }}
+            </q-td>
             <q-td key="total_cpu_hours" :props="props">{{ Math.round(props.row.total_cpu_hours / 24) }}</q-td>
             <q-td key="total_ram_hours" :props="props">{{ Math.round(props.row.total_ram_hours / 24) }}</q-td>
             <q-td key="total_disk_hours" :props="props">{{ Math.round(props.row.total_disk_hours / 24) }}</q-td>

@@ -94,11 +94,8 @@ export interface CashCouponInterface {
   granted_time: string
   owner_type: string
   service: string
+  vo: null | string
   user: {
-    id: string
-    name: string
-  }
-  vo: {
     id: string
     name: string
   } | null
@@ -148,6 +145,11 @@ export const useStore = defineStore('stats', {
         isLoaded: false
       },
       cashCouponTable: {
+        byId: {} as Record<string, CashCouponInterface>,
+        allIds: [],
+        isLoaded: false
+      },
+      groupCashTable: {
         byId: {} as Record<string, CashCouponInterface>,
         allIds: [],
         isLoaded: false
@@ -265,6 +267,16 @@ export const useStore = defineStore('stats', {
         }
       })
       return newArr.sort(sortFn)
+    },
+    getGroupCash: (state) => (payload: { void: string }): CashCouponInterface[] => {
+      const newArr: CashCouponInterface[] = []
+      const sortFn = (a: CashCouponInterface, b: CashCouponInterface) => new Date(b.effective_time).getTime() - new Date(a.effective_time).getTime()
+      state.tables.groupCashTable.allIds.forEach((item) => {
+        if (state.tables.groupCashTable.byId[item].vo === payload.void) {
+          newArr.unshift(state.tables.groupCashTable.byId[item])
+        }
+      })
+      return newArr.sort(sortFn)
     }
   },
   actions: {
@@ -278,12 +290,15 @@ export const useStore = defineStore('stats', {
                   if (!this.tables.balanceTable.isLoaded) {
                     this.loadBalanceTable()
                   }
-                  if (!this.tables.groupBalanceTable.isLoaded) {
-                    this.loadGroupBalanceTable()
-                  }
+                  // if (!this.tables.groupBalanceTable.isLoaded) {
+                  //   this.loadGroupBalanceTable()
+                  // }
                   if (!this.tables.cashCouponTable.isLoaded) {
                     this.loadCashCouponTable()
                   }
+                  // if (!this.tables.groupCashTable.isLoaded) {
+                  //   this.loadGroupCashTable()
+                  // }
                 })
               })
             })
@@ -431,7 +446,7 @@ export const useStore = defineStore('stats', {
         const normalizedData = normalize(data, group)
         Object.assign(this.tables.groupTable.byId, normalizedData.entities.group)
         // @ts-ignore
-        this.tables.groupTable.allIds.unshift(Object.keys(normalizedData.entities.group)[0])
+        this.tables.groupTable.allIds.push(Object.keys(normalizedData.entities.group)[0])
         this.tables.groupTable.allIds = [...new Set(this.tables.groupTable.allIds)]
       }
       // load table的最后再改isLoaded
@@ -486,6 +501,30 @@ export const useStore = defineStore('stats', {
         this.tables.cashCouponTable.allIds.unshift(data.id)
         this.tables.cashCouponTable.allIds = [...new Set(this.tables.cashCouponTable.allIds)]
       }
+    },
+    async loadGroupCashTable () {
+      this.tables.groupCashTable = {
+        byId: {},
+        allIds: [],
+        isLoaded: false
+      }
+      for (const group of this.tables.groupTable.allIds) {
+        const respCash = await stats.stats.cashcoupon.getCashCoupon({ query: { vo_id: group } })
+        const service = new schema.Entity('service')
+        const vo = new schema.Entity('vo')
+        const cach = new schema.Entity('cach', { service, vo })
+        for (const data of respCash.data.results) {
+          const normalizedData = normalize(data, cach)
+          Object.assign(this.tables.groupCashTable.byId, normalizedData.entities.cach)
+          // @ts-ignore
+          this.tables.groupCashTable.allIds.unshift(data.id)
+          this.tables.groupCashTable.allIds = [...new Set(this.tables.groupCashTable.allIds)]
+        }
+      }
+    },
+    async getGroupCashCoupon (voId: string) {
+      const respCash = await stats.stats.cashcoupon.getCashCoupon({ query: { vo_id: voId } })
+      return respCash
     }
   }
 })

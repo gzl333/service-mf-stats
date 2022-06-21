@@ -39,6 +39,10 @@ const routes: RouteRecordRaw[] = [
           {
             path: 'history',
             component: () => import('pages/personal/HistoryList.vue')
+          },
+          {
+            path: 'detail/:serverId',
+            component: () => import('pages/personal/DetailServer.vue')
           }
         ]
       },

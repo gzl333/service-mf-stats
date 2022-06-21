@@ -209,10 +209,10 @@ export default {
   cashcoupon: {
     getCashCoupon (payload?: {
       query?: {
-        page: number;
-        page_size: number;
-        vo_id: boolean;
-        available: boolean
+        page?: number;
+        page_size?: number;
+        vo_id?: string;
+        available?: string
       }
     }) {
       const config = {

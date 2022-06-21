@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { onMounted, Ref, ref, computed } from 'vue'
-import { useStore } from 'stores/store'
-// import { useRoute } from 'vue-router'
+import { ref, onMounted, onUnmounted, Ref } from 'vue'
 // import { navigateToUrl } from 'single-spa'
-// import { i18n } from 'boot/i18n'
-import PersonalServerTable from 'components/personal/PersonalServerTable.vue'
+import { useStore } from 'stores/store'
+import { useRoute, useRouter } from 'vue-router'
+import ServerTable from 'components/statistic/ServerTable.vue'
 import { exportExcel } from 'src/hooks/exportExcel'
-import { Notify } from 'quasar'
 import { getNowFormatDate, getLastFormatDate } from 'src/hooks/processTime'
+import { Notify } from 'quasar'
+// import { i18n } from 'boot/i18n'
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -18,65 +18,60 @@ import { getNowFormatDate, getLastFormatDate } from 'src/hooks/processTime'
 // const emits = defineEmits(['change', 'delete'])
 
 const store = useStore()
-// const route = useRoute()
-// const router = useRouter()
+const route = useRoute()
+const router = useRouter()
 // const tc = i18n.global.tc
-const filterOptions = computed(() => store.getServices)
 const dateFrom = ref('')
 const dateTo = ref('')
 const isLastMonth = ref(false)
 const isCurrentMonth = ref(true)
 const tableRow: Ref = ref([])
+const serviceName = ref('')
+const ipv4 = ref('')
+const vcpus = ref('')
+const ram = ref('')
+const startDate = getNowFormatDate(0)
+const currentDate = getNowFormatDate(1)
+const startLastDate = getLastFormatDate(0)
+const currentLastDate = getLastFormatDate(1)
+const query: Ref = ref({
+  page: 1,
+  page_size: 10,
+  date_start: startDate,
+  date_end: currentDate,
+  server_id: ''
+})
+const exportQuery: Ref = ref({
+  date_start: startDate,
+  date_end: currentDate,
+  server_id: '',
+  download: true
+})
 const paginationTable = ref({
   page: 1,
   count: 0,
   rowsPerPage: 10
 })
-const serviceId = ref({
-  label: '全部服务',
-  value: ''
-})
-const startDate = getNowFormatDate(0)
-const currentDate = getNowFormatDate(1)
-const startLastDate = getLastFormatDate(0)
-const currentLastDate = getLastFormatDate(1)
-const dateStart = ref('')
-const dateEnd = ref('')
-const query: Ref = ref({
-  page: 1,
-  page_size: 10,
-  date_start: startDate,
-  date_end: currentDate
-})
-const exportQuery: Ref = ref({
-  date_start: startDate,
-  date_end: currentDate,
-  download: true
-})
 const getDetailData = async () => {
   tableRow.value = []
   let obj: Record<string, string> = {}
-  const data = await store.getServerHostData(query.value)
+  query.value.server_id = route.params.serverId
+  exportQuery.value.server_id = route.params.serverId
+  const data = await store.getMachineDetail(query.value)
   for (const elem of data.data.results) {
     obj = {}
-    obj.server_id = elem.server_id
-    obj.ipv4 = elem.server.ipv4
-    obj.service_name = elem.service_name
-    obj.vcpus = elem.server.vcpus
-    obj.ram = elem.server.ram
-    obj.total_public_ip_hours = elem.total_public_ip_hours
-    obj.total_cpu_hours = elem.total_cpu_hours
-    obj.total_ram_hours = elem.total_ram_hours
-    obj.total_disk_hours = elem.total_disk_hours
-    obj.total_original_amount = elem.total_original_amount
-    obj.total_trade_amount = elem.total_trade_amount
+    obj.creation_time = elem.creation_time
+    obj.public_ip_hours = elem.public_ip_hours
+    obj.cpu_hours = elem.cpu_hours
+    obj.ram_hours = elem.ram_hours
+    obj.disk_hours = elem.disk_hours
+    obj.original_amount = elem.original_amount
+    obj.trade_amount = elem.trade_amount
     tableRow.value.push(obj)
   }
   paginationTable.value.count = data.data.count
-  dateStart.value = query.value.date_start
-  dateEnd.value = query.value.date_end
 }
-const changeMonth = async (type: number) => {
+const changeMonth = (type: number) => {
   if (type === 0) {
     isLastMonth.value = false
     isCurrentMonth.value = true
@@ -84,7 +79,7 @@ const changeMonth = async (type: number) => {
     query.value.date_end = currentDate
     exportQuery.value.date_start = startDate
     exportQuery.value.date_end = currentDate
-    await getDetailData()
+    getDetailData()
   } else {
     isCurrentMonth.value = false
     isLastMonth.value = true
@@ -92,7 +87,7 @@ const changeMonth = async (type: number) => {
     query.value.date_end = currentLastDate
     exportQuery.value.date_start = startLastDate
     exportQuery.value.date_end = currentLastDate
-    await getDetailData()
+    getDetailData()
   }
   dateFrom.value = ''
   dateTo.value = ''
@@ -105,23 +100,14 @@ const selectDate = () => {
   exportQuery.value.date_start = dateStart
   exportQuery.value.date_end = dateEnd
 }
-const selectService = (val: Record<string, string>) => {
-  if (val.value !== '') {
-    query.value.service_id = val.value
-    exportQuery.value.service_id = val.value
-  } else {
-    delete query.value.service_id
-    delete exportQuery.value.service_id
-  }
-}
-const changePagination = async (val: number) => {
-  query.value.page = val
-  await getDetailData()
-}
 const changePageSize = async () => {
   query.value.page_size = paginationTable.value.rowsPerPage
   query.value.page = 1
   paginationTable.value.page = 1
+  await getDetailData()
+}
+const changePagination = async (val: number) => {
+  query.value.page = val
   await getDetailData()
 }
 const search = async () => {
@@ -140,7 +126,7 @@ const exportFile = () => {
       multiLine: false
     })
   } else {
-    exportExcel('个人云主机用量统计.xlsx', '#personalServerTable')
+    exportExcel('云主机用量统计.xlsx', '#serverTable')
   }
 }
 const exportAll = async () => {
@@ -156,31 +142,46 @@ const exportAll = async () => {
       multiLine: false
     })
   } else {
-    const fileData = await store.getServerHostFile(exportQuery.value)
+    const fileData = await store.getServerDetailFile(exportQuery.value)
     const link = document.createElement('a')
     const blob = new Blob(['\ufeff' + fileData.data], { type: 'text/csv,charset=UTF-8' })
     link.style.display = 'none'
     link.href = URL.createObjectURL(blob)
     link.download = fileData.headers['content-disposition']
-    link.download = '个人云主机用量统计'
+    link.download = '云主机用量统计'
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
   }
 }
-onMounted(async () => {
-  await getDetailData()
+onMounted(() => {
+  serviceName.value = sessionStorage.getItem('serviceName') || ''
+  ipv4.value = sessionStorage.getItem('ipv4') || ''
+  vcpus.value = sessionStorage.getItem('vcpus') || ''
+  ram.value = sessionStorage.getItem('ram') || ''
+  getDetailData()
+})
+onUnmounted(() => {
+  sessionStorage.removeItem('serviceName')
+  sessionStorage.removeItem('ipv4')
+  sessionStorage.removeItem('vcpus')
+  sessionStorage.removeItem('ram')
 })
 </script>
 
 <template>
-  <div class="PersonalList">
-    <div class="row q-mt-xl items-center">
+  <div class="DetailServer">
+    <div class="row items-center title-area">
+      <q-btn icon="arrow_back_ios" color="primary" flat unelevated dense
+             @click="router.back()"/>
+      <span class="text-primary text-h6 text-weight-bold">云主机用量详情</span>
+    </div>
+    <div class="row q-gutter-x-md q-mt-lg">
       <q-btn-group>
-        <q-btn label="本月" class="text-subtitle1 q-px-lg" @click="changeMonth(0)" :style="isCurrentMonth ? 'background-color: #1976D2; color: #ffffff' : ''"/>
-        <q-btn label="上月" class="text-subtitle1 q-px-lg" @click="changeMonth(1)" :style="isLastMonth ? 'background-color: #1976D2; color: #ffffff' : ''"/>
+        <q-btn :style="isCurrentMonth ? 'background-color: #1976D2; color: #ffffff' : ''" label="本月" class="text-subtitle1 q-px-lg" @click="changeMonth(0)"/>
+        <q-btn :style="isLastMonth ? 'background-color: #1976D2; color: #ffffff' : ''" label="上月" class="text-subtitle1 q-px-lg" @click="changeMonth(1)"/>
       </q-btn-group>
-      <div class="col-4 row items-baseline q-ml-lg">
+      <div class="col-4 row items-baseline q-ml-xl">
         <div class="col-5">
           <q-input filled dense v-model="dateFrom" mask="date">
             <template v-slot:append>
@@ -213,17 +214,39 @@ onMounted(async () => {
           </q-input>
         </div>
       </div>
-      <div class="col-2">
-        <q-select outlined dense v-model="serviceId" :options="filterOptions" @update:model-value="selectService" label="筛选服务"/>
-      </div>
-      <div class="col-4 q-ml-md">
-        <q-btn outline label="搜索" class="q-px-lg" @click="search"/>
+      <div class="col-4">
+        <q-btn outline label="搜索" @click="search"/>
         <q-btn outline label="导出当页数据" class="q-ml-md" @click="exportFile"/>
         <q-btn outline label="导出全部数据" class="q-ml-md" @click="exportAll"/>
       </div>
     </div>
-    <personal-server-table :tableRow="tableRow"/>
-    <div class="row q-py-md text-grey justify-between items-center">
+    <div class="q-mt-xl">
+      <q-card class="my-card" flat bordered>
+        <q-card-section>
+          <div class="row">
+            <div class="col-4 text-center">
+              <div class="text-h6">UUID</div>
+              <q-separator size="0.1rem"/>
+              <div class="text-subtitle1 q-mt-xl">{{ route.params.serverId }}</div>
+            </div>
+            <div class="col-4 text-center">
+              <div class="text-h6">服务节点</div>
+              <q-separator size="0.1rem"/>
+              <div class="text-subtitle1 q-mt-xl">{{ serviceName }}</div>
+            </div>
+            <div class="col-4 text-center">
+              <div class="text-h6">初始配置</div>
+              <q-separator size="0.1rem"/>
+              <div class="text-subtitle1 q-mt-md">{{ vcpus }}核</div>
+              <div class="text-subtitle1">{{ ram / 1024 }}GB内存</div>
+              <div class="text-subtitle1">公网ip：{{ ipv4 }}</div>
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
+    </div>
+    <server-table :tableRow="tableRow"/>
+    <div class="row text-grey justify-between items-center q-mt-md">
       <div class="row items-center">
         <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>
         <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense
@@ -245,6 +268,6 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
-.PersonalList {
+.DetailServer {
 }
 </style>
