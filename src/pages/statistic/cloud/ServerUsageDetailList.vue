@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { onMounted, ref, onUnmounted, Ref } from 'vue'
+import { onMounted, ref, Ref } from 'vue'
 // import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
-import DetailTable from 'components/statistic/DetailTable.vue'
-import { exportExcel } from 'src/hooks/exportExcel'
+import DetailTable from 'components/statistic/ServerUsageDetailTable.vue'
+import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
 import { getNowFormatDate, getLastFormatDate } from 'src/hooks/processTime'
 import { Notify } from 'quasar'
 // const props = defineProps({
@@ -21,8 +21,6 @@ const store = useStore()
 const route = useRoute()
 const router = useRouter()
 // const tc = i18n.global.tc
-const count = ref('')
-const userName = ref('')
 const totalAmount = ref(0)
 const actualAmount = ref(0)
 const dateFrom = ref('')
@@ -35,26 +33,26 @@ const paginationTable = ref({
   count: 0,
   rowsPerPage: 10
 })
-const startDate = getNowFormatDate(0)
-const currentDate = getNowFormatDate(1)
-const startLastDate = getLastFormatDate(0)
-const currentLastDate = getLastFormatDate(1)
+const currentMonthStartDate = getNowFormatDate(0)
+const currentMonthEndDate = getNowFormatDate(1)
+const lastMonthStartDate = getLastFormatDate(0)
+const lastMonthEndDate = getLastFormatDate(1)
 const dateStart = ref('')
 const dateEnd = ref('')
 const query: Ref = ref({
   page: 1,
   page_size: 10,
-  date_start: startDate,
-  date_end: currentDate,
+  date_start: currentMonthStartDate,
+  date_end: currentMonthEndDate,
   'as-admin': true
 })
 const exportQuery: Ref = ref({
-  date_start: startDate,
-  date_end: currentDate,
+  date_start: currentMonthStartDate,
+  date_end: currentMonthEndDate,
   'as-admin': true,
   download: true
 })
-const getData = async () => {
+const getDetailData = async () => {
   tableRow.value = []
   totalAmount.value = 0
   actualAmount.value = 0
@@ -69,7 +67,7 @@ const getData = async () => {
     query.value.service_id = route.params.serviceId
     exportQuery.value.service_id = route.params.serviceId
   }
-  const data = await store.getServerHostData(query.value)
+  const data = await store.getServerMetering(query.value)
   for (const elem of data.data.results) {
     obj = {}
     obj.ipv4 = elem.server.ipv4
@@ -94,19 +92,19 @@ const changeMonth = async (type: number) => {
   if (type === 0) {
     isLastMonth.value = false
     isCurrentMonth.value = true
-    query.value.date_start = startDate
-    query.value.date_end = currentDate
-    exportQuery.value.date_start = startDate
-    exportQuery.value.date_end = currentDate
-    await getData()
+    query.value.date_start = currentMonthStartDate
+    query.value.date_end = currentMonthEndDate
+    exportQuery.value.date_start = currentMonthStartDate
+    exportQuery.value.date_end = currentMonthEndDate
+    await getDetailData()
   } else {
     isCurrentMonth.value = false
     isLastMonth.value = true
-    query.value.date_start = startLastDate
-    query.value.date_end = currentLastDate
-    exportQuery.value.date_start = startLastDate
-    exportQuery.value.date_end = currentLastDate
-    await getData()
+    query.value.date_start = lastMonthStartDate
+    query.value.date_end = lastMonthEndDate
+    exportQuery.value.date_start = lastMonthStartDate
+    exportQuery.value.date_end = lastMonthEndDate
+    await getDetailData()
   }
   dateFrom.value = ''
   dateTo.value = ''
@@ -121,16 +119,16 @@ const selectDate = () => {
 }
 const changePagination = async (val: number) => {
   query.value.page = val
-  await getData()
+  await getDetailData()
 }
 const changePageSize = async () => {
   query.value.page_size = paginationTable.value.rowsPerPage
   query.value.page = 1
   paginationTable.value.page = 1
-  await getData()
+  await getDetailData()
 }
 const search = async () => {
-  await getData()
+  await getDetailData()
 }
 const exportFile = () => {
   if (tableRow.value.length === 0) {
@@ -162,42 +160,16 @@ const exportAll = async () => {
     })
   } else {
     const fileData = await store.getServerHostFile(exportQuery.value)
-    const link = document.createElement('a')
-    const blob = new Blob(['\ufeff' + fileData.data], { type: 'text/csv,charset=UTF-8' })
-    link.style.display = 'none'
-    link.href = URL.createObjectURL(blob)
-    link.download = fileData.headers['content-disposition']
-    link.download = '云主机用量统计'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    exportAllData(fileData.data, '云主机用量统计')
   }
 }
 onMounted(async () => {
-  if (route.meta.type === 'user') {
-    count.value = sessionStorage.getItem('userCount') || ''
-    userName.value = sessionStorage.getItem('username') || ''
-  } else if (route.meta.type === 'group') {
-    count.value = sessionStorage.getItem('groupCount') || ''
-    userName.value = sessionStorage.getItem('voName') || ''
-  } else if (route.meta.type === 'service') {
-    count.value = sessionStorage.getItem('serviceCount') || ''
-    userName.value = sessionStorage.getItem('serviceName') || ''
-  }
-  await getData()
-})
-onUnmounted(() => {
-  sessionStorage.removeItem('username')
-  sessionStorage.removeItem('userCount')
-  sessionStorage.removeItem('voName')
-  sessionStorage.removeItem('groupCount')
-  sessionStorage.removeItem('serviceName')
-  sessionStorage.removeItem('serviceCount')
+  await getDetailData()
 })
 </script>
 
 <template>
-  <div class="DetailList">
+  <div class="ServerUsageDetailList">
     <div class="row items-center title-area q-mt-xl">
       <q-btn icon="arrow_back_ios" color="primary" flat unelevated dense
              @click="router.back()"/>
@@ -205,8 +177,8 @@ onUnmounted(() => {
     </div>
     <div class="row q-mt-lg">
       <q-btn-group>
-        <q-btn :style="isCurrentMonth ? 'background-color: #1976D2; color: #ffffff' : ''" label="本月" class="text-subtitle1 q-px-lg" @click="changeMonth(0)"/>
-        <q-btn :style="isLastMonth ? 'background-color: #1976D2; color: #ffffff' : ''" label="上月" class="text-subtitle1 q-px-lg" @click="changeMonth(1)"/>
+        <q-btn label="本月" :class="isCurrentMonth ? 'text-subtitle1 q-px-lg button-area' : 'text-subtitle1 q-px-lg'" @click="changeMonth(0)"/>
+        <q-btn label="上月" :class="isLastMonth ? 'text-subtitle1 q-px-lg button-area' : 'text-subtitle1 q-px-lg'" @click="changeMonth(1)"/>
       </q-btn-group>
       <div class="col-4 row items-baseline q-ml-lg">
         <div class="col-5">
@@ -250,9 +222,9 @@ onUnmounted(() => {
     <div class="row q-mt-xl text-subtitle1 text-bold">
       <!--      <div class="col-2">{{ store.tables.UserNameTable.byId[route.params.userid]?.username }}</div>-->
       <div>
-        {{ route.meta.type === 'user' ? '用户名：' : route.meta.type === 'group' ? '组名称：' : '服务名称：' }}{{ userName }}
+        {{ route.meta.type === 'user' ? '用户名：' : route.meta.type === 'group' ? '组名称：' : '服务名称：' }}{{ route.query.name }}
       </div>
-      <div class="q-ml-lg">云主机数量合计：{{ count }}</div>
+      <div class="q-ml-lg">云主机数量合计：{{ route.query.count }}</div>
       <div class="q-ml-lg">计费周期：{{ dateStart }}-{{ dateEnd }}</div>
       <div class="q-ml-lg">计费金额合计：{{ totalAmount.toFixed(2) }}点</div>
       <div class="q-ml-lg">实际扣费金额合计：{{ actualAmount.toFixed(2) }}点</div>
@@ -280,6 +252,10 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss" scoped>
-.DetailList {
+.ServerUsageDetailList {
+  .button-area {
+    background-color: $primary;
+    color: $dark;
+  }
 }
 </style>

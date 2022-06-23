@@ -20,6 +20,7 @@ const tc = i18n.global.tc
 const activeItem = computed(() => store.items.currentPath[0])
 const releaseTime = process.env.releaseTime
 store.loadAllTables()
+console.log(store.items)
 console.log(store.tables)
 </script>
 

@@ -5,7 +5,7 @@
 // import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
-import dateFormat from 'src/utils'
+import { dateFormat } from 'src/hooks/processTime'
 const props = defineProps({
   tableRow: {
     type: Array,
@@ -31,7 +31,7 @@ const columnsTwo = [
 </script>
 
 <template>
-  <div class="ServerTable">
+  <div class="ServerStatisticsDetailTable">
     <div class="q-mt-xl">
       <q-table
         flat
@@ -64,6 +64,6 @@ const columnsTwo = [
 </template>
 
 <style lang="scss" scoped>
-.ServerTable {
+.ServerStatisticsDetailTable {
 }
 </style>

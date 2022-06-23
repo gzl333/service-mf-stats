@@ -19,13 +19,37 @@ const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
 // const tc = i18n.global.tc
-
-const serviceColumns = [
-  { name: 'service_id', label: 'ID', align: 'center' },
-  { name: 'name', align: 'center', label: '服务节点' },
-  { name: 'total_original_amount', label: '计费金额合计', align: 'center' },
-  { name: 'total_trade_amount', label: '实际扣费金额合计', align: 'center' },
-  { name: 'total_server', label: '云主机数量合计', align: 'center' }
+const userColumns = [
+  {
+    name: 'user_id',
+    label: 'ID',
+    align: 'center'
+  },
+  {
+    name: 'username',
+    align: 'center',
+    label: '用户'
+  },
+  {
+    name: 'company',
+    label: '单位',
+    align: 'center'
+  },
+  {
+    name: 'total_original_amount',
+    label: '计费金额合计',
+    align: 'center'
+  },
+  {
+    name: 'total_trade_amount',
+    label: '实际扣费金额合计',
+    align: 'center'
+  },
+  {
+    name: 'total_server',
+    label: '云主机数量合计',
+    align: 'center'
+  }
 ]
 const isLoading = ref(false)
 const paginationTable = ref({
@@ -35,7 +59,7 @@ const paginationTable = ref({
 })
 const myDate = new Date()
 const year = myDate.getFullYear()
-const serviceTableRow = ref([])
+const userTableRow = ref([])
 const currentDate = getNowFormatDate(1)
 const query: Ref = ref({
   page: 1,
@@ -44,14 +68,14 @@ const query: Ref = ref({
   date_end: currentDate,
   'as-admin': true
 })
-emitter.on('service', async (value) => {
+emitter.on('user', async (value) => {
   query.value = value
-  await getServiceData()
+  await getUserAggregationData()
 })
-const getServiceData = async () => {
+const getUserAggregationData = async () => {
   isLoading.value = true
-  const data = await store.getServiceHostData(query.value)
-  serviceTableRow.value = data.data.results
+  const data = await store.getUserMetering(query.value)
+  userTableRow.value = data.data.results
   paginationTable.value.page = 1
   paginationTable.value.count = data.data.count
   isLoading.value = false
@@ -60,39 +84,37 @@ const changePageSize = async () => {
   query.value.page_size = paginationTable.value.rowsPerPage
   query.value.page = 1
   paginationTable.value.page = 1
-  await getServiceData()
+  await getUserAggregationData()
 }
 const changePagination = async (val: number) => {
   isLoading.value = true
   query.value.page = val
-  const data = await store.getServiceHostData(query.value)
-  serviceTableRow.value = data.data.results
+  const data = await store.getUserMetering(query.value)
+  userTableRow.value = data.data.results
   isLoading.value = false
 }
-const goToDetail = (serviceId: string, serviceName: string, serviceCount: string) => {
-  navigateToUrl(`/my/stats/statistic/list/service/${serviceId}`)
-  sessionStorage.setItem('serviceName', serviceName)
-  sessionStorage.setItem('serviceCount', serviceCount)
+const goToDetail = (userid: string, username: string, count: string) => {
+  navigateToUrl(`/my/stats/statistic/list/user/${userid}?name=${username}&count=${count}`)
 }
 onMounted(async () => {
-  await getServiceData()
+  await getUserAggregationData()
 })
 onBeforeUnmount(() => {
-  emitter.off('service')
+  emitter.off('user')
 })
-</script>
 
+</script>
 <template>
-  <div class="ServiceList">
+  <div class="UserAggregationList">
     <div class="q-ml-md">
       <q-separator/>
       <q-table
         flat
-        id="serviceTable"
+        id="userTable"
         :loading="isLoading"
         table-header-class="bg-grey-1 text-grey"
-        :rows="serviceTableRow"
-        :columns="serviceColumns"
+        :rows="userTableRow"
+        :columns="userColumns"
         row-key="name"
         color="primary"
         loading-label="网络请求中，请稍候..."
@@ -102,12 +124,19 @@ onBeforeUnmount(() => {
       >
         <template v-slot:body="props">
           <q-tr :props="props">
-            <q-td key="service_id" :props="props">{{ props.row.service_id }}</q-td>
-            <q-td key="name" :props="props">
+            <q-td key="user_id" :props="props">
+              <div class="text">{{ props.row.user_id }}</div>
+            </q-td>
+            <q-td key="username" :props="props">
               <q-btn
-                @click="goToDetail(props.row.service_id, props.row.service.name, props.row.total_server )"
-                class="q-ma-none" :label="props.row.service.name" color="primary" padding="xs" flat dense unelevated>
+                @click="goToDetail(props.row.user_id, props.row.user.username, props.row.total_server)"
+                class="q-ma-none" :label="props.row.user.username" color="primary" padding="xs" flat dense
+                unelevated no-caps>
               </q-btn>
+            </q-td>
+            <q-td key="company" :props="props">{{
+                props.row.user.company === '' ? '暂无' : props.row.user.company
+              }}
             </q-td>
             <q-td key="total_original_amount" :props="props">{{ props.row.total_original_amount }}</q-td>
             <q-td key="total_trade_amount" :props="props">{{ props.row.total_trade_amount }}</q-td>
@@ -139,6 +168,6 @@ onBeforeUnmount(() => {
 </template>
 
 <style lang="scss" scoped>
-.ServiceList {
+.UserAggregationList {
 }
 </style>

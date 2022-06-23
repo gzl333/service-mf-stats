@@ -44,18 +44,15 @@ const changeTab = async (name: string) => {
           <q-tabs
             v-model="activeItem"
             inline-label
-            :breakpoint="0"
             align="left"
             indicator-color="primary"
             active-color="primary"
           >
-            <q-tab no-caps name="cloud" class="q-px-none q-py-md q-mr-md text-weight-bold text-subtitle1" icon="las la-laptop"
+            <q-tab no-caps name="cloud" class="q-px-none q-py-md q-mr-md" icon="las la-laptop" label="云主机"
                    @click="changeTab('cloud')" :ripple="false">
-              云主机
             </q-tab>
-            <q-tab no-caps name="storage" class="q-px-none q-py-md q-mr-md text-weight-bold text-subtitle1"
+            <q-tab no-caps name="storage" class="q-px-none q-py-md q-mr-md" label="对象存储"
                    icon="las la-memory" @click="changeTab('storage')" :ripple="false">
-              对象存储
             </q-tab>
           </q-tabs>
         </div>

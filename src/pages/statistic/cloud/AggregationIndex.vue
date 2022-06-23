@@ -4,7 +4,7 @@ import { onMounted, ref, Ref } from 'vue'
 import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
-import { exportExcel } from 'src/hooks/exportExcel'
+import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
 import emitter from 'boot/mitt'
 import { navigateToUrl } from 'single-spa'
 // const props = defineProps({
@@ -24,8 +24,9 @@ const activeItem = ref(store.items.currentPath[3])
 const isDisable = ref(false)
 const myDate = new Date()
 const year = myDate.getFullYear()
+// 该变量用于作比较判断
 const month = myDate.getMonth() + 1
-let monthNew: number | string = myDate.getMonth() + 1
+let currentMonth: number | string = myDate.getMonth() + 1
 let strDate: number | string = myDate.getDate()
 const searchName = ref('')
 const searchQuery = ref({
@@ -42,13 +43,13 @@ const monthOptions: Ref = ref([])
 const yearOptions: Ref = ref([])
 const getNowFormatDate = () => {
   const seperator1 = '-'
-  if (monthNew >= 1 && monthNew <= 9) {
-    monthNew = '0' + monthNew
+  if (currentMonth >= 1 && currentMonth <= 9) {
+    currentMonth = '0' + currentMonth
   }
   if (strDate >= 0 && strDate <= 9) {
     strDate = '0' + strDate
   }
-  return year + seperator1 + monthNew + seperator1 + strDate
+  return year + seperator1 + currentMonth + seperator1 + strDate
 }
 const currentDate = getNowFormatDate()
 const query: Ref = ref({
@@ -117,7 +118,7 @@ const initQuery = () => {
       dateStart = year + '-' + '01-01'
       dateEnd = currentDate
     } else if (searchQuery.value.month.value === month) {
-      dateStart = year + '-' + monthNew + '-' + '01'
+      dateStart = year + '-' + currentMonth + '-' + '01'
       dateEnd = currentDate
     } else {
       const day = new Date(searchQuery.value.year.value, searchQuery.value.month.value, 0).getDate()
@@ -174,6 +175,7 @@ const search = async () => {
     emitter.emit('service', query.value)
   }
 }
+// 导出当页数据
 const exportFile = () => {
   // name表示生成excel的文件名     tableName表示表格的id
   if (activeItem.value === 'user') {
@@ -186,51 +188,20 @@ const exportFile = () => {
     exportExcel('服务用量列表.xlsx', '#serviceTable')
   }
 }
+// 导出全部数据
 const exportAll = async () => {
   if (activeItem.value === 'user') {
     const fileData = await store.getUserHostFile(exportQuery.value)
-    const link = document.createElement('a')
-    const blob = new Blob(['\ufeff' + fileData.data], { type: 'text/csv,charset=UTF-8' })
-    link.style.display = 'none'
-    link.href = URL.createObjectURL(blob)
-    link.download = fileData.headers['content-disposition']
-    link.download = '按用户计量计费聚合统计'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    exportAllData(fileData.data, '按用户计量计费聚合统计')
   } else if (activeItem.value === 'group') {
     const fileData = await store.getGroupHostFile(exportQuery.value)
-    const link = document.createElement('a')
-    const blob = new Blob(['\ufeff' + fileData.data], { type: 'text/csv,charset=UTF-8' })
-    link.style.display = 'none'
-    link.href = URL.createObjectURL(blob)
-    link.download = fileData.headers['content-disposition']
-    link.download = '按项目组计量计费聚合统计'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    exportAllData(fileData.data, '按项目组计量计费聚合统计')
   } else if (activeItem.value === 'server') {
     const fileData = await store.getServerHostFile(exportQuery.value)
-    const link = document.createElement('a')
-    const blob = new Blob(['\ufeff' + fileData.data], { type: 'text/csv,charset=UTF-8' })
-    link.style.display = 'none'
-    link.href = URL.createObjectURL(blob)
-    link.download = fileData.headers['content-disposition']
-    link.download = '按云主机计量计费聚合统计'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    exportAllData(fileData.data, '按云主机计量计费聚合统计')
   } else if (activeItem.value === 'service') {
     const fileData = await store.getServiceHostFile(exportQuery.value)
-    const link = document.createElement('a')
-    const blob = new Blob(['\ufeff' + fileData.data], { type: 'text/csv,charset=UTF-8' })
-    link.style.display = 'none'
-    link.href = URL.createObjectURL(blob)
-    link.download = fileData.headers['content-disposition']
-    link.download = '按服务计量计费聚合统计'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    exportAllData(fileData.data, '按服务计量计费聚合统计')
   }
 }
 const changeTab = async (name: string) => {
@@ -251,7 +222,7 @@ const changeTab = async (name: string) => {
   exportQuery.value.date_start = searchQuery.value.year.value + '-01-01'
   exportQuery.value.date_end = currentDate
   changeYear(searchQuery.value.year)
-  sessionStorage.setItem('tabStatus', name)
+  // sessionStorage.setItem('tabStatus', name)
   if (name === 'service') {
     isDisable.value = true
   } else {
@@ -265,7 +236,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="CloudList">
+  <div class="AggregationIndex">
     <div class="row q-mt-xl justify-between items-center">
       <div class="row col-6">
         <div class="col-2">
@@ -316,6 +287,6 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
-.CloudList {
+.AggregationIndex {
 }
 </style>

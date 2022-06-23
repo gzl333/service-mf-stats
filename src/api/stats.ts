@@ -6,10 +6,25 @@ import { axiosStats } from 'boot/axios'
 export const apiBaseHarbor = axiosStats.defaults.baseURL
 export default {
   // stats apis
-  api: {
+  registry: {
     getRegistry () {
       return axiosStats.get('/registry')
-    },
+    }
+  },
+  user: {
+    getUserPermissionPolicy (payload?: {
+      query?: {
+        page: number;
+        page_size: number;
+      }
+    }) {
+      const config = {
+        params: payload?.query
+      }
+      return axiosStats.get('/user/permission-policy', config)
+    }
+  },
+  service: {
     getService (payload?: {
       query?: {
         page: number;
@@ -22,18 +37,9 @@ export default {
         params: payload?.query
       }
       return axiosStats.get('/service', config)
-    },
-    getUserPermissionPolicy (payload?: {
-      query?: {
-        page: number;
-        page_size: number;
-      }
-    }) {
-      const config = {
-        params: payload?.query
-      }
-      return axiosStats.get('/user/permission-policy', config)
-    },
+    }
+  },
+  metering: {
     getMeteringServer (payload: {
       query?: {
         page: number;

@@ -31,7 +31,7 @@ const columns = [
 </script>
 
 <template>
-  <div class="DetailTable">
+  <div class="ServerUsageDetailTable">
     <div class="q-mt-xl">
       <q-table
         id="detailTable"
@@ -66,6 +66,6 @@ const columns = [
 </template>
 
 <style lang="scss" scoped>
-.DetailTable {
+.ServerUsageDetailTable {
 }
 </style>

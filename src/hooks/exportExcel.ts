@@ -16,3 +16,19 @@ export const exportExcel = (name: string, id: string) => {
   }
   return selIn
 }
+
+export const exportAllData = (fileData: Record<string, unknown>, fileName: string) => {
+  // 创建一个a标签
+  const link = document.createElement('a')
+  // 转化为blob对象
+  // csv文件流需要加上\ufeff前缀,否则会乱码
+  const blob = new Blob(['\ufeff' + fileData], { type: 'text/csv,charset=UTF-8' })
+  link.style.display = 'none'
+  link.href = URL.createObjectURL(blob)
+  // link.download = fileData.headers['content-disposition']
+  // 文件名
+  link.download = fileName
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}

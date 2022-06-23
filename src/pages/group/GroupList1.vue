@@ -82,7 +82,7 @@ const search = async () => {
   // }
 }
 const exportFile = () => {
-  exportExcel('项目组云主机用量列表.xlsx', '#groupServerTable')
+  exportExcel('项目组云主机用量列表.xlsx', '#GroupUsageTable')
 }
 const selectDate = () => {
   const dateStart = dateFrom.value.replace(/(\/)/g, '-')
@@ -92,7 +92,7 @@ const selectDate = () => {
 }
 const getGroupData = async () => {
   isLoading.value = true
-  const data = await store.getGroupHostData(query.value)
+  const data = await store.getGroupMetering(query.value)
   groupTableRow.value = data.data.results
   paginationTable.value.page = 1
   paginationTable.value.count = data.data.count
@@ -107,7 +107,7 @@ const changePageSize = async () => {
 const changePagination = async (val: number) => {
   isLoading.value = true
   query.value.page = val
-  const data = await store.getGroupHostData(query.value)
+  const data = await store.getGroupMetering(query.value)
   groupTableRow.value = data.data.results
   isLoading.value = false
 }

@@ -42,7 +42,7 @@ const routes: RouteRecordRaw[] = [
           },
           {
             path: 'detail/:serverId',
-            component: () => import('pages/personal/DetailServer.vue')
+            component: () => import('pages/personal/ServerUsageDetailList.vue')
           }
         ]
       },
@@ -85,35 +85,35 @@ const routes: RouteRecordRaw[] = [
                   requireServiceAdmin: true // 服务管理员权限才能访问
                 },
                 redirect: '/my/stats/statistic/list/cloud/server',
-                component: () => import('pages/statistic/cloud/CloudList.vue'),
+                component: () => import('pages/statistic/cloud/AggregationIndex.vue'),
                 children: [
                   {
                     path: 'group',
                     meta: {
                       requireServiceAdmin: true // 服务管理员权限才能访问
                     },
-                    component: () => import('pages/statistic/cloud/GroupList.vue')
+                    component: () => import('pages/statistic/cloud/GroupAggregationList.vue')
                   },
                   {
                     path: 'user',
                     meta: {
                       requireServiceAdmin: true // 服务管理员权限才能访问
                     },
-                    component: () => import('pages/statistic/cloud/UserList.vue')
+                    component: () => import('pages/statistic/cloud/UserAggregationList.vue')
                   },
                   {
                     path: 'server',
                     meta: {
                       requireServiceAdmin: true // 服务管理员权限才能访问
                     },
-                    component: () => import('pages/statistic/cloud/ServerList.vue')
+                    component: () => import('pages/statistic/cloud/ServerAggregationList.vue')
                   },
                   {
                     path: 'service',
                     meta: {
                       requireServiceAdmin: true // 服务管理员权限才能访问
                     },
-                    component: () => import('pages/statistic/cloud/ServiceList.vue')
+                    component: () => import('pages/statistic/cloud/ServiceAggregationList.vue')
                   }
                 ]
               },
@@ -130,7 +130,7 @@ const routes: RouteRecordRaw[] = [
                 meta: {
                   requireServiceAdmin: true // 服务管理员权限才能访问
                 },
-                component: () => import('pages/statistic/cloud/DetailServer.vue')
+                component: () => import('pages/statistic/cloud/ServerStatisticsDetailList.vue')
               },
               {
                 path: 'service/:serviceId',
@@ -139,7 +139,7 @@ const routes: RouteRecordRaw[] = [
                   requireServiceAdmin: true, // 服务管理员权限才能访问
                   type: 'service'
                 },
-                component: () => import('pages/statistic/cloud/DetailList.vue')
+                component: () => import('pages/statistic/cloud/ServerUsageDetailList.vue')
               },
               {
                 path: 'group/:groupId',
@@ -148,7 +148,7 @@ const routes: RouteRecordRaw[] = [
                   requireServiceAdmin: true, // 服务管理员权限才能访问
                   type: 'group'
                 },
-                component: () => import('pages/statistic/cloud/DetailList.vue')
+                component: () => import('pages/statistic/cloud/ServerUsageDetailList.vue')
               },
               {
                 path: 'user/:userid',
@@ -157,7 +157,7 @@ const routes: RouteRecordRaw[] = [
                   requireServiceAdmin: true, // 服务管理员权限才能访问
                   type: 'user'
                 },
-                component: () => import('pages/statistic/cloud/DetailList.vue')
+                component: () => import('pages/statistic/cloud/ServerUsageDetailList.vue')
               }
             ]
           }

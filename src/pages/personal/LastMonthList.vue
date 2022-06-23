@@ -4,8 +4,8 @@ import { useStore } from 'stores/store'
 // import { useRoute } from 'vue-router'
 // import { navigateToUrl } from 'single-spa'
 // import { i18n } from 'boot/i18n'
-import DetailTable from 'components/personal/PersonalServerTable.vue'
-import { exportExcel } from 'src/hooks/exportExcel'
+import PersonalUsageTable from 'components/personal/PersonalUsageTable.vue'
+import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
 import { Notify } from 'quasar'
 import { getLastFormatDate } from 'src/hooks/processTime'
 // const props = defineProps({
@@ -23,8 +23,8 @@ const store = useStore()
 // const tc = i18n.global.tc
 const filterOptions = computed(() => store.getServices)
 const tableRow: Ref = ref([])
-const startLastDate = getLastFormatDate(0)
-const currentLastDate = getLastFormatDate(1)
+const startDate = getLastFormatDate(0)
+const endDate = getLastFormatDate(1)
 const paginationTable = ref({
   page: 1,
   count: 0,
@@ -37,18 +37,18 @@ const serviceId = ref({
 const query: Ref = ref({
   page: 1,
   page_size: 10,
-  date_start: startLastDate,
-  date_end: currentLastDate
+  date_start: startDate,
+  date_end: endDate
 })
 const exportQuery: Ref = ref({
-  date_start: startLastDate,
-  date_end: currentLastDate,
+  date_start: startDate,
+  date_end: endDate,
   download: true
 })
 const getDetailData = async () => {
   tableRow.value = []
   let obj: Record<string, string> = {}
-  const data = await store.getServerHostData(query.value)
+  const data = await store.getServerMetering(query.value)
   for (const elem of data.data.results) {
     obj = {}
     obj.server_id = elem.server_id
@@ -88,6 +88,7 @@ const changePageSize = async () => {
 const search = async () => {
   await getDetailData()
 }
+// 导出当页数据
 const exportFile = () => {
   if (tableRow.value.length === 0) {
     Notify.create({
@@ -101,9 +102,10 @@ const exportFile = () => {
       multiLine: false
     })
   } else {
-    exportExcel('个人云主机用量统计.xlsx', '#personalServerTable')
+    exportExcel('个人云主机用量统计.xlsx', '#PersonalUsageTable')
   }
 }
+// 导出全部数据
 const exportAll = async () => {
   if (tableRow.value.length === 0) {
     Notify.create({
@@ -118,15 +120,7 @@ const exportAll = async () => {
     })
   } else {
     const fileData = await store.getServerHostFile(exportQuery.value)
-    const link = document.createElement('a')
-    const blob = new Blob(['\ufeff' + fileData.data], { type: 'text/csv,charset=UTF-8' })
-    link.style.display = 'none'
-    link.href = URL.createObjectURL(blob)
-    link.download = fileData.headers['content-disposition']
-    link.download = '个人云主机用量统计'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    exportAllData(fileData.data, '个人云主机上月用量统计')
   }
 }
 onMounted(async () => {
@@ -146,7 +140,7 @@ onMounted(async () => {
         <q-btn outline label="导出全部数据" class="q-ml-md" @click="exportAll"/>
       </div>
     </div>
-    <detail-table :tableRow="tableRow"/>
+    <personal-usage-table :tableRow="tableRow"/>
     <div class="row q-py-md text-grey justify-between items-center">
       <div class="row items-center">
         <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>

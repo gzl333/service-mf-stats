@@ -4,7 +4,7 @@ import { useStore } from 'stores/store'
 // import { useRoute } from 'vue-router'
 // import { navigateToUrl } from 'single-spa'
 // import { i18n } from 'boot/i18n'
-import GroupServerTable from 'components/group/GroupServerTable.vue'
+import GroupUsageTable from 'components/group/GroupUsageTable.vue'
 import { exportExcel } from 'src/hooks/exportExcel'
 import { getNowFormatDate, getLastFormatDate } from 'src/hooks/processTime'
 // const props = defineProps({
@@ -58,7 +58,7 @@ const getDetailData = async () => {
   let obj: Record<string, string> = {}
   for (const id of store.tables.groupTable.allIds) {
     query.value.vo_id = id
-    const data = await store.getServerHostData(query.value)
+    const data = await store.getServerMetering(query.value)
     for (const elem of data.data.results) {
       obj = {}
       obj.server_id = elem.server_id
@@ -85,7 +85,7 @@ const getSingleDetailData = async () => {
   paginationTable.value.count = 0
   let obj: Record<string, string> = {}
   query.value.vo_id = groupId.value.value
-  const data = await store.getServerHostData(query.value)
+  const data = await store.getServerMetering(query.value)
   for (const elem of data.data.results) {
     obj = {}
     obj.server_id = elem.server_id
@@ -154,7 +154,7 @@ const search = async () => {
   }
 }
 const exportFile = () => {
-  exportExcel('项目组云主机用量列表.xlsx', '#groupServerTable')
+  exportExcel('项目组云主机用量列表.xlsx', '#GroupUsageTable')
 }
 onMounted(async () => {
   if (store.tables.groupTable.allIds.length === 0) {
@@ -213,7 +213,7 @@ onMounted(async () => {
         <q-btn outline label="导出当页数据" class="q-ml-sm" @click="exportFile"/>
       </div>
     </div>
-    <group-server-table :tableRow="tableRow"/>
+    <group-usage-table :tableRow="tableRow"/>
     <div class="row q-py-md text-grey justify-between items-center">
       <div class="row items-center">
         <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>

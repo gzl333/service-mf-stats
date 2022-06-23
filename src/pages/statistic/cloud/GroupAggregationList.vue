@@ -46,11 +46,11 @@ const query: Ref = ref({
 })
 emitter.on('group', async (value) => {
   query.value = value
-  await getGroupData()
+  await getGroupAggregationData()
 })
-const getGroupData = async () => {
+const getGroupAggregationData = async () => {
   isLoading.value = true
-  const data = await store.getGroupHostData(query.value)
+  const data = await store.getGroupMetering(query.value)
   groupTableRow.value = data.data.results
   paginationTable.value.page = 1
   paginationTable.value.count = data.data.count
@@ -60,22 +60,20 @@ const changePageSize = async () => {
   query.value.page_size = paginationTable.value.rowsPerPage
   query.value.page = 1
   paginationTable.value.page = 1
-  await getGroupData()
+  await getGroupAggregationData()
 }
 const changePagination = async (val: number) => {
   isLoading.value = true
   query.value.page = val
-  const data = await store.getGroupHostData(query.value)
+  const data = await store.getGroupMetering(query.value)
   groupTableRow.value = data.data.results
   isLoading.value = false
 }
 const goToDetail = (userid: string, voName: string, count: string) => {
-  navigateToUrl(`/my/stats/statistic/list/group/${userid}`)
-  sessionStorage.setItem('voName', voName)
-  sessionStorage.setItem('groupCount', count)
+  navigateToUrl(`/my/stats/statistic/list/group/${userid}?name=${voName}&count=${count}`)
 }
 onMounted(async () => {
-  await getGroupData()
+  await getGroupAggregationData()
 })
 onBeforeUnmount(() => {
   emitter.off('group')
@@ -84,7 +82,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="GroupList">
+  <div class="GroupAggregationList">
     <div class="q-ml-md">
       <q-separator/>
       <q-table
@@ -141,6 +139,6 @@ onBeforeUnmount(() => {
 </template>
 
 <style lang="scss" scoped>
-.GroupList {
+.GroupAggregationList {
 }
 </style>

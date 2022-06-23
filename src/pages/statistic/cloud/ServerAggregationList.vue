@@ -54,11 +54,11 @@ const query: Ref = ref({
 const clickToCopy = useCopyToClipboard()
 emitter.on('server', async (value) => {
   query.value = value
-  await getServerData()
+  await getServerAggregationData()
 })
-const getServerData = async () => {
+const getServerAggregationData = async () => {
   isLoading.value = true
-  const data = await store.getServerHostData(query.value)
+  const data = await store.getServerMetering(query.value)
   serverTableRow.value = data.data.results
   paginationTable.value.page = 1
   paginationTable.value.count = data.data.count
@@ -68,24 +68,20 @@ const changePageSize = async () => {
   query.value.page_size = paginationTable.value.rowsPerPage
   query.value.page = 1
   paginationTable.value.page = 1
-  await getServerData()
+  await getServerAggregationData()
 }
 const changePagination = async (val: number) => {
   isLoading.value = true
   query.value.page = val
-  const data = await store.getServerHostData(query.value)
+  const data = await store.getServerMetering(query.value)
   serverTableRow.value = data.data.results
   isLoading.value = false
 }
 const goToDetail = (serverId: string, serviceName: string, ipv4: string, vcpus: string, ram: string) => {
-  navigateToUrl(`/my/stats/statistic/list/server/${serverId}`)
-  sessionStorage.setItem('serviceName', serviceName)
-  sessionStorage.setItem('ipv4', ipv4)
-  sessionStorage.setItem('vcpus', vcpus)
-  sessionStorage.setItem('ram', ram)
+  navigateToUrl(`/my/stats/statistic/list/server/${serverId}?service=${serviceName}&ipv4=${ipv4}&vcpus=${vcpus}&ram=${ram}`)
 }
 onMounted(async () => {
-  await getServerData()
+  await getServerAggregationData()
 })
 onBeforeUnmount(() => {
   emitter.off('server')
@@ -93,7 +89,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="ServerList">
+  <div class="ServerAggregationList">
     <div class="q-ml-md">
       <q-separator/>
       <q-table
@@ -170,7 +166,7 @@ onBeforeUnmount(() => {
 </template>
 
 <style lang="scss" scoped>
-.ServerList {
+.ServerAggregationList {
   .text {
     width: 80px;
     overflow: hidden; /*超出部分隐藏*/

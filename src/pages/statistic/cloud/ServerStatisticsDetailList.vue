@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, Ref } from 'vue'
+import { ref, onMounted, Ref } from 'vue'
 // import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 import { useRoute, useRouter } from 'vue-router'
-import ServerTable from 'components/statistic/ServerTable.vue'
-import { exportExcel } from 'src/hooks/exportExcel'
+import ServerTable from 'components/statistic/ServerStatisticsDetailTable.vue'
+import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
 import { getNowFormatDate, getLastFormatDate } from 'src/hooks/processTime'
 import { Notify } from 'quasar'
 // import { i18n } from 'boot/i18n'
@@ -26,25 +26,23 @@ const dateTo = ref('')
 const isLastMonth = ref(false)
 const isCurrentMonth = ref(true)
 const tableRow: Ref = ref([])
-const serviceName = ref('')
-const ipv4 = ref('')
-const vcpus = ref('')
-const ram = ref('')
-const startDate = getNowFormatDate(0)
-const currentDate = getNowFormatDate(1)
-const startLastDate = getLastFormatDate(0)
-const currentLastDate = getLastFormatDate(1)
+const currentMonthStartDate = getNowFormatDate(0)
+const currentMonthEndDate = getNowFormatDate(1)
+const lastMonthStartDate = getLastFormatDate(0)
+const lastMonthEndDate = getLastFormatDate(1)
 const query: Ref = ref({
   page: 1,
   page_size: 10,
-  date_start: startDate,
-  date_end: currentDate,
-  server_id: ''
+  date_start: currentMonthStartDate,
+  date_end: currentMonthEndDate,
+  server_id: '',
+  'as-admin': true
 })
 const exportQuery: Ref = ref({
-  date_start: startDate,
-  date_end: currentDate,
+  date_start: currentMonthStartDate,
+  date_end: currentMonthEndDate,
   server_id: '',
+  'as-admin': true,
   download: true
 })
 const paginationTable = ref({
@@ -57,7 +55,7 @@ const getDetailData = async () => {
   let obj: Record<string, string> = {}
   query.value.server_id = route.params.serverId
   exportQuery.value.server_id = route.params.serverId
-  const data = await store.getMachineDetail(query.value)
+  const data = await store.getMeteringDetail(query.value)
   for (const elem of data.data.results) {
     obj = {}
     obj.creation_time = elem.creation_time
@@ -75,18 +73,18 @@ const changeMonth = (type: number) => {
   if (type === 0) {
     isLastMonth.value = false
     isCurrentMonth.value = true
-    query.value.date_start = startDate
-    query.value.date_end = currentDate
-    exportQuery.value.date_start = startDate
-    exportQuery.value.date_end = currentDate
+    query.value.date_start = currentMonthStartDate
+    query.value.date_end = currentMonthEndDate
+    exportQuery.value.date_start = currentMonthStartDate
+    exportQuery.value.date_end = currentMonthEndDate
     getDetailData()
   } else {
     isCurrentMonth.value = false
     isLastMonth.value = true
-    query.value.date_start = startLastDate
-    query.value.date_end = currentLastDate
-    exportQuery.value.date_start = startLastDate
-    exportQuery.value.date_end = currentLastDate
+    query.value.date_start = lastMonthStartDate
+    query.value.date_end = lastMonthEndDate
+    exportQuery.value.date_start = lastMonthStartDate
+    exportQuery.value.date_end = lastMonthEndDate
     getDetailData()
   }
   dateFrom.value = ''
@@ -143,43 +141,25 @@ const exportAll = async () => {
     })
   } else {
     const fileData = await store.getServerDetailFile(exportQuery.value)
-    const link = document.createElement('a')
-    const blob = new Blob(['\ufeff' + fileData.data], { type: 'text/csv,charset=UTF-8' })
-    link.style.display = 'none'
-    link.href = URL.createObjectURL(blob)
-    link.download = fileData.headers['content-disposition']
-    link.download = '云主机用量统计'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    exportAllData(fileData.data, '云主机用量统计')
   }
 }
 onMounted(() => {
-  serviceName.value = sessionStorage.getItem('serviceName') || ''
-  ipv4.value = sessionStorage.getItem('ipv4') || ''
-  vcpus.value = sessionStorage.getItem('vcpus') || ''
-  ram.value = sessionStorage.getItem('ram') || ''
   getDetailData()
-})
-onUnmounted(() => {
-  sessionStorage.removeItem('serviceName')
-  sessionStorage.removeItem('ipv4')
-  sessionStorage.removeItem('vcpus')
-  sessionStorage.removeItem('ram')
 })
 </script>
 
 <template>
-  <div class="DetailServer">
-    <div class="row items-center title-area">
+  <div class="ServerStatisticsDetailList">
+    <div class="row items-center title-area q-mt-xl">
       <q-btn icon="arrow_back_ios" color="primary" flat unelevated dense
              @click="router.back()"/>
-      <span class="text-primary text-h6 text-weight-bold">云主机用量详情</span>
+      <span class="text-primary text-h6 text-weight-bold">云主机用量统计</span>
     </div>
     <div class="row q-gutter-x-md q-mt-lg">
       <q-btn-group>
-        <q-btn :style="isCurrentMonth ? 'background-color: #1976D2; color: #ffffff' : ''" label="本月" class="text-subtitle1 q-px-lg" @click="changeMonth(0)"/>
-        <q-btn :style="isLastMonth ? 'background-color: #1976D2; color: #ffffff' : ''" label="上月" class="text-subtitle1 q-px-lg" @click="changeMonth(1)"/>
+        <q-btn label="本月" :class="isCurrentMonth ? 'text-subtitle1 q-px-lg button-area' : 'text-subtitle1 q-px-lg'" @click="changeMonth(0)"/>
+        <q-btn label="上月" :class="isLastMonth ? 'text-subtitle1 q-px-lg button-area' : 'text-subtitle1 q-px-lg'" @click="changeMonth(1)"/>
       </q-btn-group>
       <div class="col-4 row items-baseline q-ml-xl">
         <div class="col-5">
@@ -232,14 +212,14 @@ onUnmounted(() => {
             <div class="col-4 text-center">
               <div class="text-h6">服务节点</div>
               <q-separator size="0.1rem"/>
-              <div class="text-subtitle1 q-mt-xl">{{ serviceName }}</div>
+              <div class="text-subtitle1 q-mt-xl">{{ route.query.service }}</div>
             </div>
             <div class="col-4 text-center">
               <div class="text-h6">初始配置</div>
               <q-separator size="0.1rem"/>
-              <div class="text-subtitle1 q-mt-md">{{ vcpus }}核</div>
-              <div class="text-subtitle1">{{ ram / 1024 }}GB内存</div>
-              <div class="text-subtitle1">公网ip：{{ ipv4 }}</div>
+              <div class="text-subtitle1 q-mt-md">{{ route.query.vcpus }}核</div>
+              <div class="text-subtitle1">{{ route.query.ram / 1024 }}GB内存</div>
+              <div class="text-subtitle1">公网ip：{{ route.query.ipv4 }}</div>
             </div>
           </div>
         </q-card-section>
@@ -268,6 +248,10 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss" scoped>
-.DetailServer {
+.ServerStatisticsDetailList {
+  .button-area {
+    background-color: $primary;
+    color: $dark;
+  }
 }
 </style>

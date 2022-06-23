@@ -4,7 +4,7 @@ import { computed, ref, onMounted, Ref } from 'vue'
 import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
-import dateFormat from 'src/utils'
+import { dateFormat } from 'src/hooks/processTime'
 
 // const props = defineProps({
 //   foo: {
@@ -20,92 +20,29 @@ const store = useStore()
 // const router = useRouter()
 // const tc = i18n.global.tc
 const activeItem: Ref = ref('0')
-const balance = ref('')
+const groupId = ref('')
 const tab = ref('available')
 const groupTabs = computed(() => store.getGroupTabs)
-const availableCash: Ref = ref([])
-const expiringCash: Ref = ref([])
-const expiredCash: Ref = ref([])
-const outCash: Ref = ref([])
+const groupBalance = computed(() => store.getGroupBalanceByGroupId(groupId.value))
+const availableCoupon = computed(() => store.getGroupAvailableCouponByGroupId(groupId.value))
+const expiringCoupon = computed(() => store.getGroupExpiringCouponByGroupId(groupId.value))
+const expiredCoupon = computed(() => store.getGroupExpiredCouponByGroupId(groupId.value))
+const outCoupon = computed(() => store.getGroupOutCouponByGroupId(groupId.value))
+
 const changeTab = async (label: string, voId: string) => {
-  availableCash.value = []
-  expiringCash.value = []
-  expiredCash.value = []
-  outCash.value = []
   activeItem.value = label
-  const resData = await store.getGroupBalance(voId)
-  balance.value = resData.data.balance
-  sessionStorage.setItem('groupTabStatus', label)
-  const cashCouponData = await store.getGroupCashCoupon(voId)
-  getAvailableCash(cashCouponData.data.results)
-  getExpiredCash(cashCouponData.data.results)
-  getExpiringCash(cashCouponData.data.results)
-  getOutCash(cashCouponData.data.results)
-}
-const getAvailableCash = (dataArr: []) => {
-  const now = new Date()
-  dataArr.forEach((item: Record<string, string>) => {
-    const startTime = dateFormat(item.expiration_time)
-    const end = new Date(startTime.replace(/-/g, '/'))
-    if (item.balance !== '0.00' && now.getTime() < end.getTime()) {
-      availableCash.value.push(item)
-    }
-  })
-}
-const getExpiringCash = (dataArr: []) => {
-  const now = new Date()
-  dataArr.forEach((item: Record<string, string>) => {
-    const startTime = dateFormat(item.expiration_time)
-    const end = new Date(startTime.replace(/-/g, '/'))
-    const total = (end.getTime() - now.getTime()) / 1000
-    const spacing = parseInt(String(total / (60 * 60)))
-    if (item.balance !== '0.00' && spacing > 0 && spacing <= 24) {
-      expiringCash.value.push(item)
-    }
-  })
-}
-const getExpiredCash = (dataArr: []) => {
-  const now = new Date()
-  dataArr.forEach((item: Record<string, string>) => {
-    const startTime = dateFormat(item.expiration_time)
-    const end = new Date(startTime.replace(/-/g, '/'))
-    const total = (end.getTime() - now.getTime()) / 1000
-    const spacing = parseInt(String(total / (60 * 60)))
-    if (item.balance !== '0.00' && spacing < 0) {
-      expiredCash.value.push(item)
-    }
-  })
-}
-const getOutCash = (dataArr: []) => {
-  dataArr.forEach((item: Record<string, string>) => {
-    if (item.balance === '0.00') {
-      outCash.value.push(item)
-    }
-  })
+  groupId.value = voId
+  // sessionStorage.setItem('groupTabStatus', label)
 }
 onMounted(async () => {
   if (store.tables.groupTable.allIds.length === 0) {
     await store.loadGroupTable()
   }
   if (sessionStorage.getItem('groupTabStatus') != null) {
-    console.log(sessionStorage.getItem('groupTabStatus'))
-    const index: any = sessionStorage.getItem('groupTabStatus') || ''
-    activeItem.value = sessionStorage.getItem('groupTabStatus') || ''
-    const resData = await store.getGroupBalance(store.tables.groupTable.allIds[index])
-    balance.value = resData.data.balance
-    const cashCouponData = await store.getGroupCashCoupon(store.tables.groupTable.allIds[index])
-    getAvailableCash(cashCouponData.data.results)
-    getExpiredCash(cashCouponData.data.results)
-    getExpiringCash(cashCouponData.data.results)
-    getOutCash(cashCouponData.data.results)
+    // activeItem.value = sessionStorage.getItem('groupTabStatus') || ''
+    groupId.value = groupTabs.value[0].voId
   } else {
-    const resData = await store.getGroupBalance(store.tables.groupTable.allIds[0])
-    balance.value = resData.data.balance
-    const cashCouponData = await store.getGroupCashCoupon(store.tables.groupTable.allIds[0])
-    getAvailableCash(cashCouponData.data.results)
-    getExpiredCash(cashCouponData.data.results)
-    getExpiringCash(cashCouponData.data.results)
-    getOutCash(cashCouponData.data.results)
+    groupId.value = groupTabs.value[0].voId
   }
 })
 </script>
@@ -128,7 +65,7 @@ onMounted(async () => {
       <div class="col-10 q-ml-xl">
         <div class="row items-center">
           <div class="text-subtitle1 text-weight-bold">账户余额</div>
-          <div class="text-subtitle1 text-weight-bold">{{ `${balance}点` }}</div>
+          <div class="text-subtitle1 text-weight-bold q-ml-lg">{{ groupBalance }}点</div>
 <!--          <q-btn outline label="充值" class="q-ml-xl"/>-->
         </div>
         <div class="row justify-between items-center q-mt-lg">
@@ -140,19 +77,19 @@ onMounted(async () => {
               dense
               align="center"
               active-color="primary"
-              class="q-ml-lg"
+              class="q-ml-md"
             >
               <q-tab :ripple="false" name="available">
-                <div>{{ `可用（${availableCash.length}）` }}</div>
+                <div>{{ `可用（${availableCoupon.length}）` }}</div>
               </q-tab>
               <q-tab :ripple="false" name="expiring">
-                <div>{{ `即将到期（${expiringCash.length}）` }}</div>
+                <div>{{ `即将到期（${expiringCoupon.length}）` }}</div>
               </q-tab>
               <q-tab :ripple="false" name="expired">
-                <div>{{ `已到期（${expiredCash.length}）` }}</div>
+                <div>{{ `已到期（${expiredCoupon.length}）` }}</div>
               </q-tab>
               <q-tab :ripple="false" name="out">
-                <div>{{ `已用完（${outCash.length}）` }}</div>
+                <div>{{ `已用完（${outCoupon.length}）` }}</div>
               </q-tab>
             </q-tabs>
           </div>
@@ -166,8 +103,8 @@ onMounted(async () => {
     </div>
     <q-tab-panels v-model="tab" animated>
       <q-tab-panel name="available">
-        <div class="row justify-between q-mt-xl" v-if="availableCash.length !== 0">
-          <div class="col-5 q-mt-lg" v-for="(item, index) in availableCash" :key="index">
+        <div class="row justify-between q-mt-xl" v-if="availableCoupon.length !== 0">
+          <div class="col-5 q-mt-lg" v-for="(item, index) in availableCoupon" :key="index">
             <q-card flat bordered class="my-card">
               <q-card-section>
                 <div class="text-h6 text-weight-bold text-center">
@@ -192,8 +129,8 @@ onMounted(async () => {
         </div>
       </q-tab-panel>
       <q-tab-panel name="expiring">
-        <div class="row justify-between q-mt-xl" v-if="expiringCash.length !== 0">
-          <div class="col-5 q-mt-lg" v-for="(item, index) in expiringCash" :key="index">
+        <div class="row justify-between q-mt-xl" v-if="expiringCoupon.length !== 0">
+          <div class="col-5 q-mt-lg" v-for="(item, index) in expiringCoupon" :key="index">
             <q-card flat bordered class="my-card">
               <q-card-section>
                 <div class="text-h6 text-weight-bold text-center">
@@ -218,8 +155,8 @@ onMounted(async () => {
         </div>
       </q-tab-panel>
       <q-tab-panel name="expired">
-        <div class="row justify-between q-mt-xl" v-if="expiredCash.length !== 0">
-          <div class="col-5" v-for="(item, index) in expiredCash" :key="index">
+        <div class="row justify-between q-mt-xl" v-if="expiredCoupon.length !== 0">
+          <div class="col-5" v-for="(item, index) in expiredCoupon" :key="index">
             <q-card flat bordered class="my-card">
               <q-card-section>
                 <div class="text-h6 text-weight-bold text-center">
@@ -244,8 +181,8 @@ onMounted(async () => {
         </div>
       </q-tab-panel>
       <q-tab-panel name="out">
-        <div class="row justify-between q-mt-xl" v-if="outCash.length !== 0">
-          <div class="col-5 q-mt-lg" v-for="(item, index) in outCash" :key="index">
+        <div class="row justify-between q-mt-xl" v-if="outCoupon.length !== 0">
+          <div class="col-5 q-mt-lg" v-for="(item, index) in outCoupon" :key="index">
             <q-card flat bordered class="my-card">
               <q-card-section>
                 <div class="text-h6 text-weight-bold text-center">

@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 // import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
-import dateFormat from 'src/utils'
+import { dateFormat } from 'src/hooks/processTime'
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
 
@@ -20,17 +20,17 @@ const store = useStore()
 // const router = useRouter()
 // const tc = i18n.global.tc
 const tab = ref('available')
-const availableCashCoupon = computed(() => store.getAvailableCash())
-const expiredCashCoupon = computed(() => store.getExpiredCash())
-const expiringCashCoupon = computed(() => store.getExpiringCash())
-const outCashCoupon = computed(() => store.getOutCash())
+const availableCashCoupon = computed(() => store.getPersonalAvailableCoupon())
+const expiredCashCoupon = computed(() => store.getPersonalExpiredCoupon())
+const expiringCashCoupon = computed(() => store.getPersonalExpiringCoupon())
+const outCashCoupon = computed(() => store.getPersonalOutCoupon())
 </script>
 
 <template>
   <div class="PersonalIndex">
     <div class="row items-center">
       <div class="text-subtitle1 text-weight-bold">个人账户余额</div>
-      <div class="text-subtitle1 text-weight-bold q-ml-md">{{ `${store.tables.balanceTable.byId?.balance}点` }}</div>
+      <div class="text-subtitle1 text-weight-bold q-ml-md">{{ `${store.items.personalBalance?.balance}点` }}</div>
 <!--      <q-btn outline label="充值" class="q-ml-xl"/>-->
     </div>
     <div class="row justify-between items-center q-mt-lg">

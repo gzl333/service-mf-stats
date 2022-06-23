@@ -32,10 +32,10 @@ const columns = [
 </script>
 
 <template>
-  <div class="GroupServerTable">
+  <div class="GroupUsageTable">
     <div class="q-mt-xl">
       <q-table
-        id="groupServerTable"
+        id="GroupUsageTable"
         flat
         table-header-class="bg-grey-1 text-grey"
         :rows="props.tableRow"
@@ -53,7 +53,7 @@ const columns = [
               <q-btn class="q-ma-none" :label="props.row.ipv4" color="primary" padding="xs" flat dense unelevated></q-btn>
             </q-td>
             <q-td key="service_name" :props="props">{{ props.row.service_name }}</q-td>
-            <q-td key="vo_id" :props="props">{{ store.tables.groupTable?.byId[props.row.vo_id].name }}</q-td>
+            <q-td key="vo_id" :props="props">{{ store.tables.groupTable?.byId[props.row.vo_id]?.name }}</q-td>
             <q-td key="configuration" :props="props">{{props.row.vcpus + '核' + Math.round(props.row.ram / 1024) + 'GB内存' }}</q-td>
             <q-td key="total_public_ip_hours" :props="props">{{ Math.round(props.row.total_public_ip_hours / 24) }}</q-td>
             <q-td key="total_cpu_hours" :props="props">{{ Math.round(props.row.total_cpu_hours / 24) }}</q-td>
@@ -70,6 +70,6 @@ const columns = [
 </template>
 
 <style lang="scss" scoped>
-.GroupServerTable {
+.GroupUsageTable {
 }
 </style>
