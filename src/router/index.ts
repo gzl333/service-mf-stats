@@ -43,11 +43,7 @@ export default route(function (/* { store, ssrContext } */) {
     // 根据当前path更新store.items.currentPath
     store.items.currentPath = to.path.split('/').slice(3)
 
-    // console.log('store', store.items.vmsAdmin)
-    // console.log('to', to.meta)
-    // console.log(sessionStorage.getItem('role'))
-    // console.log(JSON.parse(sessionStorage.getItem('role')))
-    // if (to.meta.requireServiceAdmin && JSON.parse(sessionStorage.getItem('role')).length === 0) {
+    // if (to.meta.requireServiceAdmin) {
     // next(from.fullPath)
     // Notify.create({
     //   classes: 'notification-negative shadow-15',

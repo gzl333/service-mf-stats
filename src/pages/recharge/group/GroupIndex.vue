@@ -21,29 +21,24 @@ const store = useStore()
 // const tc = i18n.global.tc
 const activeItem: Ref = ref('0')
 const groupId = ref('')
-const tab = ref('available')
+const groupTabActive = ref('available')
 const groupTabs = computed(() => store.getGroupTabs)
 const groupBalance = computed(() => store.getGroupBalanceByGroupId(groupId.value))
 const availableCoupon = computed(() => store.getGroupAvailableCouponByGroupId(groupId.value))
 const expiringCoupon = computed(() => store.getGroupExpiringCouponByGroupId(groupId.value))
 const expiredCoupon = computed(() => store.getGroupExpiredCouponByGroupId(groupId.value))
 const outCoupon = computed(() => store.getGroupOutCouponByGroupId(groupId.value))
-
+console.log(availableCoupon)
 const changeTab = async (label: string, voId: string) => {
   activeItem.value = label
   groupId.value = voId
-  // sessionStorage.setItem('groupTabStatus', label)
+  groupTabActive.value = 'available'
 }
 onMounted(async () => {
   if (store.tables.groupTable.allIds.length === 0) {
     await store.loadGroupTable()
   }
-  if (sessionStorage.getItem('groupTabStatus') != null) {
-    // activeItem.value = sessionStorage.getItem('groupTabStatus') || ''
-    groupId.value = groupTabs.value[0].voId
-  } else {
-    groupId.value = groupTabs.value[0].voId
-  }
+  groupId.value = groupTabs.value[0].voId
 })
 </script>
 
@@ -66,13 +61,13 @@ onMounted(async () => {
         <div class="row items-center">
           <div class="text-subtitle1 text-weight-bold">账户余额</div>
           <div class="text-subtitle1 text-weight-bold q-ml-lg">{{ groupBalance }}点</div>
-<!--          <q-btn outline label="充值" class="q-ml-xl"/>-->
+          <!--          <q-btn outline label="充值" class="q-ml-xl"/>-->
         </div>
         <div class="row justify-between items-center q-mt-lg">
           <div class="row items-center">
             <div class="text-subtitle1 text-weight-bold">科技云券</div>
             <q-tabs
-              v-model="tab"
+              v-model="groupTabActive"
               narrow-indicator
               dense
               align="center"
@@ -101,14 +96,14 @@ onMounted(async () => {
         </div>
       </div>
     </div>
-    <q-tab-panels v-model="tab" animated>
-      <q-tab-panel name="available">
+    <q-tab-panels v-model="groupTabActive" animated>
+      <q-tab-panel name="available" class="no-scroll">
         <div class="row justify-between q-mt-xl" v-if="availableCoupon.length !== 0">
           <div class="col-5 q-mt-lg" v-for="(item, index) in availableCoupon" :key="index">
             <q-card flat bordered class="my-card">
               <q-card-section>
                 <div class="text-h6 text-weight-bold text-center">
-                  {{ store.tables.serviceTable.byId[item.service.id]?.name }}
+                  {{ store.tables.serviceTable.byId[item.service]?.name }}
                 </div>
               </q-card-section>
               <q-card-section class="text-center text-subtitle1">
@@ -128,13 +123,13 @@ onMounted(async () => {
           <div>暂无科技云券</div>
         </div>
       </q-tab-panel>
-      <q-tab-panel name="expiring">
+      <q-tab-panel name="expiring" class="no-scroll">
         <div class="row justify-between q-mt-xl" v-if="expiringCoupon.length !== 0">
           <div class="col-5 q-mt-lg" v-for="(item, index) in expiringCoupon" :key="index">
             <q-card flat bordered class="my-card">
               <q-card-section>
                 <div class="text-h6 text-weight-bold text-center">
-                  {{ store.tables.serviceTable.byId[item.service.id]?.name }}
+                  {{ store.tables.serviceTable.byId[item.service]?.name }}
                 </div>
               </q-card-section>
               <q-card-section class="text-center text-subtitle1">
@@ -154,13 +149,13 @@ onMounted(async () => {
           <div>暂无科技云券</div>
         </div>
       </q-tab-panel>
-      <q-tab-panel name="expired">
+      <q-tab-panel name="expired" class="no-scroll">
         <div class="row justify-between q-mt-xl" v-if="expiredCoupon.length !== 0">
           <div class="col-5" v-for="(item, index) in expiredCoupon" :key="index">
             <q-card flat bordered class="my-card">
               <q-card-section>
                 <div class="text-h6 text-weight-bold text-center">
-                  {{ store.tables.serviceTable.byId[item.service.id]?.name }}
+                  {{ store.tables.serviceTable.byId[item.service]?.name }}
                 </div>
               </q-card-section>
               <q-card-section class="text-center text-subtitle1">
@@ -180,13 +175,13 @@ onMounted(async () => {
           <div>暂无科技云券</div>
         </div>
       </q-tab-panel>
-      <q-tab-panel name="out">
+      <q-tab-panel name="out" class="no-scroll">
         <div class="row justify-between q-mt-xl" v-if="outCoupon.length !== 0">
           <div class="col-5 q-mt-lg" v-for="(item, index) in outCoupon" :key="index">
             <q-card flat bordered class="my-card">
               <q-card-section>
                 <div class="text-h6 text-weight-bold text-center">
-                  {{ store.tables.serviceTable.byId[item.service.id]?.name }}
+                  {{ store.tables.serviceTable.byId[item.service]?.name }}
                 </div>
               </q-card-section>
               <q-card-section class="text-center text-subtitle1">

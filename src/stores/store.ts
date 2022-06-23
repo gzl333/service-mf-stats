@@ -443,7 +443,6 @@ export const useStore = defineStore('stats', {
         this.$patch(state => {
           state.items.fedRole = respUserRole.data.role
           state.items.vmsAdmin = respUserRole.data.vms.service_ids
-          // sessionStorage.setItem('role', JSON.stringify(payload.vmsAdmin))
         })
       }
     },

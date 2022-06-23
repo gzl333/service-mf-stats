@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, ref } from 'vue'
+import { ref } from 'vue'
 import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
@@ -24,9 +24,6 @@ const changeTab = async (name: string) => {
   activeItem.value = name
   navigateToUrl(`/my/stats/recharge/${name}`)
 }
-onBeforeUnmount(() => {
-  sessionStorage.removeItem('groupTabStatus')
-})
 </script>
 
 <template>

@@ -222,7 +222,6 @@ const changeTab = async (name: string) => {
   exportQuery.value.date_start = searchQuery.value.year.value + '-01-01'
   exportQuery.value.date_end = currentDate
   changeYear(searchQuery.value.year)
-  // sessionStorage.setItem('tabStatus', name)
   if (name === 'service') {
     isDisable.value = true
   } else {

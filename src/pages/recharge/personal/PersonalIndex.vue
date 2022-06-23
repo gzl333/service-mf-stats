@@ -65,7 +65,7 @@ const outCashCoupon = computed(() => store.getPersonalOutCoupon())
       </div>
     </div>
     <q-tab-panels v-model="tab" animated>
-      <q-tab-panel name="available">
+      <q-tab-panel name="available" class="no-scroll">
         <div class="row justify-between q-mt-xl" v-if="availableCashCoupon.length !== 0">
           <div class="col-5 q-mt-lg" v-for="(item, index) in availableCashCoupon" :key="index">
             <q-card flat bordered class="my-card">
@@ -91,7 +91,7 @@ const outCashCoupon = computed(() => store.getPersonalOutCoupon())
           <div>暂无科技云券</div>
         </div>
       </q-tab-panel>
-      <q-tab-panel name="expiring">
+      <q-tab-panel name="expiring" class="no-scroll">
         <div class="row justify-between q-mt-xl" v-if="expiringCashCoupon.length !== 0">
           <div class="col-5 q-mt-lg" v-for="(item, index) in expiringCashCoupon" :key="index">
             <q-card flat bordered class="my-card">
@@ -117,7 +117,7 @@ const outCashCoupon = computed(() => store.getPersonalOutCoupon())
           <div>暂无科技云券</div>
         </div>
       </q-tab-panel>
-      <q-tab-panel name="expired">
+      <q-tab-panel name="expired" class="no-scroll">
         <div class="row justify-between q-mt-xl" v-if="expiredCashCoupon.length !== 0">
           <div class="col-5" v-for="(item, index) in expiredCashCoupon" :key="index">
             <q-card flat bordered class="my-card">
@@ -143,7 +143,7 @@ const outCashCoupon = computed(() => store.getPersonalOutCoupon())
           <div>暂无科技云券</div>
         </div>
       </q-tab-panel>
-      <q-tab-panel name="out">
+      <q-tab-panel name="out" class="no-scroll">
         <div class="row justify-between q-mt-xl" v-if="outCashCoupon.length !== 0">
           <div class="col-5 q-mt-lg" v-for="(item, index) in outCashCoupon" :key="index">
             <q-card flat bordered class="my-card">
