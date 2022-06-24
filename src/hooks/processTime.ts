@@ -36,6 +36,18 @@ export const getLastFormatDate = (type: number) => {
     return year + seperator1 + month + seperator1 + day
   }
 }
+export const getFormatDate = () => {
+  let currentMonth: number | string = myDate.getMonth() + 1
+  let strDate: number | string = myDate.getDate()
+  const seperator1 = '-'
+  if (currentMonth >= 1 && currentMonth <= 9) {
+    currentMonth = '0' + currentMonth
+  }
+  if (strDate >= 0 && strDate <= 9) {
+    strDate = '0' + strDate
+  }
+  return year + seperator1 + currentMonth + seperator1 + strDate
+}
 export const getHistoryStartFormatDate = () => {
   month = myDate.getMonth() + 1
   strDate = myDate.getDate()

@@ -5,7 +5,8 @@
 // import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
-import { dateFormat } from 'src/hooks/processTime'
+// import { dateFormat } from 'src/hooks/processTime'
+import PayStatusChip from '../../components/statistic/PayStatusChip.vue'
 const props = defineProps({
   tableRow: {
     type: Array,
@@ -13,13 +14,16 @@ const props = defineProps({
   }
 })
 // const emits = defineEmits(['change', 'delete'])
-
+console.log(props)
 // const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
 // const tc = i18n.global.tc
 const columnsTwo = [
-  { name: 'creation_time', align: 'center', label: '每日统计时间' },
+  // { name: 'creation_time', align: 'center', label: '每日统计时间' },
+  { name: 'date', align: 'center', label: '计费日期' },
+  { name: 'payment_status', label: '扣费状态', align: 'center' },
+  { name: 'username', label: '用户名', align: 'center' },
   { name: 'public_ip_hours', label: '公网IP(个*天)', align: 'center' },
   { name: 'cpu_hours', label: 'vCPU(核*天）', align: 'center' },
   { name: 'ram_hours', label: '内存(GB*天)', align: 'center' },
@@ -48,7 +52,11 @@ const columnsTwo = [
       >
         <template v-slot:body="props">
           <q-tr :props="props">
-            <q-td key="creation_time" :props="props">{{ dateFormat(props.row.creation_time) }}</q-td>
+            <q-td key="date" :props="props">{{ props.row.date }}</q-td>
+            <q-td key="payment_status" :props="props">
+              <pay-status-chip class="non-selectable" :status="props.row.payment_status"/>
+            </q-td>
+            <q-td key="username" :props="props">{{ props.row.username }}</q-td>
             <q-td key="public_ip_hours" :props="props">{{ Math.round(props.row.public_ip_hours / 24) }}</q-td>
             <q-td key="cpu_hours" :props="props">{{ Math.round(props.row.cpu_hours / 24) }}</q-td>
             <q-td key="ram_hours" :props="props">{{ Math.round(props.row.ram_hours / 24) }}</q-td>

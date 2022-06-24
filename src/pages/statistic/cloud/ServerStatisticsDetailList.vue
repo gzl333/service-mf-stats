@@ -3,9 +3,9 @@ import { ref, onMounted, Ref } from 'vue'
 // import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 import { useRoute, useRouter } from 'vue-router'
-import ServerTable from 'components/statistic/ServerStatisticsDetailTable.vue'
+import ServerStatisticsDetailTable from 'components/statistic/ServerStatisticsDetailTable.vue'
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
-import { getNowFormatDate, getLastFormatDate } from 'src/hooks/processTime'
+// import { getNowFormatDate } from 'src/hooks/processTime'
 import { Notify } from 'quasar'
 // import { i18n } from 'boot/i18n'
 // const props = defineProps({
@@ -21,26 +21,36 @@ const store = useStore()
 const route = useRoute()
 const router = useRouter()
 // const tc = i18n.global.tc
-const dateFrom = ref('')
-const dateTo = ref('')
-const isLastMonth = ref(false)
-const isCurrentMonth = ref(true)
+const monthOptions: Ref = ref([])
+const yearOptions: Ref = ref([])
 const tableRow: Ref = ref([])
-const currentMonthStartDate = getNowFormatDate(0)
-const currentMonthEndDate = getNowFormatDate(1)
-const lastMonthStartDate = getLastFormatDate(0)
-const lastMonthEndDate = getLastFormatDate(1)
+const myDate = new Date()
+const year = myDate.getFullYear()
+const month = myDate.getMonth() + 1
+let currentMonth: number | string = myDate.getMonth() + 1
+let strDate: number | string = myDate.getDate()
+const getFormatDate = () => {
+  const seperator1 = '-'
+  if (currentMonth >= 1 && currentMonth <= 9) {
+    currentMonth = '0' + currentMonth
+  }
+  if (strDate >= 0 && strDate <= 9) {
+    strDate = '0' + strDate
+  }
+  return year + seperator1 + currentMonth + seperator1 + strDate
+}
+const currentDate = getFormatDate()
 const query: Ref = ref({
   page: 1,
   page_size: 10,
-  date_start: currentMonthStartDate,
-  date_end: currentMonthEndDate,
+  date_start: year + '-' + '01-01',
+  date_end: currentDate,
   server_id: '',
   'as-admin': true
 })
 const exportQuery: Ref = ref({
-  date_start: currentMonthStartDate,
-  date_end: currentMonthEndDate,
+  date_start: year + '-' + '01-01',
+  date_end: currentDate,
   server_id: '',
   'as-admin': true,
   download: true
@@ -50,49 +60,106 @@ const paginationTable = ref({
   count: 0,
   rowsPerPage: 10
 })
+const searchQuery = ref({
+  year: {
+    label: year,
+    value: year
+  },
+  month: {
+    label: '全年',
+    value: 0
+  }
+})
+const changeYear = (val: Record<string, number>) => {
+  monthOptions.value = []
+  searchQuery.value.month = {
+    label: '全年',
+    value: 0
+  }
+  monthOptions.value.push({
+    value: 0,
+    label: '全年'
+  })
+  if (val.value === year) {
+    for (let i = 1; i <= month; i++) {
+      monthOptions.value.push({
+        value: i,
+        label: i + '月'
+      })
+    }
+  } else {
+    for (let i = 1; i <= 12; i++) {
+      monthOptions.value.push({
+        value: i,
+        label: i + '月'
+      })
+    }
+  }
+}
+const initSelectYear = () => {
+  monthOptions.value.push({
+    value: 0,
+    label: '全年'
+  })
+  for (let i = 2021; i <= year; i++) {
+    yearOptions.value.unshift({
+      value: i,
+      label: i
+    })
+  }
+  for (let i = 1; i <= month; i++) {
+    monthOptions.value.push({
+      value: i,
+      label: i + '月'
+    })
+  }
+}
 const getDetailData = async () => {
   tableRow.value = []
-  let obj: Record<string, string> = {}
   query.value.server_id = route.params.serverId
   exportQuery.value.server_id = route.params.serverId
   const data = await store.getMeteringDetail(query.value)
   for (const elem of data.data.results) {
-    obj = {}
-    obj.creation_time = elem.creation_time
-    obj.public_ip_hours = elem.public_ip_hours
-    obj.cpu_hours = elem.cpu_hours
-    obj.ram_hours = elem.ram_hours
-    obj.disk_hours = elem.disk_hours
-    obj.original_amount = elem.original_amount
-    obj.trade_amount = elem.trade_amount
-    tableRow.value.push(obj)
+    tableRow.value.push(elem)
   }
   paginationTable.value.count = data.data.count
 }
-const changeMonth = (type: number) => {
-  if (type === 0) {
-    isLastMonth.value = false
-    isCurrentMonth.value = true
-    query.value.date_start = currentMonthStartDate
-    query.value.date_end = currentMonthEndDate
-    exportQuery.value.date_start = currentMonthStartDate
-    exportQuery.value.date_end = currentMonthEndDate
-    getDetailData()
+const initQuery = () => {
+  query.value.page = 1
+  let dateStart = ''
+  let dateEnd = ''
+  if (searchQuery.value.year.value === year) {
+    if (searchQuery.value.month.value === 0) {
+      dateStart = year + '-' + '01-01'
+      dateEnd = currentDate
+    } else if (searchQuery.value.month.value === month) {
+      dateStart = year + '-' + currentMonth + '-' + '01'
+      dateEnd = currentDate
+    } else {
+      const day = new Date(searchQuery.value.year.value, searchQuery.value.month.value, 0).getDate()
+      if (searchQuery.value.month.value < 10) {
+        dateStart = year + '-' + '0' + searchQuery.value.month.value + '-' + '01'
+        dateEnd = year + '-' + '0' + searchQuery.value.month.value + '-' + day
+      } else {
+        dateStart = year + '-' + searchQuery.value.month.value + '-' + '01'
+        dateEnd = year + '-' + searchQuery.value.month.value + '-' + day
+      }
+    }
   } else {
-    isCurrentMonth.value = false
-    isLastMonth.value = true
-    query.value.date_start = lastMonthStartDate
-    query.value.date_end = lastMonthEndDate
-    exportQuery.value.date_start = lastMonthStartDate
-    exportQuery.value.date_end = lastMonthEndDate
-    getDetailData()
+    if (searchQuery.value.month.value === 0) {
+      dateStart = searchQuery.value.year.value + '-' + '01-01'
+      dateEnd = searchQuery.value.year.value + '-' + '12-31'
+    } else {
+      const day = new Date(searchQuery.value.year.value, searchQuery.value.month.value, 0).getDate()
+      if (searchQuery.value.month.value < 10) {
+        dateStart = searchQuery.value.year.value + '-' + '0' + searchQuery.value.month.value + '-' + '01'
+        dateEnd = searchQuery.value.year.value + '-' + '0' + searchQuery.value.month.value + '-' + day
+      } else {
+        dateStart = searchQuery.value.year.value + '-' + searchQuery.value.month.value + '-' + '01'
+        dateEnd = searchQuery.value.year.value + '-' + searchQuery.value.month.value + '-' + day
+      }
+    }
   }
-  dateFrom.value = ''
-  dateTo.value = ''
-}
-const selectDate = () => {
-  const dateStart = dateFrom.value.replace(/(\/)/g, '-')
-  const dateEnd = dateTo.value.replace(/(\/)/g, '-')
   query.value.date_start = dateStart
   query.value.date_end = dateEnd
   exportQuery.value.date_start = dateStart
@@ -109,6 +176,7 @@ const changePagination = async (val: number) => {
   await getDetailData()
 }
 const search = async () => {
+  initQuery()
   await getDetailData()
 }
 const exportFile = () => {
@@ -145,6 +213,7 @@ const exportAll = async () => {
   }
 }
 onMounted(() => {
+  initSelectYear()
   getDetailData()
 })
 </script>
@@ -156,46 +225,19 @@ onMounted(() => {
              @click="router.back()"/>
       <span class="text-primary text-h6 text-weight-bold">云主机用量统计</span>
     </div>
-    <div class="row q-gutter-x-md q-mt-lg">
-      <q-btn-group>
-        <q-btn label="本月" :class="isCurrentMonth ? 'text-subtitle1 q-px-lg button-area' : 'text-subtitle1 q-px-lg'" @click="changeMonth(0)"/>
-        <q-btn label="上月" :class="isLastMonth ? 'text-subtitle1 q-px-lg button-area' : 'text-subtitle1 q-px-lg'" @click="changeMonth(1)"/>
-      </q-btn-group>
-      <div class="col-4 row items-baseline q-ml-xl">
-        <div class="col-5">
-          <q-input filled dense v-model="dateFrom" mask="date">
-            <template v-slot:append>
-              <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
-                  <q-date v-model="dateFrom" @update:model-value="selectDate">
-                    <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="确定" color="primary" flat/>
-                    </div>
-                  </q-date>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input>
+    <div class="row q-mt-lg justify-between">
+      <div class="row col-5 items-center">
+        <div class="col-3">
+          <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" label="请选择" @update:model-value="changeYear"/>
         </div>
-        <div class="col-1 text-center">至</div>
-        <div class="col-5">
-          <q-input filled dense v-model="dateTo" mask="date">
-            <template v-slot:append>
-              <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
-                  <q-date v-model="dateTo" @update:model-value="selectDate">
-                    <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="确定" color="primary" flat/>
-                    </div>
-                  </q-date>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input>
+        <div class="col-3 q-ml-md">
+          <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" label="请选择"/>
+        </div>
+        <div class="q-ml-md">
+          <q-btn outline label="搜索" @click="search" class="q-px-lg"/>
         </div>
       </div>
-      <div class="col-4">
-        <q-btn outline label="搜索" @click="search"/>
+      <div>
         <q-btn outline label="导出当页数据" class="q-ml-md" @click="exportFile"/>
         <q-btn outline label="导出全部数据" class="q-ml-md" @click="exportAll"/>
       </div>
@@ -204,19 +246,24 @@ onMounted(() => {
       <q-card class="my-card" flat bordered>
         <q-card-section>
           <div class="row">
-            <div class="col-4 text-center">
-              <div class="text-h6">UUID</div>
-              <q-separator size="0.1rem"/>
-              <div class="text-subtitle1 q-mt-xl">{{ route.params.serverId }}</div>
+            <div class="col-3 text-center">
+              <div class="text-subtitle1 text-weight-bold">UUID</div>
+              <q-separator/>
+              <div class="q-mt-xl">{{ route.params.serverId }}</div>
             </div>
-            <div class="col-4 text-center">
-              <div class="text-h6">服务节点</div>
-              <q-separator size="0.1rem"/>
+            <div class="col-3 text-center">
+              <div class="text-subtitle1 text-weight-bold">服务节点</div>
+              <q-separator/>
               <div class="text-subtitle1 q-mt-xl">{{ route.query.service }}</div>
             </div>
-            <div class="col-4 text-center">
-              <div class="text-h6">初始配置</div>
-              <q-separator size="0.1rem"/>
+            <div class="col-3 text-center">
+              <div class="text-subtitle1 text-weight-bold">用户</div>
+              <q-separator/>
+              <div class="text-subtitle1 q-mt-xl">{{ tableRow[0]?.username }}</div>
+            </div>
+            <div class="col-3 text-center">
+              <div class="text-subtitle1 text-weight-bold">初始配置</div>
+              <q-separator/>
               <div class="text-subtitle1 q-mt-md">{{ route.query.vcpus }}核</div>
               <div class="text-subtitle1">{{ route.query.ram / 1024 }}GB内存</div>
               <div class="text-subtitle1">公网ip：{{ route.query.ipv4 }}</div>
@@ -225,7 +272,7 @@ onMounted(() => {
         </q-card-section>
       </q-card>
     </div>
-    <server-table :tableRow="tableRow"/>
+    <server-statistics-detail-table :tableRow="tableRow"/>
     <div class="row text-grey justify-between items-center q-mt-md">
       <div class="row items-center">
         <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>

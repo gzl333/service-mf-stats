@@ -11,6 +11,7 @@ const props = defineProps({
     required: true
   }
 })
+console.log(props)
 // const emits = defineEmits(['change', 'delete'])
 
 // const store = useStore()
@@ -25,8 +26,8 @@ const columns = [
   { name: 'total_cpu_hours', label: 'vCPU(核*天）', align: 'center' },
   { name: 'total_ram_hours', label: '内存(GB*天)', align: 'center' },
   { name: 'total_disk_hours', label: '本地硬盘(GB*天)', align: 'center' },
-  { name: 'total_original_amount', label: '计费金额(本月)', align: 'center' },
-  { name: 'total_trade_amount', label: '实际扣费金额(本月)', align: 'center' }
+  { name: 'total_original_amount', label: '计费金额', align: 'center' },
+  { name: 'total_trade_amount', label: '实际扣费金额', align: 'center' }
 ]
 </script>
 
@@ -48,9 +49,9 @@ const columns = [
       >
         <template v-slot:body="props">
           <q-tr :props="props">
-            <q-td key="ipv4" :props="props">{{ props.row.ipv4 }}</q-td>
+            <q-td key="ipv4" :props="props">{{ props.row.server.ipv4 }}</q-td>
             <q-td key="service_name" :props="props">{{ props.row.service_name }}</q-td>
-            <q-td key="configuration" :props="props">{{props.row.vcpus + '核' + Math.round(props.row.ram / 1024) + 'GB内存' }}</q-td>
+            <q-td key="configuration" :props="props">{{props.row.server.vcpus + '核' + Math.round(props.row.server.ram / 1024) + 'GB内存' }}</q-td>
             <q-td key="total_public_ip_hours" :props="props">{{ Math.round(props.row.total_public_ip_hours / 24) }}</q-td>
             <q-td key="total_cpu_hours" :props="props">{{ Math.round(props.row.total_cpu_hours / 24) }}</q-td>
             <q-td key="total_ram_hours" :props="props">{{ Math.round(props.row.total_ram_hours / 24) }}</q-td>

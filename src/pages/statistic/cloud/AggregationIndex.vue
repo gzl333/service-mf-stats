@@ -71,7 +71,7 @@ const initSelectYear = () => {
     label: '全年'
   })
   for (let i = 2021; i <= year; i++) {
-    yearOptions.value.push({
+    yearOptions.value.unshift({
       value: i,
       label: i
     })

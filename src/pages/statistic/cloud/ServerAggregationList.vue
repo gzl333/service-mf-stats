@@ -94,7 +94,7 @@ onBeforeUnmount(() => {
       <q-separator/>
       <q-table
         flat
-        id="serverTable"
+        id="status"
         :loading="isLoading"
         table-header-class="bg-grey-1 text-grey"
         :rows="serverTableRow"
