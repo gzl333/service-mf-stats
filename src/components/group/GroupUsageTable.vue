@@ -2,6 +2,7 @@
 // import { ref } from 'vue'
 // import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
+import { navigateToUrl } from 'single-spa'
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
 
@@ -12,7 +13,6 @@ const props = defineProps({
   }
 })
 // const emits = defineEmits(['change', 'delete'])
-
 const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
@@ -29,6 +29,9 @@ const columns = [
   { name: 'total_original_amount', label: '计费金额(本月)', align: 'center' },
   { name: 'total_trade_amount', label: '实际扣费金额(本月)', align: 'center' }
 ]
+const goToDetail = (serverId: string, serviceName: string, ipv4: string, vcpus: string, ram: string) => {
+  navigateToUrl(`/my/stats/group/detail/${serverId}?service=${serviceName}&ipv4=${ipv4}&vcpus=${vcpus}&ram=${ram}`)
+}
 </script>
 
 <template>
@@ -50,7 +53,9 @@ const columns = [
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="ipv4" :props="props">
-              <q-btn class="q-ma-none" :label="props.row.ipv4" color="primary" padding="xs" flat dense unelevated></q-btn>
+              <q-btn class="q-ma-none" :label="props.row.ipv4" color="primary" padding="xs"
+                     @click="goToDetail(props.row.server_id, props.row.service_name, props.row.ipv4, props.row.vcpus, props.row.ram)"
+                     flat dense unelevated></q-btn>
             </q-td>
             <q-td key="service_name" :props="props">{{ props.row.service_name }}</q-td>
             <q-td key="vo_id" :props="props">{{ store.tables.groupTable?.byId[props.row.vo_id]?.name }}</q-td>

@@ -7,7 +7,7 @@ import { useStore } from 'stores/store'
 import PersonalUsageTable from 'components/personal/PersonalUsageTable.vue'
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
 import { Notify } from 'quasar'
-import { getLastFormatDate } from 'src/hooks/processTime'
+import { getNowFormatDate } from 'src/hooks/processTime'
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -23,8 +23,8 @@ const store = useStore()
 // const tc = i18n.global.tc
 const filterOptions = computed(() => store.getServices)
 const tableRow: Ref = ref([])
-const startDate = getLastFormatDate(0)
-const endDate = getLastFormatDate(1)
+const startDate = getNowFormatDate(0)
+const currentDate = getNowFormatDate(1)
 const paginationTable = ref({
   page: 1,
   count: 0,
@@ -38,11 +38,11 @@ const query: Ref = ref({
   page: 1,
   page_size: 10,
   date_start: startDate,
-  date_end: endDate
+  date_end: currentDate
 })
 const exportQuery: Ref = ref({
   date_start: startDate,
-  date_end: endDate,
+  date_end: currentDate,
   download: true
 })
 const getDetailData = async () => {
@@ -73,7 +73,7 @@ const selectService = (val: Record<string, string>) => {
     getDetailData()
   } else {
     delete query.value.service_id
-    delete exportQuery.value.service_id
+    delete exportQuery.value
     getDetailData()
   }
 }
@@ -87,7 +87,6 @@ const changePageSize = async () => {
   paginationTable.value.page = 1
   await getDetailData()
 }
-// 导出当页数据
 const exportFile = () => {
   if (tableRow.value.length === 0) {
     Notify.create({
@@ -104,7 +103,6 @@ const exportFile = () => {
     exportExcel('个人云主机用量统计.xlsx', '#PersonalUsageTable')
   }
 }
-// 导出全部数据
 const exportAll = async () => {
   if (tableRow.value.length === 0) {
     Notify.create({
@@ -119,7 +117,7 @@ const exportAll = async () => {
     })
   } else {
     const fileData = await store.getServerHostFile(exportQuery.value)
-    exportAllData(fileData.data, '个人云主机上月用量统计')
+    exportAllData(fileData.data, '个人云主机本月用量统计')
   }
 }
 onMounted(async () => {
@@ -128,7 +126,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="PersonalList">
+  <div class="CurrentMonthList">
     <div class="row items-center justify-between">
       <div class="col-4 row">
         <q-select outlined dense v-model="serviceId" :options="filterOptions" @update:model-value="selectService" label="筛选服务" class="col-8"/>
@@ -161,6 +159,6 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
-.PersonalList {
+.CurrentMonthList {
 }
 </style>

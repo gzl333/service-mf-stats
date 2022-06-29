@@ -4,7 +4,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/my/stats',
     component: () => import('layouts/StatsLayout.vue'),
-    redirect: '/my/stats/recharge',
+    redirect: '/my/stats/personal',
     children: [
       {
         path: 'recharge',
@@ -30,7 +30,7 @@ const routes: RouteRecordRaw[] = [
         children: [
           {
             path: 'month',
-            component: () => import('pages/personal/ThisMonthList.vue')
+            component: () => import('pages/personal/CurrentMonthList.vue')
           },
           {
             path: 'last',
@@ -42,19 +42,31 @@ const routes: RouteRecordRaw[] = [
           },
           {
             path: 'detail/:serverId',
-            component: () => import('pages/personal/ServerUsageDetailList.vue')
+            component: () => import('pages/public/ServerUsageDetailList.vue')
           }
         ]
       },
       {
         path: 'group',
         name: '项目组云主机用量列表',
-        redirect: '/my/stats/group/server',
+        redirect: '/my/stats/group/current',
         component: () => import('pages/group/GroupIndex.vue'),
         children: [
           {
-            path: 'server',
-            component: () => import('pages/group/GroupList.vue')
+            path: 'current',
+            component: () => import('pages/group/CurrentMonthList.vue')
+          },
+          {
+            path: 'last',
+            component: () => import('pages/group/LastMonthList.vue')
+          },
+          {
+            path: 'history',
+            component: () => import('pages/group/HistoryList.vue')
+          },
+          {
+            path: 'detail/:serverId',
+            component: () => import('pages/public/ServerUsageDetailList.vue')
           }
         ]
       },

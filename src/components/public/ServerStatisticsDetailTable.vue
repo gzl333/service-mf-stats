@@ -6,7 +6,7 @@
 // import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
 // import { dateFormat } from 'src/hooks/processTime'
-import PayStatusChip from '../../components/statistic/PayStatusChip.vue'
+import PayStatusChip from '../statistic/PayStatusChip.vue'
 const props = defineProps({
   tableRow: {
     type: Array,
@@ -14,7 +14,6 @@ const props = defineProps({
   }
 })
 // const emits = defineEmits(['change', 'delete'])
-console.log(props)
 // const store = useStore()
 // const route = useRoute()
 // const router = useRouter()

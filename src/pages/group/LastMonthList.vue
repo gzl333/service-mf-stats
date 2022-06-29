@@ -4,7 +4,7 @@ import { useStore } from 'stores/store'
 // import { useRoute } from 'vue-router'
 // import { navigateToUrl } from 'single-spa'
 // import { i18n } from 'boot/i18n'
-import PersonalUsageTable from 'components/personal/PersonalUsageTable.vue'
+import GroupUsageTable from 'components/group/GroupUsageTable.vue'
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
 import { Notify } from 'quasar'
 import { getLastFormatDate } from 'src/hooks/processTime'
@@ -22,6 +22,7 @@ const store = useStore()
 // const router = useRouter()
 // const tc = i18n.global.tc
 const filterOptions = computed(() => store.getServices)
+const groupOptions = computed(() => store.getGroupOptions)
 const tableRow: Ref = ref([])
 const startDate = getLastFormatDate(0)
 const endDate = getLastFormatDate(1)
@@ -29,6 +30,10 @@ const paginationTable = ref({
   page: 1,
   count: 0,
   rowsPerPage: 10
+})
+const groupId = ref({
+  label: '全部项目组',
+  value: '0'
 })
 const serviceId = ref({
   label: '全部服务',
@@ -45,15 +50,18 @@ const exportQuery: Ref = ref({
   date_end: endDate,
   download: true
 })
-const getDetailData = async () => {
+const getSingleDetailData = async () => {
   tableRow.value = []
+  paginationTable.value.count = 0
   let obj: Record<string, string> = {}
+  // query.value.vo_id = groupId.value.value
   const data = await store.getServerMetering(query.value)
   for (const elem of data.data.results) {
     obj = {}
     obj.server_id = elem.server_id
     obj.ipv4 = elem.server.ipv4
     obj.service_name = elem.service_name
+    obj.vo_id = groupId.value.value
     obj.vcpus = elem.server.vcpus
     obj.ram = elem.server.ram
     obj.total_public_ip_hours = elem.total_public_ip_hours
@@ -66,14 +74,51 @@ const getDetailData = async () => {
   }
   paginationTable.value.count = data.data.count
 }
+const getDetailData = async () => {
+  tableRow.value = []
+  paginationTable.value.count = 0
+  let obj: Record<string, string> = {}
+  for (const id of store.tables.groupTable.allIds) {
+    query.value.vo_id = id
+    const data = await store.getServerMetering(query.value)
+    for (const elem of data.data.results) {
+      obj = {}
+      obj.server_id = elem.server_id
+      obj.ipv4 = elem.server.ipv4
+      obj.service_name = elem.service_name
+      obj.vo_id = id
+      obj.vcpus = elem.server.vcpus
+      obj.ram = elem.server.ram
+      obj.total_public_ip_hours = elem.total_public_ip_hours
+      obj.total_cpu_hours = elem.total_cpu_hours
+      obj.total_ram_hours = elem.total_ram_hours
+      obj.total_disk_hours = elem.total_disk_hours
+      obj.total_original_amount = elem.total_original_amount
+      obj.total_trade_amount = elem.total_trade_amount
+      tableRow.value.push(obj)
+    }
+    paginationTable.value.count = paginationTable.value.count + data.data.count
+  }
+  delete query.value.vo_id
+  delete exportQuery.value.vo_id
+}
 const selectService = (val: Record<string, string>) => {
   if (val.value !== '') {
     query.value.service_id = val.value
     exportQuery.value.service_id = val.value
-    getDetailData()
+    getSingleDetailData()
   } else {
     delete query.value.service_id
     delete exportQuery.value.service_id
+    getDetailData()
+  }
+}
+const selectGroup = (val: Record<string, string>) => {
+  if (val.value !== '0') {
+    query.value.vo_id = val.value
+    exportQuery.value.vo_id = val.value
+    getSingleDetailData()
+  } else {
     getDetailData()
   }
 }
@@ -87,7 +132,6 @@ const changePageSize = async () => {
   paginationTable.value.page = 1
   await getDetailData()
 }
-// 导出当页数据
 const exportFile = () => {
   if (tableRow.value.length === 0) {
     Notify.create({
@@ -101,10 +145,9 @@ const exportFile = () => {
       multiLine: false
     })
   } else {
-    exportExcel('个人云主机用量统计.xlsx', '#PersonalUsageTable')
+    exportExcel('个人云主机用量统计.xlsx', '#GroupUsageTable')
   }
 }
-// 导出全部数据
 const exportAll = async () => {
   if (tableRow.value.length === 0) {
     Notify.create({
@@ -119,26 +162,30 @@ const exportAll = async () => {
     })
   } else {
     const fileData = await store.getServerHostFile(exportQuery.value)
-    exportAllData(fileData.data, '个人云主机上月用量统计')
+    exportAllData(fileData.data, '个人云主机本月用量统计')
   }
 }
 onMounted(async () => {
+  if (store.tables.groupTable.allIds.length === 0) {
+    await store.loadGroupTable()
+  }
   await getDetailData()
 })
 </script>
 
 <template>
-  <div class="PersonalList">
+  <div class="CurrentMonthList">
     <div class="row items-center justify-between">
-      <div class="col-4 row">
-        <q-select outlined dense v-model="serviceId" :options="filterOptions" @update:model-value="selectService" label="筛选服务" class="col-8"/>
+      <div class="col-5 row">
+        <q-select class="col-5" outlined dense v-model="groupId" :options="groupOptions" @update:model-value="selectGroup" label="筛选项目组"/>
+        <q-select outlined dense v-model="serviceId" :options="filterOptions" @update:model-value="selectService" label="筛选服务" class="col-6 q-ml-md"/>
       </div>
       <div>
         <q-btn outline label="导出当页数据" class="q-ml-md" @click="exportFile"/>
         <q-btn outline label="导出全部数据" class="q-ml-md" @click="exportAll"/>
       </div>
     </div>
-    <personal-usage-table :tableRow="tableRow"/>
+    <group-usage-table :tableRow="tableRow"/>
     <div class="row q-py-md text-grey justify-between items-center">
       <div class="row items-center">
         <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>
@@ -161,6 +208,6 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
-.PersonalList {
+.CurrentMonthList {
 }
 </style>
