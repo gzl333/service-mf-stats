@@ -26,8 +26,8 @@ const columns = [
   { name: 'total_cpu_hours', label: 'vCPU(核*天）', align: 'center' },
   { name: 'total_ram_hours', label: '内存(GB*天)', align: 'center' },
   { name: 'total_disk_hours', label: '本地硬盘(GB*天)', align: 'center' },
-  { name: 'total_original_amount', label: '计费金额(本月)', align: 'center' },
-  { name: 'total_trade_amount', label: '实际扣费金额(本月)', align: 'center' }
+  { name: 'total_original_amount', label: '计费金额', align: 'center' },
+  { name: 'total_trade_amount', label: '实际扣费金额', align: 'center' }
 ]
 const goToDetail = (serverId: string, serviceName: string, ipv4: string, vcpus: string, ram: string) => {
   navigateToUrl(`/my/stats/group/detail/${serverId}?service=${serviceName}&ipv4=${ipv4}&vcpus=${vcpus}&ram=${ram}`)

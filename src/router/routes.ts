@@ -30,10 +30,16 @@ const routes: RouteRecordRaw[] = [
         children: [
           {
             path: 'month',
+            meta: {
+              isPersonal: true
+            },
             component: () => import('pages/personal/CurrentMonthList.vue')
           },
           {
             path: 'last',
+            meta: {
+              isPersonal: true
+            },
             component: () => import('pages/personal/LastMonthList.vue')
           },
           {

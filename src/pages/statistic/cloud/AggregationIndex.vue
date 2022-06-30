@@ -263,7 +263,6 @@ onMounted(async () => {
         align="justify"
         active-color="primary"
         active-bg-color="grey-3"
-        style="width: 8.4%"
       >
         <q-tab no-caps name="server" class="q-pl-none text-weight-bold" @click="changeTab('server')" :ripple="false">
           按云主机uuid

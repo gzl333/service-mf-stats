@@ -20,7 +20,6 @@ const store = useStore()
 // const tc = i18n.global.tc
 
 const activeItem = ref(store.items.currentPath[1])
-console.log(store.items.currentPath)
 const changeTab = async (name: string) => {
   activeItem.value = name
   navigateToUrl(`/my/stats/group/${name}`)

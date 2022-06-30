@@ -28,7 +28,6 @@ const availableCoupon = computed(() => store.getGroupAvailableCouponByGroupId(gr
 const expiringCoupon = computed(() => store.getGroupExpiringCouponByGroupId(groupId.value))
 const expiredCoupon = computed(() => store.getGroupExpiredCouponByGroupId(groupId.value))
 const outCoupon = computed(() => store.getGroupOutCouponByGroupId(groupId.value))
-console.log(availableCoupon)
 const changeTab = async (label: string, voId: string) => {
   activeItem.value = label
   groupId.value = voId

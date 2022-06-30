@@ -136,7 +136,6 @@ const changePageSize = async () => {
   await getDetailData()
 }
 const search = async () => {
-  console.log(query.value)
   if (groupId.value.value === '0') {
     await getDetailData()
   } else {

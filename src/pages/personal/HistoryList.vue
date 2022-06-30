@@ -4,7 +4,7 @@ import { useStore } from 'stores/store'
 // import { useRoute } from 'vue-router'
 // import { navigateToUrl } from 'single-spa'
 // import { i18n } from 'boot/i18n'
-import PersonalUsageTable from 'components/personal/PersonalUsageTable.vue'
+import ServerUsageTable from 'components/public/ServerUsageTable.vue'
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
 import { Notify } from 'quasar'
 import { getHistoryStartFormatDate, getNowFormatDate } from 'src/hooks/processTime'
@@ -49,22 +49,9 @@ const exportQuery: Ref = ref({
 })
 const getDetailData = async () => {
   tableRow.value = []
-  let obj: Record<string, string> = {}
   const data = await store.getServerMetering(query.value)
   for (const elem of data.data.results) {
-    obj = {}
-    obj.server_id = elem.server_id
-    obj.ipv4 = elem.server.ipv4
-    obj.service_name = elem.service_name
-    obj.vcpus = elem.server.vcpus
-    obj.ram = elem.server.ram
-    obj.total_public_ip_hours = elem.total_public_ip_hours
-    obj.total_cpu_hours = elem.total_cpu_hours
-    obj.total_ram_hours = elem.total_ram_hours
-    obj.total_disk_hours = elem.total_disk_hours
-    obj.total_original_amount = elem.total_original_amount
-    obj.total_trade_amount = elem.total_trade_amount
-    tableRow.value.push(obj)
+    tableRow.value.push(elem)
   }
   paginationTable.value.count = data.data.count
 }
@@ -110,7 +97,7 @@ const exportFile = () => {
       multiLine: false
     })
   } else {
-    exportExcel('个人云主机用量统计.xlsx', '#PersonalUsageTable')
+    exportExcel('个人云主机用量统计.xlsx', '#ServerUsageTable')
   }
 }
 // 导出全部数据
@@ -180,7 +167,7 @@ onMounted(async () => {
         <q-btn outline label="导出全部数据" class="q-ml-md" @click="exportAll"/>
       </div>
     </div>
-    <personal-usage-table :tableRow="tableRow"/>
+    <server-usage-table :tableRow="tableRow"/>
     <div class="row q-py-md text-grey justify-between items-center">
       <div class="row items-center">
         <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>

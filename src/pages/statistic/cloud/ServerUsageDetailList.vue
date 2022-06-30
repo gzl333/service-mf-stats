@@ -4,7 +4,7 @@ import { onMounted, ref, Ref } from 'vue'
 import { useStore } from 'stores/store'
 import { useRoute, useRouter } from 'vue-router'
 // import { i18n } from 'boot/i18n'
-import ServerUsageDetailTable from 'components/statistic/ServerUsageDetailTable.vue'
+import ServerUsageTable from 'components/public/ServerUsageTable.vue'
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
 import { Notify } from 'quasar'
 // const props = defineProps({
@@ -205,7 +205,7 @@ const exportFile = () => {
       multiLine: false
     })
   } else {
-    exportExcel('云主机用量统计.xlsx', '#detailTable')
+    exportExcel('云主机用量统计.xlsx', '#ServerUsageTable')
   }
 }
 const exportAll = async () => {
@@ -264,7 +264,7 @@ onMounted(async () => {
       <div class="q-ml-lg">计费金额合计：{{ totalAmount.toFixed(2) }}点</div>
       <div class="q-ml-lg">实际扣费金额合计：{{ actualAmount.toFixed(2) }}点</div>
     </div>
-    <server-usage-detail-table :tableRow="tableRow"/>
+    <server-usage-table :table-row="tableRow"/>
     <div class="row q-mt-lg text-grey justify-between items-center">
       <div class="row items-center">
         <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>
