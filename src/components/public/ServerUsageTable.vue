@@ -11,12 +11,10 @@ const props = defineProps({
     required: true
   }
 })
-console.log(props)
 // const emits = defineEmits(['change', 'delete'])
 
 // const store = useStore()
 const route = useRoute()
-console.log(route)
 // const router = useRouter()
 // const tc = i18n.global.tc
 const columns = [
@@ -31,6 +29,9 @@ const columns = [
   { name: 'total_trade_amount', label: '实际扣费金额', align: 'center' }
 ]
 const goToDetail = (serverId: string, serviceName: string, ipv4: string, vcpus: string, ram: string) => {
+  console.log(ipv4)
+  console.log(vcpus)
+  console.log(ram)
   navigateToUrl(`/my/stats/personal/detail/${serverId}?service=${serviceName}&ipv4=${ipv4}&vcpus=${vcpus}&ram=${ram}`)
 }
 </script>
@@ -55,7 +56,7 @@ const goToDetail = (serverId: string, serviceName: string, ipv4: string, vcpus: 
           <q-tr :props="props">
             <q-td key="ipv4" :props="props">
               <q-btn v-if="route.meta.isPersonal" class="q-ma-none" :label="props.row.server.ipv4" color="primary" padding="xs"
-                     @click="goToDetail(props.row.server_id, props.row.service_name, props.row.ipv4, props.row.vcpus, props.row.ram)"
+                     @click="goToDetail(props.row.server_id, props.row.service_name, props.row.server.ipv4, props.row.server.vcpus, props.row.server.ram)"
                      flat dense unelevated></q-btn>
               <span v-else>{{ props.row.server.ipv4 }}</span>
             </q-td>
