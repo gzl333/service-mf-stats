@@ -13,11 +13,9 @@ const props = defineProps({
     required: false
   }
 })
-console.log(props)
 // const emits = defineEmits(['change', 'delete'])
 // const store = useStore()
 const route = useRoute()
-console.log(route)
 // const router = useRouter()
 // const tc = i18n.global.tc
 const columnsTwo = [
@@ -57,8 +55,8 @@ const columnsTwo = [
             <q-td key="payment_status" :props="props">
               <pay-status-chip class="non-selectable" :status="props.row.payment_status"/>
             </q-td>
-            <q-td v-if="props.row.username !== ''" key="username" :props="props">{{ props.row.username }}</q-td>
-            <q-td v-if="props.row.vo_name !== ''" key="vo_name" :props="props">{{ props.row.vo_name }}</q-td>
+            <q-td v-if="route.meta.isPersonal" key="username" :props="props">{{ props.row.username }}</q-td>
+            <q-td v-else key="vo_name" :props="props">{{ props.row.vo_name }}</q-td>
             <q-td key="public_ip_hours" :props="props">{{ Math.round(props.row.public_ip_hours / 24) }}</q-td>
             <q-td key="cpu_hours" :props="props">{{ Math.round(props.row.cpu_hours / 24) }}</q-td>
             <q-td key="ram_hours" :props="props">{{ Math.round(props.row.ram_hours / 24) }}</q-td>
