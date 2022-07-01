@@ -15,7 +15,6 @@ import { Notify } from 'quasar'
 //   }
 // })
 // const emits = defineEmits(['change', 'delete'])
-
 const store = useStore()
 const route = useRoute()
 const router = useRouter()
@@ -44,12 +43,14 @@ const query: Ref = ref({
   page_size: 10,
   date_start: year + '-' + '01-01',
   date_end: currentDate,
+  'as-admin': true,
   server_id: ''
 })
 const exportQuery: Ref = ref({
   date_start: year + '-' + '01-01',
   date_end: currentDate,
   server_id: '',
+  'as-admin': true,
   download: true
 })
 const paginationTable = ref({

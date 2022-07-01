@@ -51,6 +51,9 @@ const routes: RouteRecordRaw[] = [
           },
           {
             path: 'detail/:serverId',
+            meta: {
+              isPersonal: true
+            },
             component: () => import('pages/public/ServerUsageDetailList.vue')
           }
         ]

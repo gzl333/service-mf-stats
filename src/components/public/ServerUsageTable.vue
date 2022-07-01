@@ -29,9 +29,6 @@ const columns = [
   { name: 'total_trade_amount', label: '实际扣费金额', align: 'center' }
 ]
 const goToDetail = (serverId: string, serviceName: string, ipv4: string, vcpus: string, ram: string) => {
-  console.log(ipv4)
-  console.log(vcpus)
-  console.log(ram)
   navigateToUrl(`/my/stats/personal/detail/${serverId}?service=${serviceName}&ipv4=${ipv4}&vcpus=${vcpus}&ram=${ram}`)
 }
 </script>
