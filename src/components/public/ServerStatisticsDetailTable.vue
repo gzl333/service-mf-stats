@@ -18,7 +18,7 @@ const props = defineProps({
 const route = useRoute()
 // const router = useRouter()
 // const tc = i18n.global.tc
-const columnsTwo = [
+const columns = [
   // { name: 'creation_time', align: 'center', label: '每日统计时间' },
   { name: 'date', align: 'center', label: '计费日期' },
   { name: 'payment_status', label: '扣费状态', align: 'center' },
@@ -41,7 +41,7 @@ const columnsTwo = [
         id="serverTable"
         table-header-class="bg-grey-1 text-grey"
         :rows="props.tableRow"
-        :columns="columnsTwo"
+        :columns="columns"
         row-key="name"
         color="primary"
         loading-label="网络请求中，请稍候..."

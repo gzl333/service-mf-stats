@@ -152,7 +152,8 @@ const routes: RouteRecordRaw[] = [
                 path: 'server/:serverId',
                 name: '云主机用量明细',
                 meta: {
-                  requireServiceAdmin: true // 服务管理员权限才能访问
+                  requireServiceAdmin: true, // 服务管理员权限才能访问
+                  isPersonal: true
                 },
                 component: () => import('pages/statistic/cloud/ServerStatisticsDetailList.vue')
               },
