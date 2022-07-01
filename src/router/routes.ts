@@ -44,6 +44,9 @@ const routes: RouteRecordRaw[] = [
           },
           {
             path: 'history',
+            meta: {
+              isPersonal: true
+            },
             component: () => import('pages/personal/HistoryList.vue')
           },
           {
