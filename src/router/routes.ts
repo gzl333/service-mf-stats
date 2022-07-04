@@ -8,7 +8,6 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: 'recharge',
-        name: '账户与充值',
         redirect: '/my/stats/recharge/personal',
         component: () => import('pages/recharge/RechargeIndex.vue'),
         children: [
@@ -23,8 +22,17 @@ const routes: RouteRecordRaw[] = [
         ]
       },
       {
+        path: 'billing',
+        component: () => import('pages/billing/BillingIndex.vue'),
+        children: [
+          {
+            path: 'server',
+            component: () => import('pages/billing/ServerPage.vue')
+          }
+        ]
+      },
+      {
         path: 'personal',
-        name: '个人云主机用量列表',
         redirect: '/my/stats/personal/month',
         component: () => import('pages/personal/PersonalIndex.vue'),
         children: [
@@ -60,7 +68,6 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: 'group',
-        name: '项目组云主机用量列表',
         redirect: '/my/stats/group/current',
         component: () => import('pages/group/GroupIndex.vue'),
         children: [
@@ -88,7 +95,6 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: 'statistic',
-        name: '用量管理统计',
         meta: {
           requireServiceAdmin: true // 服务管理员权限才能访问
         },
@@ -150,7 +156,6 @@ const routes: RouteRecordRaw[] = [
               },
               {
                 path: 'server/:serverId',
-                name: '云主机用量明细',
                 meta: {
                   requireServiceAdmin: true, // 服务管理员权限才能访问
                   isPersonal: true
@@ -159,7 +164,6 @@ const routes: RouteRecordRaw[] = [
               },
               {
                 path: 'service/:serviceId',
-                name: '服务用量列表',
                 meta: {
                   requireServiceAdmin: true, // 服务管理员权限才能访问
                   type: 'service'
@@ -168,7 +172,6 @@ const routes: RouteRecordRaw[] = [
               },
               {
                 path: 'group/:groupId',
-                name: '项目组用量列表',
                 meta: {
                   requireServiceAdmin: true, // 服务管理员权限才能访问
                   type: 'group'
@@ -177,7 +180,6 @@ const routes: RouteRecordRaw[] = [
               },
               {
                 path: 'user/:userid',
-                name: '用户用量列表',
                 meta: {
                   requireServiceAdmin: true, // 服务管理员权限才能访问
                   type: 'user'
