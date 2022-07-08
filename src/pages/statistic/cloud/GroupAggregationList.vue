@@ -20,7 +20,7 @@ const store = useStore()
 // const router = useRouter()
 // const tc = i18n.global.tc
 const groupColumns = [
-  { name: 'vo_id', label: 'ID', align: 'center' },
+  // { name: 'vo_id', label: 'ID', align: 'center' },
   { name: 'name', align: 'center', label: '项目组名称' },
   { name: 'company', label: '单位', align: 'center' },
   { name: 'total_original_amount', label: '计费金额合计', align: 'center' },
@@ -101,7 +101,7 @@ onBeforeUnmount(() => {
       >
         <template v-slot:body="props">
           <q-tr :props="props">
-            <q-td key="vo_id" :props="props">{{ props.row.vo_id }}</q-td>
+<!--            <q-td key="vo_id" :props="props">{{ props.row.vo_id }}</q-td>-->
             <q-td key="name" :props="props">
               <q-btn
                 @click="goToDetail(props.row.vo_id, props.row.vo.name, props.row.total_server)"

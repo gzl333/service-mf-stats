@@ -20,11 +20,11 @@ const store = useStore()
 // const router = useRouter()
 // const tc = i18n.global.tc
 const userColumns = [
-  {
-    name: 'user_id',
-    label: 'ID',
-    align: 'center'
-  },
+  // {
+  //   name: 'user_id',
+  //   label: 'ID',
+  //   align: 'center'
+  // },
   {
     name: 'username',
     align: 'center',
@@ -124,9 +124,9 @@ onBeforeUnmount(() => {
       >
         <template v-slot:body="props">
           <q-tr :props="props">
-            <q-td key="user_id" :props="props">
-              <div class="text">{{ props.row.user_id }}</div>
-            </q-td>
+<!--            <q-td key="user_id" :props="props">-->
+<!--              <div class="text">{{ props.row.user_id }}</div>-->
+<!--            </q-td>-->
             <q-td key="username" :props="props">
               <q-btn
                 @click="goToDetail(props.row.user_id, props.row.user.username, props.row.total_server)"

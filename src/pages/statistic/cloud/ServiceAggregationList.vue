@@ -21,7 +21,7 @@ const store = useStore()
 // const tc = i18n.global.tc
 
 const serviceColumns = [
-  { name: 'service_id', label: 'ID', align: 'center' },
+  // { name: 'service_id', label: 'ID', align: 'center' },
   { name: 'name', align: 'center', label: '服务节点' },
   { name: 'total_original_amount', label: '计费金额合计', align: 'center' },
   { name: 'total_trade_amount', label: '实际扣费金额合计', align: 'center' },
@@ -100,7 +100,7 @@ onBeforeUnmount(() => {
       >
         <template v-slot:body="props">
           <q-tr :props="props">
-            <q-td key="service_id" :props="props">{{ props.row.service_id }}</q-td>
+<!--            <q-td key="service_id" :props="props">{{ props.row.service_id }}</q-td>-->
             <q-td key="name" :props="props">
               <q-btn
                 @click="goToDetail(props.row.service_id, props.row.service.name, props.row.total_server )"

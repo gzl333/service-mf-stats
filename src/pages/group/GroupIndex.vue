@@ -31,7 +31,7 @@ const changeTab = async (name: string) => {
     <div class="column">
       <div class="row justify-center">
         <div class="content-fixed-width">
-          <div class="text-h6 q-pt-lg q-px-none">个人云主机</div>
+          <div class="text-h6 q-pt-lg q-px-none">项目组云主机</div>
           <q-tabs
             v-model="activeItem"
             inline-label
