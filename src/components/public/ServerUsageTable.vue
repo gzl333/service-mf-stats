@@ -21,7 +21,7 @@ const columns = [
   { name: 'ipv4', align: 'center', label: 'ip地址' },
   { name: 'service_name', label: '服务节点', align: 'center' },
   { name: 'configuration', label: '初始配置', align: 'center' },
-  { name: 'total_public_ip_hours', label: '公网IP(个)', align: 'center' },
+  { name: 'total_public_ip_hours', label: '公网IP(个*天)', align: 'center' },
   { name: 'total_cpu_hours', label: 'vCPU(核*天）', align: 'center' },
   { name: 'total_ram_hours', label: '内存(GB*天)', align: 'center' },
   { name: 'total_disk_hours', label: '本地硬盘(GB*天)', align: 'center' },
