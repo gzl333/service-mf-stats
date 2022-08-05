@@ -252,7 +252,7 @@ onMounted(() => {
               <div class="q-mt-xl">{{ route.params.serverId }}</div>
             </div>
             <div class="col-3 text-center">
-              <div class="text-subtitle1 text-weight-bold">服务节点</div>
+              <div class="text-subtitle1 text-weight-bold">服务单元</div>
               <q-separator/>
               <div class="text-subtitle1 q-mt-xl">{{ route.query.service }}</div>
             </div>

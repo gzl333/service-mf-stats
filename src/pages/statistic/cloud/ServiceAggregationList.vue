@@ -22,7 +22,7 @@ const store = useStore()
 
 const serviceColumns = [
   // { name: 'service_id', label: 'ID', align: 'center' },
-  { name: 'name', align: 'center', label: '服务节点' },
+  { name: 'name', align: 'center', label: '服务单元' },
   { name: 'total_original_amount', label: '计费金额合计', align: 'center' },
   { name: 'total_trade_amount', label: '实际扣费金额合计', align: 'center' },
   { name: 'total_server', label: '云主机数量合计', align: 'center' }

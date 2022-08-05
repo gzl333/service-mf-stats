@@ -25,7 +25,7 @@ const store = useStore()
 const serverColumns = [
   { name: 'server_id', label: '云主机uuid', align: 'center' },
   { name: 'ipv4', align: 'center', label: 'ip地址' },
-  { name: 'service_name', label: '服务节点', align: 'center' },
+  { name: 'service_name', label: '服务单元', align: 'center' },
   { name: 'configuration', label: '初始配置', align: 'center' },
   { name: 'total_public_ip_hours', label: '公网IP(个*天)', align: 'center' },
   { name: 'total_cpu_hours', label: 'vCPU(核*天）', align: 'center' },

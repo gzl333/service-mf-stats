@@ -268,7 +268,7 @@ onMounted(async () => {
           按云主机uuid
         </q-tab>
         <q-tab no-caps name="service"  class="q-pl-none text-weight-bold" @click="changeTab('service')" :ripple="false">
-          按服务节点
+          按服务单元
         </q-tab>
         <q-tab no-caps name="group"  class="q-pl-none text-weight-bold" @click="changeTab('group')" :ripple="false">
           按项目组id
