@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
-// import { i18n } from 'boot/i18n'
+import { i18n } from 'boot/i18n'
 
 // const props = defineProps({
 //   foo: {
@@ -17,7 +17,7 @@ import { useStore } from 'stores/store'
 const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
-// const tc = i18n.global.tc
+const { tc } = i18n.global
 
 const activeItem = ref(store.items.currentPath[1])
 const changeTab = async (name: string) => {
@@ -31,7 +31,7 @@ const changeTab = async (name: string) => {
     <div class="column">
       <div class="row justify-center">
         <div class="content-fixed-width">
-          <div class="text-h6 q-pt-lg q-px-none">项目组云主机</div>
+          <div class="text-h6 q-pt-lg q-px-none">{{ tc('项目组云主机') }}</div>
           <q-tabs
             v-model="activeItem"
             inline-label
@@ -39,13 +39,13 @@ const changeTab = async (name: string) => {
             indicator-color="primary"
             active-color="primary"
           >
-            <q-tab no-caps name="current" class="q-px-none q-py-md q-mr-md" :ripple="false" label="本月数据"
+            <q-tab no-caps name="current" class="q-px-none q-py-md q-mr-md" :ripple="false" :label="tc('本月数据')"
                    icon="las la-digital-tachograph" @click="changeTab('current')">
             </q-tab>
-            <q-tab no-caps name="last" class="q-px-none q-py-md q-mr-md" :ripple="false" label="上月数据"
+            <q-tab no-caps name="last" class="q-px-none q-py-md q-mr-md" :ripple="false" :label="tc('上月数据')"
                    icon="las la-calendar" @click="changeTab('last')">
             </q-tab>
-            <q-tab no-caps name="history" class="q-px-none q-py-md q-mr-md" :ripple="false" label="历史数据"
+            <q-tab no-caps name="history" class="q-px-none q-py-md q-mr-md" :ripple="false" :label="tc('历史数据')"
                    icon="las la-history" @click="changeTab('history')">
             </q-tab>
           </q-tabs>

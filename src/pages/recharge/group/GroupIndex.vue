@@ -18,7 +18,7 @@ import { dateFormat } from 'src/hooks/processTime'
 const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
-// const tc = i18n.global.tc
+// const { tc } = i18n.global
 const activeItem: Ref = ref('0')
 const groupId = ref('')
 const groupTabActive = ref('available')

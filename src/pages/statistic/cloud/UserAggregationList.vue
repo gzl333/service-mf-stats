@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, Ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount, Ref, computed } from 'vue'
 import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
-// import { i18n } from 'boot/i18n'
+import { i18n } from 'boot/i18n'
 import emitter from 'boot/mitt'
 import { getNowFormatDate } from 'src/hooks/processTime'
 // const props = defineProps({
@@ -18,8 +18,8 @@ import { getNowFormatDate } from 'src/hooks/processTime'
 const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
-// const tc = i18n.global.tc
-const userColumns = [
+const { tc } = i18n.global
+const userColumns = computed(() => [
   // {
   //   name: 'user_id',
   //   label: 'ID',
@@ -28,29 +28,29 @@ const userColumns = [
   {
     name: 'username',
     align: 'center',
-    label: '用户'
+    label: (() => tc('用户'))()
   },
   {
     name: 'company',
-    label: '单位',
+    label: (() => tc('单位'))(),
     align: 'center'
   },
   {
     name: 'total_original_amount',
-    label: '计费金额合计',
+    label: (() => tc('计费金额合计'))(),
     align: 'center'
   },
   {
     name: 'total_trade_amount',
-    label: '实际扣费金额合计',
+    label: (() => tc('实际扣费金额合计'))(),
     align: 'center'
   },
   {
     name: 'total_server',
-    label: '云主机数量合计',
+    label: (() => tc('云主机数量合计'))(),
     align: 'center'
   }
-]
+])
 const isLoading = ref(false)
 const paginationTable = ref({
   page: 1,
@@ -117,8 +117,8 @@ onBeforeUnmount(() => {
         :columns="userColumns"
         row-key="name"
         color="primary"
-        loading-label="网络请求中，请稍候..."
-        no-data-label="暂无数据"
+        :loading-label="tc('网络请求中，请稍候...')"
+        :no-data-label="tc('暂无数据')"
         hide-pagination
         :pagination="{ rowsPerPage: 0 }"
       >
@@ -135,7 +135,7 @@ onBeforeUnmount(() => {
               </q-btn>
             </q-td>
             <q-td key="company" :props="props">{{
-                props.row.user.company === '' ? '暂无' : props.row.user.company
+                props.row.user.company === '' ? tc('暂无') : props.row.user.company
               }}
             </q-td>
             <q-td key="total_original_amount" :props="props">{{ props.row.total_original_amount }}</q-td>
@@ -147,11 +147,12 @@ onBeforeUnmount(() => {
       <q-separator/>
       <div class="row text-grey justify-between items-center q-mt-md">
         <div class="row items-center">
-          <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>
+          <span class="q-pr-md" v-if="i18n.global.locale === 'zh'">共{{ paginationTable.count }}条数据</span>
+          <span class="q-pr-md" v-else>{{ paginationTable.count }} pieces of data in total</span>
           <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense
                     borderless @update:model-value="changePageSize">
           </q-select>
-          <span>/页</span>
+          <span>/{{ tc('页') }}</span>
         </div>
         <q-pagination
           v-model="paginationTable.page"

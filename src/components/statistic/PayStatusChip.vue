@@ -12,7 +12,7 @@ const props = defineProps({
   }
 })
 // const emits = defineEmits(['change', 'delete'])
-const { tc/* , locale  */ } = i18n.global
+const { tc } = i18n.global
 // const store = useStore()
 // const route = useRoute()
 // const router = useRouter()

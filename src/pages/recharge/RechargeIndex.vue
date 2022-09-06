@@ -17,7 +17,7 @@ import { useStore } from 'stores/store'
 const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
-// const tc = i18n.global.tc
+// const { tc } = i18n.global
 
 const activeItem = ref(store.items.currentPath[1]) // keep selection when reloading
 const changeTab = async (name: string) => {

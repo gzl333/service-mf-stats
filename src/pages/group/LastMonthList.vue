@@ -3,7 +3,7 @@ import { onMounted, Ref, ref, computed } from 'vue'
 import { useStore } from 'stores/store'
 // import { useRoute } from 'vue-router'
 // import { navigateToUrl } from 'single-spa'
-// import { i18n } from 'boot/i18n'
+import { i18n } from 'boot/i18n'
 import GroupUsageTable from 'components/group/GroupUsageTable.vue'
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
 import { Notify } from 'quasar'
@@ -20,7 +20,7 @@ import { getLastFormatDate } from 'src/hooks/processTime'
 const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
-// const tc = i18n.global.tc
+const { tc } = i18n.global
 const filterOptions = computed(() => store.getServices)
 const groupOptions = computed(() => store.getGroupOptions)
 const tableRow: Ref = ref([])
@@ -33,10 +33,12 @@ const paginationTable = ref({
 })
 const groupId = ref({
   label: '全部项目组',
+  labelEn: 'All Groups',
   value: '0'
 })
 const serviceId = ref({
   label: '全部服务',
+  labelEn: 'All Servers',
   value: ''
 })
 const query: Ref = ref({
@@ -106,20 +108,36 @@ const selectService = (val: Record<string, string>) => {
   if (val.value !== '') {
     query.value.service_id = val.value
     exportQuery.value.service_id = val.value
-    getSingleDetailData()
   } else {
     delete query.value.service_id
     delete exportQuery.value.service_id
-    getDetailData()
   }
+  // if (groupId.value.value !== '0') {
+  //   query.value.service_id = val.value
+  //   exportQuery.value.service_id = val.value
+  //   getSingleDetailData()
+  // } else {
+  //   delete query.value.service_id
+  //   delete exportQuery.value.service_id
+  //   getDetailData()
+  // }
 }
 const selectGroup = (val: Record<string, string>) => {
-  if (val.value !== '0') {
-    query.value.vo_id = val.value
-    exportQuery.value.vo_id = val.value
-    getSingleDetailData()
+  query.value.vo_id = val.value
+  exportQuery.value.vo_id = val.value
+  // if (val.value !== '0') {
+  //   query.value.vo_id = val.value
+  //   exportQuery.value.vo_id = val.value
+  //   getSingleDetailData()
+  // } else {
+  //   getDetailData()
+  // }
+}
+const search = async () => {
+  if (groupId.value.value === '0') {
+    await getDetailData()
   } else {
-    getDetailData()
+    await getSingleDetailData()
   }
 }
 const changePagination = async (val: number) => {
@@ -138,14 +156,14 @@ const exportFile = () => {
       classes: 'notification-negative shadow-15',
       icon: 'mdi-alert',
       textColor: 'negative',
-      message: '暂无数据',
+      message: tc('暂无数据'),
       position: 'bottom',
       closeBtn: true,
       timeout: 5000,
       multiLine: false
     })
   } else {
-    exportExcel('个人云主机用量统计.xlsx', '#GroupUsageTable')
+    exportExcel(i18n.global.locale === 'zh' ? '项目组云主机用量统计.xlsx' : ' Group Servers Statistics.xlsx', '#GroupUsageTable')
   }
 }
 const exportAll = async () => {
@@ -154,7 +172,7 @@ const exportAll = async () => {
       classes: 'notification-negative shadow-15',
       icon: 'mdi-alert',
       textColor: 'negative',
-      message: '暂无数据',
+      message: tc('暂无数据'),
       position: 'bottom',
       closeBtn: true,
       timeout: 5000,
@@ -162,7 +180,7 @@ const exportAll = async () => {
     })
   } else {
     const fileData = await store.getServerHostFile(exportQuery.value)
-    exportAllData(fileData.data, '个人云主机本月用量统计')
+    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '项目组云主机上月月用量统计' : 'Group Servers Statistics In Last Month')
   }
 }
 onMounted(async () => {
@@ -177,22 +195,24 @@ onMounted(async () => {
   <div class="CurrentMonthList">
     <div class="row items-center justify-between">
       <div class="col-5 row">
-        <q-select class="col-5" outlined dense v-model="groupId" :options="groupOptions" @update:model-value="selectGroup" label="筛选项目组"/>
-        <q-select outlined dense v-model="serviceId" :options="filterOptions" @update:model-value="selectService" label="筛选服务" class="col-6 q-ml-md"/>
+        <q-select class="col-5" outlined dense v-model="groupId" :options="groupOptions" @update:model-value="selectGroup" :label="tc('筛选项目组')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
+        <q-select outlined dense v-model="serviceId" :options="filterOptions" @update:model-value="selectService" :label="tc('筛选服务')" class="col-5 q-ml-xs" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
+        <q-btn class="q-ml-xs" outline no-caps :label="tc('搜索')" @click="search"/>
       </div>
       <div>
-        <q-btn outline label="导出当页数据" class="q-ml-md" @click="exportFile"/>
-        <q-btn outline label="导出全部数据" class="q-ml-md" @click="exportAll"/>
+        <q-btn outline no-caps :label="tc('导出当页数据')" @click="exportFile"/>
+        <q-btn outline no-caps :label="tc('导出全部数据')" class="q-ml-xs" @click="exportAll"/>
       </div>
     </div>
     <group-usage-table :tableRow="tableRow"/>
     <div class="row q-py-md text-grey justify-between items-center">
       <div class="row items-center">
-        <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>
+        <span class="q-pr-md" v-if="i18n.global.locale === 'zh'">共{{ paginationTable.count }}条数据</span>
+        <span class="q-pr-md" v-else>{{ paginationTable.count }} pieces of data in total</span>
         <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense
                   borderless @update:model-value="changePageSize">
         </q-select>
-        <span>/页</span>
+        <span>/{{ tc('页') }}</span>
       </div>
       <q-pagination
         v-model="paginationTable.page"

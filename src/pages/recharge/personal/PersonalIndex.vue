@@ -18,7 +18,7 @@ import { dateFormat } from 'src/hooks/processTime'
 const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
-// const tc = i18n.global.tc
+// const { tc } = i18n.global
 const tab = ref('available')
 const availableCashCoupon = computed(() => store.getPersonalAvailableCoupon())
 const expiredCashCoupon = computed(() => store.getPersonalExpiredCoupon())

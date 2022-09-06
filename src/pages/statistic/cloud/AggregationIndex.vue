@@ -3,7 +3,7 @@ import { onMounted, ref, Ref } from 'vue'
 // import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
-// import { i18n } from 'boot/i18n'
+import { i18n } from 'boot/i18n'
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
 import emitter from 'boot/mitt'
 import { navigateToUrl } from 'single-spa'
@@ -19,7 +19,7 @@ import { navigateToUrl } from 'single-spa'
 const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
-// const tc = i18n.global.tc
+const { tc } = i18n.global
 const activeItem = ref(store.items.currentPath[3])
 const isDisable = ref(false)
 const myDate = new Date()
@@ -28,6 +28,7 @@ const year = myDate.getFullYear()
 const month = myDate.getMonth() + 1
 let currentMonth: number | string = myDate.getMonth() + 1
 let strDate: number | string = myDate.getDate()
+const monthArray = ['January', 'february', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const searchName = ref('')
 const searchQuery = ref({
   year: {
@@ -36,6 +37,7 @@ const searchQuery = ref({
   },
   month: {
     label: '全年',
+    labelEn: 'Annual',
     value: 0
   }
 })
@@ -68,7 +70,8 @@ const exportQuery: Ref = ref({
 const initSelectYear = () => {
   monthOptions.value.push({
     value: 0,
-    label: '全年'
+    label: '全年',
+    labelEn: 'Annual'
   })
   for (let i = 2021; i <= year; i++) {
     yearOptions.value.unshift({
@@ -79,7 +82,8 @@ const initSelectYear = () => {
   for (let i = 1; i <= month; i++) {
     monthOptions.value.push({
       value: i,
-      label: i + '月'
+      label: i + '月',
+      labelEn: monthArray[i - 1]
     })
   }
 }
@@ -87,24 +91,28 @@ const changeYear = (val: Record<string, number>) => {
   monthOptions.value = []
   searchQuery.value.month = {
     label: '全年',
+    labelEn: 'Annual',
     value: 0
   }
   monthOptions.value.push({
     value: 0,
-    label: '全年'
+    label: '全年',
+    labelEn: 'Annual'
   })
   if (val.value === year) {
     for (let i = 1; i <= month; i++) {
       monthOptions.value.push({
         value: i,
-        label: i + '月'
+        label: i + '月',
+        labelEn: monthArray[i - 1]
       })
     }
   } else {
     for (let i = 1; i <= 12; i++) {
       monthOptions.value.push({
         value: i,
-        label: i + '月'
+        label: i + '月',
+        labelEn: monthArray[i - 1]
       })
     }
   }
@@ -179,29 +187,29 @@ const search = async () => {
 const exportFile = () => {
   // name表示生成excel的文件名     tableName表示表格的id
   if (activeItem.value === 'user') {
-    exportExcel('用户用量列表.xlsx', '#userTable')
+    exportExcel(i18n.global.locale === 'zh' ? '用户用量列表.xlsx' : 'User Usage List.xlsx', '#userTable')
   } else if (activeItem.value === 'group') {
-    exportExcel('项目组用量列表.xlsx', '#groupTable')
+    exportExcel(i18n.global.locale === 'zh' ? '项目组用量列表.xlsx' : 'Group Usage List.xlsx', '#groupTable')
   } else if (activeItem.value === 'server') {
-    exportExcel('云主机用量列表.xlsx', '#serverTable')
+    exportExcel(i18n.global.locale === 'zh' ? '云主机用量列表.xlsx' : 'Servers Usage List.xlsx', '#serverTable')
   } else if (activeItem.value === 'service') {
-    exportExcel('服务用量列表.xlsx', '#serviceTable')
+    exportExcel(i18n.global.locale === 'zh' ? '服务用量列表.xlsx' : 'service Usage List.xlsx', '#serviceTable')
   }
 }
 // 导出全部数据
 const exportAll = async () => {
   if (activeItem.value === 'user') {
     const fileData = await store.getUserHostFile(exportQuery.value)
-    exportAllData(fileData.data, '按用户计量计费聚合统计')
+    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '按用户计量计费聚合统计' : 'Aggregate Statistics Of Metering By User')
   } else if (activeItem.value === 'group') {
     const fileData = await store.getGroupHostFile(exportQuery.value)
-    exportAllData(fileData.data, '按项目组计量计费聚合统计')
+    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '按项目组计量计费聚合统计' : 'Aggregate Statistics Of Metering By Group')
   } else if (activeItem.value === 'server') {
     const fileData = await store.getServerHostFile(exportQuery.value)
-    exportAllData(fileData.data, '按云主机计量计费聚合统计')
+    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '按云主机计量计费聚合统计' : 'Aggregate Statistics Of Metering By Server')
   } else if (activeItem.value === 'service') {
     const fileData = await store.getServiceHostFile(exportQuery.value)
-    exportAllData(fileData.data, '按服务计量计费聚合统计')
+    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '按服务计量计费聚合统计' : 'Aggregate Statistics Of Metering By Service')
   }
 }
 const changeTab = async (name: string) => {
@@ -213,6 +221,7 @@ const changeTab = async (name: string) => {
     },
     month: {
       label: '全年',
+      labelEn: 'Annual',
       value: 0
     }
   }
@@ -237,23 +246,23 @@ onMounted(async () => {
 <template>
   <div class="AggregationIndex">
     <div class="row q-mt-xl justify-between items-center">
-      <div class="row col-6">
+      <div class="row col-7">
         <div class="col-2">
-          <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" label="请选择" @update:model-value="changeYear"/>
+          <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" :label="tc('请选择')" @update:model-value="changeYear" />
         </div>
         <div class="col-2 q-ml-md">
-          <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" label="请选择"/>
+          <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" :label="tc('请选择')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
         </div>
         <div class="col-4 q-ml-md">
-          <q-input outlined dense clearable :disable="isDisable" v-model="searchName" label="搜索服务"/>
+          <q-input outlined dense clearable :disable="isDisable" v-model="searchName" :label="tc('搜索服务')"/>
         </div>
         <div class="col-2 q-ml-md">
-          <q-btn outline label="搜索" class="q-px-lg" @click="search"/>
+          <q-btn outline no-caps :label="tc('搜索')" class="q-px-lg" @click="search"/>
         </div>
       </div>
-      <div class="col-3 q-gutter-x-lg">
-        <q-btn outline label="导出当页数据" @click="exportFile()"/>
-        <q-btn outline label="导出全部数据" @click="exportAll"/>
+      <div class="col-4 row justify-end">
+        <q-btn outline no-caps :label="tc('导出当页数据')" @click="exportFile()"/>
+        <q-btn class="q-ml-sm" outline no-caps :label="tc('导出全部数据')" @click="exportAll"/>
       </div>
     </div>
     <div class="row q-mt-md">
@@ -265,16 +274,16 @@ onMounted(async () => {
         active-bg-color="grey-3"
       >
         <q-tab no-caps name="server" class="q-pl-none text-weight-bold" @click="changeTab('server')" :ripple="false">
-          按云主机uuid
+          {{ tc('按云主机uuid') }}
         </q-tab>
         <q-tab no-caps name="service"  class="q-pl-none text-weight-bold" @click="changeTab('service')" :ripple="false">
-          按服务单元
+          {{ tc('按服务单元') }}
         </q-tab>
         <q-tab no-caps name="group"  class="q-pl-none text-weight-bold" @click="changeTab('group')" :ripple="false">
-          按项目组id
+          {{ tc('按项目组id') }}
         </q-tab>
         <q-tab no-caps name="user"  class="q-pl-none text-weight-bold" @click="changeTab('user')" :ripple="false">
-          按用户id
+          {{ tc('按用户id') }}
         </q-tab>
       </q-tabs>
       <div style="width: 90%">

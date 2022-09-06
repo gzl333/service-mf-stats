@@ -7,7 +7,7 @@ import ServerStatisticsDetailTable from 'components/public/ServerStatisticsDetai
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
 // import { getNowFormatDate } from 'src/hooks/processTime'
 import { Notify } from 'quasar'
-// import { i18n } from 'boot/i18n'
+import { i18n } from 'boot/i18n'
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -20,7 +20,7 @@ import { Notify } from 'quasar'
 const store = useStore()
 const route = useRoute()
 const router = useRouter()
-// const tc = i18n.global.tc
+const { tc } = i18n.global
 const monthOptions: Ref = ref([])
 const yearOptions: Ref = ref([])
 const tableRow: Ref = ref([])
@@ -29,6 +29,7 @@ const year = myDate.getFullYear()
 const month = myDate.getMonth() + 1
 let currentMonth: number | string = myDate.getMonth() + 1
 let strDate: number | string = myDate.getDate()
+const monthArray = ['January', 'february', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const getFormatDate = () => {
   const seperator1 = '-'
   if (currentMonth >= 1 && currentMonth <= 9) {
@@ -67,6 +68,7 @@ const searchQuery = ref({
   },
   month: {
     label: '全年',
+    labelEn: 'Annual',
     value: 0
   }
 })
@@ -74,24 +76,28 @@ const changeYear = (val: Record<string, number>) => {
   monthOptions.value = []
   searchQuery.value.month = {
     label: '全年',
+    labelEn: 'Annual',
     value: 0
   }
   monthOptions.value.push({
     value: 0,
-    label: '全年'
+    label: '全年',
+    labelEn: 'Annual'
   })
   if (val.value === year) {
     for (let i = 1; i <= month; i++) {
       monthOptions.value.push({
         value: i,
-        label: i + '月'
+        label: i + '月',
+        labelEn: monthArray[i - 1]
       })
     }
   } else {
     for (let i = 1; i <= 12; i++) {
       monthOptions.value.push({
         value: i,
-        label: i + '月'
+        label: i + '月',
+        labelEn: monthArray[i - 1]
       })
     }
   }
@@ -99,7 +105,8 @@ const changeYear = (val: Record<string, number>) => {
 const initSelectYear = () => {
   monthOptions.value.push({
     value: 0,
-    label: '全年'
+    label: '全年',
+    labelEn: 'Annual'
   })
   for (let i = 2021; i <= year; i++) {
     yearOptions.value.unshift({
@@ -110,7 +117,8 @@ const initSelectYear = () => {
   for (let i = 1; i <= month; i++) {
     monthOptions.value.push({
       value: i,
-      label: i + '月'
+      label: i + '月',
+      labelEn: monthArray[i - 1]
     })
   }
 }
@@ -185,14 +193,14 @@ const exportFile = () => {
       classes: 'notification-negative shadow-15',
       icon: 'mdi-alert',
       textColor: 'negative',
-      message: '暂无数据',
+      message: tc('暂无数据'),
       position: 'bottom',
       closeBtn: true,
       timeout: 5000,
       multiLine: false
     })
   } else {
-    exportExcel('云主机用量统计.xlsx', '#serverTable')
+    exportExcel(i18n.global.locale === 'zh' ? '云主机用量统计.xlsx' : 'Servers Usage Statistics.xlsx', '#serverTable')
   }
 }
 const exportAll = async () => {
@@ -201,7 +209,7 @@ const exportAll = async () => {
       classes: 'notification-negative shadow-15',
       icon: 'mdi-alert',
       textColor: 'negative',
-      message: '暂无数据',
+      message: tc('暂无数据'),
       position: 'bottom',
       closeBtn: true,
       timeout: 5000,
@@ -209,7 +217,7 @@ const exportAll = async () => {
     })
   } else {
     const fileData = await store.getServerDetailFile(exportQuery.value)
-    exportAllData(fileData.data, '云主机用量统计')
+    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '云主机用量统计' : 'Servers Usage Statistics')
   }
 }
 onMounted(() => {
@@ -223,23 +231,23 @@ onMounted(() => {
     <div class="row items-center title-area q-mt-xl">
       <q-btn icon="arrow_back_ios" color="primary" flat unelevated dense
              @click="router.back()"/>
-      <span class="text-primary text-h6 text-weight-bold">云主机用量统计</span>
+      <span class="text-primary text-h6 text-weight-bold">{{ tc('云主机用量详情') }}</span>
     </div>
     <div class="row q-mt-lg justify-between">
       <div class="row col-5 items-center">
         <div class="col-3">
-          <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" label="请选择" @update:model-value="changeYear"/>
+          <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" :label="tc('请选择')" @update:model-value="changeYear"/>
         </div>
         <div class="col-3 q-ml-md">
-          <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" label="请选择"/>
+          <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" :label="tc('请选择')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
         </div>
         <div class="q-ml-md">
-          <q-btn outline label="搜索" @click="search" class="q-px-lg"/>
+          <q-btn outline no-caps :label="tc('搜索')" @click="search" class="q-px-lg"/>
         </div>
       </div>
       <div>
-        <q-btn outline label="导出当页数据" class="q-ml-md" @click="exportFile"/>
-        <q-btn outline label="导出全部数据" class="q-ml-md" @click="exportAll"/>
+        <q-btn outline no-caps :label="tc('导出当页数据')" class="q-ml-md" @click="exportFile"/>
+        <q-btn outline no-caps :label="tc('导出全部数据')" class="q-ml-md" @click="exportAll"/>
       </div>
     </div>
     <div class="q-mt-xl">
@@ -252,21 +260,21 @@ onMounted(() => {
               <div class="q-mt-xl">{{ route.params.serverId }}</div>
             </div>
             <div class="col-3 text-center">
-              <div class="text-subtitle1 text-weight-bold">服务单元</div>
+              <div class="text-subtitle1 text-weight-bold">{{ tc('服务单元') }}</div>
               <q-separator/>
               <div class="text-subtitle1 q-mt-xl">{{ route.query.service }}</div>
             </div>
             <div class="col-3 text-center">
-              <div class="text-subtitle1 text-weight-bold">用户</div>
+              <div class="text-subtitle1 text-weight-bold">{{ tc('用户') }}</div>
               <q-separator/>
               <div class="text-subtitle1 q-mt-xl">{{ tableRow[0]?.username }}</div>
             </div>
             <div class="col-3 text-center">
-              <div class="text-subtitle1 text-weight-bold">初始配置</div>
+              <div class="text-subtitle1 text-weight-bold">{{ tc('初始配置') }}</div>
               <q-separator/>
-              <div class="text-subtitle1 q-mt-md">{{ route.query.vcpus }}核</div>
-              <div class="text-subtitle1">{{ route.query.ram / 1024 }}GB内存</div>
-              <div class="text-subtitle1">公网ip：{{ route.query.ipv4 }}</div>
+              <div class="text-subtitle1 q-mt-md">{{ route.query.vcpus + ' ' + tc('核') }}</div>
+              <div class="text-subtitle1">{{ route.query.ram / 1024 + 'GB' + ' ' + tc('内存') }}</div>
+              <div class="text-subtitle1">{{ tc('公网ip') }}：{{ route.query.ipv4 }}</div>
             </div>
           </div>
         </q-card-section>
@@ -275,11 +283,12 @@ onMounted(() => {
     <server-statistics-detail-table :tableRow="tableRow"/>
     <div class="row text-grey justify-between items-center q-mt-md">
       <div class="row items-center">
-        <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>
+        <span class="q-pr-md" v-if="i18n.global.locale === 'zh'">共{{ paginationTable.count }}条数据</span>
+        <span class="q-pr-md" v-else>{{ paginationTable.count }} pieces of data in total</span>
         <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense
                   borderless @update:model-value="changePageSize">
         </q-select>
-        <span>/页</span>
+        <span>/{{ tc('页') }}</span>
       </div>
       <q-pagination
         v-model="paginationTable.page"

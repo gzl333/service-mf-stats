@@ -3,7 +3,7 @@ import { onMounted, Ref, ref, computed } from 'vue'
 import { useStore } from 'stores/store'
 // import { useRoute } from 'vue-router'
 // import { navigateToUrl } from 'single-spa'
-// import { i18n } from 'boot/i18n'
+import { i18n } from 'boot/i18n'
 import ServerUsageTable from 'components/public/ServerUsageTable.vue'
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
 import { Notify } from 'quasar'
@@ -20,7 +20,7 @@ import { getNowFormatDate } from 'src/hooks/processTime'
 const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
-// const tc = i18n.global.tc
+const { tc } = i18n.global
 const filterOptions = computed(() => store.getServices)
 const tableRow: Ref = ref([])
 const startDate = getNowFormatDate(0)
@@ -32,6 +32,7 @@ const paginationTable = ref({
 })
 const serviceId = ref({
   label: '全部服务',
+  labelEn: 'All Servers',
   value: ''
 })
 const query: Ref = ref({
@@ -80,14 +81,14 @@ const exportFile = () => {
       classes: 'notification-negative shadow-15',
       icon: 'mdi-alert',
       textColor: 'negative',
-      message: '暂无数据',
+      message: tc('暂无数据'),
       position: 'bottom',
       closeBtn: true,
       timeout: 5000,
       multiLine: false
     })
   } else {
-    exportExcel('个人云主机用量统计.xlsx', '#ServerUsageTable')
+    exportExcel(i18n.global.locale === 'zh' ? '个人云主机用量统计.xlsx' : ' Personal Servers Statistics.xlsx', '#ServerUsageTable')
   }
 }
 const exportAll = async () => {
@@ -96,7 +97,7 @@ const exportAll = async () => {
       classes: 'notification-negative shadow-15',
       icon: 'mdi-alert',
       textColor: 'negative',
-      message: '暂无数据',
+      message: tc('暂无数据'),
       position: 'bottom',
       closeBtn: true,
       timeout: 5000,
@@ -104,7 +105,7 @@ const exportAll = async () => {
     })
   } else {
     const fileData = await store.getServerHostFile(exportQuery.value)
-    exportAllData(fileData.data, '个人云主机本月用量统计')
+    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '个人云主机本月用量统计' : 'Personal Servers Statistics In Current Month')
   }
 }
 onMounted(async () => {
@@ -116,21 +117,22 @@ onMounted(async () => {
   <div class="CurrentMonthList">
     <div class="row items-center justify-between">
       <div class="col-4 row">
-        <q-select outlined dense v-model="serviceId" :options="filterOptions" @update:model-value="selectService" label="筛选服务" class="col-8"/>
+        <q-select outlined dense v-model="serviceId" :options="filterOptions" @update:model-value="selectService" :label="tc('筛选服务')" class="col-8" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
       </div>
       <div>
-        <q-btn outline label="导出当页数据" class="q-ml-md" @click="exportFile"/>
-        <q-btn outline label="导出全部数据" class="q-ml-md" @click="exportAll"/>
+        <q-btn outline no-caps :label="tc('导出当页数据')" class="q-ml-md" @click="exportFile"/>
+        <q-btn outline no-caps :label="tc('导出全部数据')" class="q-ml-md" @click="exportAll"/>
       </div>
     </div>
     <server-usage-table :tableRow="tableRow"/>
     <div class="row q-py-md text-grey justify-between items-center">
       <div class="row items-center">
-        <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>
+        <span class="q-pr-md" v-if="i18n.global.locale === 'zh'">共{{ paginationTable.count }}条数据</span>
+        <span class="q-pr-md" v-else>{{ paginationTable.count }} pieces of data in total</span>
         <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense
                   borderless @update:model-value="changePageSize">
         </q-select>
-        <span>/页</span>
+        <span>/{{ tc('页') }}</span>
       </div>
       <q-pagination
         v-model="paginationTable.page"

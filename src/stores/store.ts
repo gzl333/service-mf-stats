@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import stats from 'src/api/index'
 import { normalize, schema } from 'normalizr'
-import { i18n } from 'boot/i18n'
 import { dateFormat } from 'src/hooks/processTime'
 // @ts-expect-error
 import { useStoreMain } from '@cnic/main'
@@ -178,17 +177,19 @@ export const useStore = defineStore('stats', {
   getters: {
     getServices (state): { value: string; label: string; }[] {
       const serviceOptions = []
-      for (const group of Object.values(state.tables.serviceTable.byId)) {
+      for (const service of Object.values(state.tables.serviceTable.byId)) {
         serviceOptions.push(
           {
-            value: group.id,
-            label: group.name
+            value: service.id,
+            label: service.name,
+            labelEn: service.name_en
           }
         )
       }
       serviceOptions.unshift({
         value: '',
-        label: i18n.global.locale === 'zh' ? '全部服务' : 'All Groups'
+        label: '全部服务',
+        labelEn: 'All Servers'
       })
       return serviceOptions
     },

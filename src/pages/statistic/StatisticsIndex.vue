@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
-// import { i18n } from 'boot/i18n'
+import { i18n } from 'boot/i18n'
 
 // const props = defineProps({
 //   foo: {
@@ -17,7 +17,7 @@ import { useStore } from 'stores/store'
 const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
-// const tc = i18n.global.tc
+const { tc } = i18n.global
 const activeItem = ref(store.items.currentPath[2]) // keep selection when reloading
 const changeTab = async (name: string) => {
   activeItem.value = name
@@ -30,7 +30,7 @@ const changeTab = async (name: string) => {
     <div class="column">
       <div class="row justify-center">
         <div class="content-fixed-width">
-          <div class="text-h6 q-pt-lg q-px-none">用量管理统计</div>
+          <div class="text-h6 q-pt-lg q-px-none">{{ tc('用量管理统计') }}</div>
           <q-tabs
             v-model="activeItem"
             inline-label
@@ -38,10 +38,10 @@ const changeTab = async (name: string) => {
             indicator-color="primary"
             active-color="primary"
           >
-            <q-tab no-caps name="cloud" class="q-px-none q-py-md q-mr-md" icon="las la-laptop" label="云主机"
+            <q-tab no-caps name="cloud" class="q-px-none q-py-md q-mr-md" icon="las la-laptop" :label="tc('云主机')"
                    @click="changeTab('cloud')" :ripple="false">
             </q-tab>
-            <q-tab no-caps name="storage" class="q-px-none q-py-md q-mr-md" label="对象存储"
+            <q-tab no-caps name="storage" class="q-px-none q-py-md q-mr-md" :label="tc('对象存储')"
                    icon="las la-memory" @click="changeTab('storage')" :ripple="false">
             </q-tab>
           </q-tabs>

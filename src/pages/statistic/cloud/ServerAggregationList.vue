@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, Ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount, Ref, computed } from 'vue'
 import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 import emitter from 'boot/mitt'
 import useCopyToClipboard from 'src/hooks/useCopyToClipboard'
 import { getNowFormatDate } from 'src/hooks/processTime'
 // import { useRoute, useRouter } from 'vue-router'
-// import { i18n } from 'boot/i18n'
+import { i18n } from 'boot/i18n'
 
 // const props = defineProps({
 //   foo: {
@@ -20,20 +20,19 @@ import { getNowFormatDate } from 'src/hooks/processTime'
 const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
-// const tc = i18n.global.tc
-
-const serverColumns = [
-  { name: 'server_id', label: '云主机uuid', align: 'center' },
-  { name: 'ipv4', align: 'center', label: 'ip地址' },
-  { name: 'service_name', label: '服务单元', align: 'center' },
-  { name: 'configuration', label: '初始配置', align: 'center' },
-  { name: 'total_public_ip_hours', label: '公网IP(个*天)', align: 'center' },
-  { name: 'total_cpu_hours', label: 'vCPU(核*天）', align: 'center' },
-  { name: 'total_ram_hours', label: '内存(GB*天)', align: 'center' },
-  { name: 'total_disk_hours', label: '本地硬盘(GB*天)', align: 'center' },
-  { name: 'total_original_amount', label: '计费金额(总)', align: 'center' },
-  { name: 'total_trade_amount', label: '实际扣费金额(总)', align: 'center' }
-]
+const { tc } = i18n.global
+const serverColumns = computed(() => [
+  { name: 'server_id', label: (() => tc('云主机uuid'))(), align: 'center' },
+  { name: 'ipv4', align: 'center', label: (() => tc('ip地址'))() },
+  { name: 'service_name', label: (() => tc('服务单元'))(), align: 'center' },
+  { name: 'configuration', label: (() => tc('初始配置'))(), align: 'center' },
+  { name: 'total_public_ip_hours', label: (() => tc('公网IP(个*天)'))(), align: 'center' },
+  { name: 'total_cpu_hours', label: (() => tc('vCPU(核*天）'))(), align: 'center' },
+  { name: 'total_ram_hours', label: (() => tc('内存(GB*天)'))(), align: 'center' },
+  { name: 'total_disk_hours', label: (() => tc('本地硬盘(GB*天)'))(), align: 'center' },
+  { name: 'total_original_amount', label: (() => tc('计费金额(总)'))(), align: 'center' },
+  { name: 'total_trade_amount', label: (() => tc('实际扣费金额(总)'))(), align: 'center' }
+])
 const paginationTable = ref({
   page: 1,
   count: 0,
@@ -101,8 +100,8 @@ onBeforeUnmount(() => {
         :columns="serverColumns"
         row-key="name"
         color="primary"
-        loading-label="网络请求中，请稍候..."
-        no-data-label="暂无数据"
+        :loading-label="tc('网络请求中，请稍候...')"
+        :no-data-label="tc('暂无数据')"
         hide-pagination
         :pagination="{ rowsPerPage: 0 }"
       >
@@ -112,22 +111,22 @@ onBeforeUnmount(() => {
               <q-btn
                 @click="goToDetail(props.row.server_id, props.row.service_name, props.row.server.ipv4, props.row.server.vcpus, props.row.server.ram)"
                 class="q-ma-none" color="primary" padding="xs" flat dense unelevated>
-                <div class="text">{{ props.row.server_id === '' ? '暂无' : props.row.server_id }}</div>
+                <div class="text">{{ props.row.server_id === '' ? tc('暂无') : props.row.server_id }}</div>
               </q-btn>
               <q-btn class="col-shrink q-px-xs q-ma-none" flat dense icon="content_copy" size="xs" color="primary"
                      @click="clickToCopy(props.row.server_id)">
                 <q-tooltip>
-                  复制到剪切板
+                  {{ tc('复制到剪切板') }}
                 </q-tooltip>
               </q-btn>
             </q-td>
-            <q-td key="ipv4" :props="props">{{ props.row.server !== null ? props.row.server.ipv4 : '暂无' }}</q-td>
+            <q-td key="ipv4" :props="props">{{ props.row.server !== null ? props.row.server.ipv4 : tc('暂无') }}</q-td>
             <q-td key="service_name" :props="props">{{
-                props.row.service_name === null ? '暂无' : props.row.service_name
+                props.row.service_name === null ? tc('暂无') : props.row.service_name
               }}
             </q-td>
             <q-td key="configuration" :props="props">{{
-                props.row.server !== null ? props.row.server.vcpus + '核' + Math.round(props.row.server.ram / 1024) + 'GB内存' : '暂无'
+                props.row.server !== null ? props.row.server.vcpus + tc('核') + Math.round(props.row.server.ram / 1024) + 'GB' + ' ' + tc('内存') : tc('暂无')
               }}
             </q-td>
             <q-td key="total_public_ip_hours" :props="props">{{
@@ -145,11 +144,12 @@ onBeforeUnmount(() => {
       <q-separator/>
       <div class="row text-grey justify-between items-center q-mt-md">
         <div class="row items-center">
-          <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>
+          <span class="q-pr-md" v-if="i18n.global.locale === 'zh'">共{{ paginationTable.count }}条数据</span>
+          <span class="q-pr-md" v-else>{{ paginationTable.count }} pieces of data in total</span>
           <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense
                     borderless @update:model-value="changePageSize">
           </q-select>
-          <span>/页</span>
+          <span>/{{ tc('页') }}</span>
         </div>
         <q-pagination
           v-model="paginationTable.page"

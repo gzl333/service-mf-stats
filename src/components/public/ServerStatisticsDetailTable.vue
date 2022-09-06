@@ -4,9 +4,10 @@
 // import { navigateToUrl } from 'single-spa'
 // import { useStore } from 'stores/store'
 import { useRoute } from 'vue-router'
-// import { i18n } from 'boot/i18n'
+import { i18n } from 'boot/i18n'
 // import { dateFormat } from 'src/hooks/processTime'
 import PayStatusChip from '../statistic/PayStatusChip.vue'
+import { computed } from 'vue'
 const props = defineProps({
   tableRow: {
     type: Array,
@@ -17,20 +18,18 @@ const props = defineProps({
 // const store = useStore()
 const route = useRoute()
 // const router = useRouter()
-// const tc = i18n.global.tc
-const columns = [
-  // { name: 'creation_time', align: 'center', label: '每日统计时间' },
-  { name: 'date', align: 'center', label: '计费日期' },
-  { name: 'payment_status', label: '扣费状态', align: 'center' },
-  { name: route.meta.isPersonal ? 'username' : 'vo_name', label: route.meta.isPersonal ? '用户名' : '项目组', align: 'center' },
-  { name: 'public_ip_hours', label: '公网IP(个*天)', align: 'center' },
-  { name: 'cpu_hours', label: 'vCPU(核*天）', align: 'center' },
-  { name: 'ram_hours', label: '内存(GB*天)', align: 'center' },
-  { name: 'disk_hours', label: '本地硬盘(GB*天)', align: 'center' },
-  { name: 'original_amount', label: '计费金额合计', align: 'center' },
-  { name: 'trade_amount', label: '实际扣费金额合计', align: 'center' }
-]
-
+const { tc } = i18n.global
+const columns = computed(() => [
+  { name: 'date', align: 'center', label: (() => tc('计费日期'))() },
+  { name: 'payment_status', label: (() => tc('扣费状态'))(), align: 'center' },
+  { name: route.meta.isPersonal ? 'username' : 'vo_name', label: route.meta.isPersonal ? (() => tc('用户名'))() : (() => tc('项目组'))(), align: 'center' },
+  { name: 'public_ip_hours', label: (() => tc('公网IP(个*天)'))(), align: 'center' },
+  { name: 'cpu_hours', label: (() => tc('vCPU(核*天）'))(), align: 'center' },
+  { name: 'ram_hours', label: (() => tc('内存(GB*天)'))(), align: 'center' },
+  { name: 'disk_hours', label: (() => tc('本地硬盘(GB*天)'))(), align: 'center' },
+  { name: 'original_amount', label: (() => tc('计费金额合计'))(), align: 'center' },
+  { name: 'trade_amount', label: (() => tc('实际扣费金额合计'))(), align: 'center' }
+])
 </script>
 
 <template>
@@ -44,8 +43,8 @@ const columns = [
         :columns="columns"
         row-key="name"
         color="primary"
-        loading-label="网络请求中，请稍候..."
-        no-data-label="暂无数据"
+        :loading-label="tc('网络请求中，请稍候...')"
+        :no-data-label="tc('暂无数据')"
         hide-pagination
         :pagination="{ rowsPerPage: 0 }"
       >
