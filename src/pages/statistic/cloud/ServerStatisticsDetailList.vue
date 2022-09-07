@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted, Ref } from 'vue'
-// import { navigateToUrl } from 'single-spa'
-import { useStore } from 'stores/store'
+import { ref, onMounted } from 'vue'
+import { useStore, MeteringDetailInterface, DateInterface } from 'stores/store'
 import { useRoute, useRouter } from 'vue-router'
 import ServerStatisticsDetailTable from 'components/public/ServerStatisticsDetailTable.vue'
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
@@ -21,9 +20,9 @@ const store = useStore()
 const route = useRoute()
 const router = useRouter()
 const { tc } = i18n.global
-const monthOptions: Ref = ref([])
-const yearOptions: Ref = ref([])
-const tableRow: Ref = ref([])
+const monthOptions = ref<DateInterface[]>([])
+const yearOptions = ref<DateInterface[]>([])
+const tableRow = ref<MeteringDetailInterface[]>([])
 const myDate = new Date()
 const year = myDate.getFullYear()
 const month = myDate.getMonth() + 1
@@ -41,7 +40,7 @@ const getFormatDate = () => {
   return year + seperator1 + currentMonth + seperator1 + strDate
 }
 const currentDate = getFormatDate()
-const query: Ref = ref({
+const query = ref<Record<string, string | number |boolean>>({
   page: 1,
   page_size: 10,
   date_start: year + '-' + '01-01',
@@ -49,7 +48,7 @@ const query: Ref = ref({
   server_id: '',
   'as-admin': true
 })
-const exportQuery: Ref = ref({
+const exportQuery = ref<Record<string, string | boolean>>({
   date_start: year + '-' + '01-01',
   date_end: currentDate,
   server_id: '',
@@ -124,8 +123,8 @@ const initSelectYear = () => {
 }
 const getDetailData = async () => {
   tableRow.value = []
-  query.value.server_id = route.params.serverId
-  exportQuery.value.server_id = route.params.serverId
+  query.value.server_id = route.params.serverId as string
+  exportQuery.value.server_id = route.params.serverId as string
   const data = await store.getMeteringDetail(query.value)
   for (const elem of data.data.results) {
     tableRow.value.push(elem)
@@ -216,7 +215,7 @@ const exportAll = async () => {
       multiLine: false
     })
   } else {
-    const fileData = await store.getServerDetailFile(exportQuery.value)
+    const fileData = await store.getMeteringDetail(exportQuery.value)
     exportAllData(fileData.data, i18n.global.locale === 'zh' ? '云主机用量统计' : 'Servers Usage Statistics')
   }
 }
@@ -250,37 +249,42 @@ onMounted(() => {
         <q-btn outline no-caps :label="tc('导出全部数据')" class="q-ml-md" @click="exportAll"/>
       </div>
     </div>
-    <div class="q-mt-xl">
+    <div class="q-mt-md">
       <q-card class="my-card" flat bordered>
         <q-card-section>
           <div class="row">
             <div class="col-3 text-center">
-              <div class="text-subtitle1 text-weight-bold">UUID</div>
+              <div class="text-subtitle1">UUID</div>
               <q-separator/>
-              <div class="q-mt-xl">{{ route.params.serverId }}</div>
+              <div class="q-mt-lg">{{ route.params.serverId }}</div>
             </div>
             <div class="col-3 text-center">
-              <div class="text-subtitle1 text-weight-bold">{{ tc('服务单元') }}</div>
+              <div class="text-subtitle1">{{ tc('服务单元') }}</div>
               <q-separator/>
-              <div class="text-subtitle1 q-mt-xl">{{ route.query.service }}</div>
+              <div class="text-subtitle1 q-mt-lg">{{ route.query.service }}</div>
             </div>
-            <div class="col-3 text-center">
-              <div class="text-subtitle1 text-weight-bold">{{ tc('用户') }}</div>
+            <div class="col-2 text-center">
+              <div class="text-subtitle1">{{ tc('用户') }}</div>
               <q-separator/>
-              <div class="text-subtitle1 q-mt-xl">{{ tableRow[0]?.username }}</div>
+              <div class="text-subtitle1 q-mt-lg">{{ tableRow[0]?.username }}</div>
             </div>
-            <div class="col-3 text-center">
-              <div class="text-subtitle1 text-weight-bold">{{ tc('初始配置') }}</div>
+            <div class="col-2 text-center">
+              <div class="text-subtitle1">{{ tc('初始配置') }}</div>
               <q-separator/>
-              <div class="text-subtitle1 q-mt-md">{{ route.query.vcpus + ' ' + tc('核') }}</div>
-              <div class="text-subtitle1">{{ route.query.ram / 1024 + 'GB' + ' ' + tc('内存') }}</div>
-              <div class="text-subtitle1">{{ tc('公网ip') }}：{{ route.query.ipv4 }}</div>
+              <div class="text-subtitle1 q-mt-lg">{{ route.query.vcpus + ' ' + tc('核') + ' ' + route.query.ram / 1024 + ' GB' }}</div>
+            </div>
+            <div class="col-2 text-center">
+              <div class="text-subtitle1">{{ tc('公网ip') }}</div>
+              <q-separator/>
+              <div class="text-subtitle1 q-mt-lg">{{ route.query.ipv4 }}</div>
             </div>
           </div>
         </q-card-section>
       </q-card>
     </div>
+    <div class="q-mt-md">
     <server-statistics-detail-table :tableRow="tableRow"/>
+    </div>
     <div class="row text-grey justify-between items-center q-mt-md">
       <div class="row items-center">
         <span class="q-pr-md" v-if="i18n.global.locale === 'zh'">共{{ paginationTable.count }}条数据</span>

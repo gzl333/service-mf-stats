@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { onMounted, ref, Ref } from 'vue'
-// import { navigateToUrl } from 'single-spa'
-import { useStore } from 'stores/store'
+import { onMounted, ref } from 'vue'
+import { useStore, DateInterface } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
 import { i18n } from 'boot/i18n'
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
@@ -41,8 +40,8 @@ const searchQuery = ref({
     value: 0
   }
 })
-const monthOptions: Ref = ref([])
-const yearOptions: Ref = ref([])
+const monthOptions = ref<DateInterface[]>([])
+const yearOptions = ref<DateInterface[]>([])
 const getNowFormatDate = () => {
   const seperator1 = '-'
   if (currentMonth >= 1 && currentMonth <= 9) {
@@ -54,14 +53,14 @@ const getNowFormatDate = () => {
   return year + seperator1 + currentMonth + seperator1 + strDate
 }
 const currentDate = getNowFormatDate()
-const query: Ref = ref({
+const query = ref<Record<string, string | number | boolean>>({
   page: 1,
   page_size: 10,
   date_start: year + '-' + '01-01',
   date_end: currentDate,
   'as-admin': true
 })
-const exportQuery: Ref = ref({
+const exportQuery = ref<Record<string, string | boolean>>({
   date_start: year + '-' + '01-01',
   date_end: currentDate,
   'as-admin': true,
@@ -199,16 +198,16 @@ const exportFile = () => {
 // 导出全部数据
 const exportAll = async () => {
   if (activeItem.value === 'user') {
-    const fileData = await store.getUserHostFile(exportQuery.value)
+    const fileData = await store.getUserMetering(exportQuery.value)
     exportAllData(fileData.data, i18n.global.locale === 'zh' ? '按用户计量计费聚合统计' : 'Aggregate Statistics Of Metering By User')
   } else if (activeItem.value === 'group') {
-    const fileData = await store.getGroupHostFile(exportQuery.value)
+    const fileData = await store.getGroupMetering(exportQuery.value)
     exportAllData(fileData.data, i18n.global.locale === 'zh' ? '按项目组计量计费聚合统计' : 'Aggregate Statistics Of Metering By Group')
   } else if (activeItem.value === 'server') {
-    const fileData = await store.getServerHostFile(exportQuery.value)
+    const fileData = await store.getServerMetering(exportQuery.value)
     exportAllData(fileData.data, i18n.global.locale === 'zh' ? '按云主机计量计费聚合统计' : 'Aggregate Statistics Of Metering By Server')
   } else if (activeItem.value === 'service') {
-    const fileData = await store.getServiceHostFile(exportQuery.value)
+    const fileData = await store.getServiceMetering(exportQuery.value)
     exportAllData(fileData.data, i18n.global.locale === 'zh' ? '按服务计量计费聚合统计' : 'Aggregate Statistics Of Metering By Service')
   }
 }
@@ -272,6 +271,7 @@ onMounted(async () => {
         align="justify"
         active-color="primary"
         active-bg-color="grey-3"
+        style="width: 10%"
       >
         <q-tab no-caps name="server" class="q-pl-none text-weight-bold" @click="changeTab('server')" :ripple="false">
           {{ tc('按云主机uuid') }}

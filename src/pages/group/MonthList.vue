@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { onMounted, Ref, ref, computed } from 'vue'
-import { useStore } from 'stores/store'
-// import { useRoute } from 'vue-router'
-// import { navigateToUrl } from 'single-spa'
+import { onMounted, ref, computed } from 'vue'
+import { useStore, GroupServerMeteringInterface } from 'stores/store'
+import { useRoute } from 'vue-router'
 import { i18n } from 'boot/i18n'
 import GroupUsageTable from 'components/group/GroupUsageTable.vue'
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
 import { Notify } from 'quasar'
-import { getNowFormatDate } from 'src/hooks/processTime'
+import { getLastFormatDate, getNowFormatDate } from 'src/hooks/processTime'
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -18,14 +17,16 @@ import { getNowFormatDate } from 'src/hooks/processTime'
 // const emits = defineEmits(['change', 'delete'])
 
 const store = useStore()
-// const route = useRoute()
+const route = useRoute()
 // const router = useRouter()
 const { tc } = i18n.global
 const filterOptions = computed(() => store.getServices)
 const groupOptions = computed(() => store.getGroupOptions)
-const tableRow: Ref = ref([])
-const startDate = getNowFormatDate(0)
-const currentDate = getNowFormatDate(1)
+const tableRow = ref<GroupServerMeteringInterface[]>([])
+const currentMonthStartDate = getNowFormatDate(0)
+const currentMonthEndDate = getNowFormatDate(1)
+const lastMonthStartDate = getLastFormatDate(0)
+const lastMonthEndDate = getLastFormatDate(1)
 const paginationTable = ref({
   page: 1,
   count: 0,
@@ -41,25 +42,51 @@ const serviceId = ref({
   labelEn: 'All Servers',
   value: ''
 })
-const query: Ref = ref({
+const query = ref<Record<string, string | number>>({
   page: 1,
   page_size: 10,
-  date_start: startDate,
-  date_end: currentDate
+  date_start: route.meta.time === 'current' ? currentMonthStartDate : lastMonthStartDate,
+  date_end: route.meta.time === 'current' ? currentMonthEndDate : lastMonthEndDate
 })
-const exportQuery: Ref = ref({
-  date_start: startDate,
-  date_end: currentDate,
+const exportQuery: Record<string, string | boolean> = {
+  date_start: route.meta.time === 'current' ? currentMonthStartDate : lastMonthStartDate,
+  date_end: route.meta.time === 'current' ? currentMonthEndDate : lastMonthEndDate,
   download: true
-})
+}
 const getSingleDetailData = async () => {
   tableRow.value = []
   paginationTable.value.count = 0
-  let obj: Record<string, string> = {}
+  let obj: GroupServerMeteringInterface = {
+    ipv4: '',
+    vo_id: '',
+    server_id: '',
+    service_name: '',
+    ram: undefined,
+    vcpus: undefined,
+    total_cpu_hours: undefined,
+    total_disk_hours: undefined,
+    total_original_amount: undefined,
+    total_public_ip_hours: undefined,
+    total_ram_hours: undefined,
+    total_trade_amount: undefined
+  }
   // query.value.vo_id = groupId.value.value
   const data = await store.getServerMetering(query.value)
   for (const elem of data.data.results) {
-    obj = {}
+    obj = {
+      ipv4: '',
+      vo_id: '',
+      server_id: '',
+      service_name: '',
+      ram: undefined,
+      vcpus: undefined,
+      total_cpu_hours: undefined,
+      total_disk_hours: undefined,
+      total_original_amount: undefined,
+      total_public_ip_hours: undefined,
+      total_ram_hours: undefined,
+      total_trade_amount: undefined
+    }
     obj.server_id = elem.server_id
     obj.ipv4 = elem.server.ipv4
     obj.service_name = elem.service_name
@@ -79,12 +106,38 @@ const getSingleDetailData = async () => {
 const getDetailData = async () => {
   tableRow.value = []
   paginationTable.value.count = 0
-  let obj: Record<string, string> = {}
+  let obj: GroupServerMeteringInterface = {
+    ipv4: '',
+    vo_id: '',
+    server_id: '',
+    service_name: '',
+    ram: undefined,
+    vcpus: undefined,
+    total_cpu_hours: undefined,
+    total_disk_hours: undefined,
+    total_original_amount: undefined,
+    total_public_ip_hours: undefined,
+    total_ram_hours: undefined,
+    total_trade_amount: undefined
+  }
   for (const id of store.tables.groupTable.allIds) {
     query.value.vo_id = id
     const data = await store.getServerMetering(query.value)
     for (const elem of data.data.results) {
-      obj = {}
+      obj = {
+        ipv4: '',
+        vo_id: '',
+        server_id: '',
+        service_name: '',
+        ram: undefined,
+        vcpus: undefined,
+        total_cpu_hours: undefined,
+        total_disk_hours: undefined,
+        total_original_amount: undefined,
+        total_public_ip_hours: undefined,
+        total_ram_hours: undefined,
+        total_trade_amount: undefined
+      }
       obj.server_id = elem.server_id
       obj.ipv4 = elem.server.ipv4
       obj.service_name = elem.service_name
@@ -102,36 +155,20 @@ const getDetailData = async () => {
     paginationTable.value.count = paginationTable.value.count + data.data.count
   }
   delete query.value.vo_id
-  delete exportQuery.value.vo_id
+  delete exportQuery.vo_id
 }
 const selectService = (val: Record<string, string>) => {
   if (val.value !== '') {
     query.value.service_id = val.value
-    exportQuery.value.service_id = val.value
+    exportQuery.service_id = val.value
   } else {
     delete query.value.service_id
-    delete exportQuery.value.service_id
+    delete exportQuery.service_id
   }
-  // if (val.value !== '') {
-  //   query.value.service_id = val.value
-  //   exportQuery.value.service_id = val.value
-  //   getSingleDetailData()
-  // } else {
-  //   delete query.value.service_id
-  //   delete exportQuery.value.service_id
-  //   getDetailData()
-  // }
 }
 const selectGroup = (val: Record<string, string>) => {
   query.value.vo_id = val.value
-  exportQuery.value.vo_id = val.value
-  // if (val.value !== '0') {
-  //   query.value.vo_id = val.value
-  //   exportQuery.value.vo_id = val.value
-  //   getSingleDetailData()
-  // } else {
-  //   getDetailData()
-  // }
+  exportQuery.vo_id = val.value
 }
 const search = async () => {
   if (groupId.value.value === '0') {
@@ -179,7 +216,7 @@ const exportAll = async () => {
       multiLine: false
     })
   } else {
-    const fileData = await store.getServerHostFile(exportQuery.value)
+    const fileData = await store.getServerMetering(exportQuery)
     exportAllData(fileData.data, i18n.global.locale === 'zh' ? '项目组云主机本月用量统计' : 'Group Servers Statistics In Current Month')
   }
 }
@@ -192,7 +229,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="CurrentMonthList">
+  <div class="MonthList">
     <div class="row items-center justify-between">
       <div class="col-5 row">
         <q-select class="col-5" outlined dense v-model="groupId" :options="groupOptions" @update:model-value="selectGroup" :label="tc('筛选项目组')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
@@ -204,7 +241,9 @@ onMounted(async () => {
         <q-btn outline no-caps :label="tc('导出全部数据')" class="q-ml-xs" @click="exportAll"/>
       </div>
     </div>
+    <div class="q-mt-md">
     <group-usage-table :tableRow="tableRow"/>
+    </div>
     <div class="row q-py-md text-grey justify-between items-center">
       <div class="row items-center">
         <span class="q-pr-md" v-if="i18n.global.locale === 'zh'">共{{ paginationTable.count }}条数据</span>
@@ -228,6 +267,6 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
-.CurrentMonthList {
+.MonthList {
 }
 </style>

@@ -113,6 +113,68 @@ export interface CouponInterface {
   } | null
 }
 
+export interface PersonalServerMeteringInterface {
+  server_id: string
+  service_name: string
+  total_cpu_hours: number
+  total_disk_hours: number
+  total_original_amount: number
+  total_public_ip_hours: number
+  total_ram_hours: number
+  total_trade_amount: number
+  server: {
+    id: string
+    ipv4: string
+    ram: number
+    vcpus: number
+  }
+}
+
+export interface GroupServerMeteringInterface {
+  ipv4: string
+  vo_id: string
+  server_id: string
+  service_name: string
+  ram: number | undefined
+  vcpus: number | undefined
+  total_cpu_hours: number | undefined
+  total_disk_hours: number | undefined
+  total_original_amount: number | undefined
+  total_public_ip_hours: number | undefined
+  total_ram_hours: number | undefined
+  total_trade_amount: number | undefined
+}
+
+export interface DateInterface {
+  value: number
+  label: string | number
+  labelEn?: string
+}
+
+export interface MeteringDetailInterface {
+  cpu_hours: number
+  creation_time: string
+  daily_statement_id: string
+  date: string
+  disk_hours: number
+  downstream: number
+  id: string
+  original_amount: string
+  owner_type: string
+  pay_type: string
+  public_ip_hours: number
+  ram_hours: number
+  server_id: string
+  service_id: string
+  snapshot_hours: number
+  trade_amount: string
+  upstream: number
+  user_id: string
+  username: string
+  vo_id: string
+  vo_name: string
+}
+
 export interface DataCenterTableInterface extends totalTable, idTable<DataCenterInterface> {
 }
 
@@ -447,45 +509,25 @@ export const useStore = defineStore('stats', {
         })
       }
     },
-    async getMeteringDetail (payload: { page: number, page_size: number, date_start: string, date_end: string, vo_id: string, user_id: string, server_id: string, service_id: string, 'as-admin': boolean }) {
+    async getMeteringDetail (payload: { page?: number, page_size?: number, date_start?: string, date_end?: string, vo_id?: string, user_id?: string, server_id?: string, service_id?: string, 'as-admin'?: boolean, download?: boolean }) {
       const respMeteringDetail = await stats.stats.metering.getMeteringServer({ query: payload })
       return respMeteringDetail
     },
-    async getUserMetering (payload: { page: number, page_size: number, date_start: string, date_end: string, service_id: string, 'as-admin': boolean }) {
+    async getUserMetering (payload: { page?: number, page_size?: number, date_start?: string, date_end?: string, service_id?: string, 'as-admin'?: boolean, download?: boolean }) {
       const respUserMetering = await stats.stats.metering.getAggregationUser({ query: payload })
       return respUserMetering
     },
-    async getGroupMetering (payload: { page: number, page_size: number, date_start: string, date_end: string, service_id: string, 'as-admin': boolean }) {
+    async getGroupMetering (payload: { page?: number, page_size?: number, date_start?: string, date_end?: string, service_id?: string, 'as-admin'?: boolean, download?: boolean }) {
       const respGroupMetering = await stats.stats.metering.getAggregationVo({ query: payload })
       return respGroupMetering
     },
-    async getServerMetering (payload: { page: number, page_size: number, date_start: string, date_end: string, vo_id: string, user_id: string, service_id: string, 'as-admin': boolean }) {
+    async getServerMetering (payload: { page?: number, page_size?: number, date_start?: string, date_end?: string, vo_id?: string, user_id?: string, service_id?: string, 'as-admin'?: boolean, download?: boolean }) {
       const respServerMetering = await stats.stats.metering.getAggregationServer({ query: payload })
       return respServerMetering
     },
-    async getServiceMetering (payload: { page: number, page_size: number, date_start: string, date_end: string, 'as-admin': boolean }) {
+    async getServiceMetering (payload: { page?: number, page_size?: number, date_start?: string, date_end?: string, 'as-admin'?: boolean, download?: boolean }) {
       const respServiceMetering = await stats.stats.metering.getAggregationService({ query: payload })
       return respServiceMetering
-    },
-    async getServerHostFile (payload: { date_start: string, date_end: string, 'as-admin': boolean, download: boolean }) {
-      const resServer = await stats.stats.metering.getAggregationServerFile({ query: payload })
-      return resServer
-    },
-    async getServiceHostFile (payload: { date_start: string, date_end: string, 'as-admin': boolean, download: boolean }) {
-      const resServer = await stats.stats.metering.getAggregationServiceFile({ query: payload })
-      return resServer
-    },
-    async getGroupHostFile (payload: { date_start: string, date_end: string, 'as-admin': boolean, download: boolean }) {
-      const resServer = await stats.stats.metering.getAggregationVoFile({ query: payload })
-      return resServer
-    },
-    async getUserHostFile (payload: { date_start: string, date_end: string, 'as-admin': boolean, download: boolean }) {
-      const resServer = await stats.stats.metering.getAggregationUserFile({ query: payload })
-      return resServer
-    },
-    async getServerDetailFile (payload: { date_start: string, date_end: string, 'as-admin': boolean, download: boolean }) {
-      const resServer = await stats.stats.metering.getMeteringServerFile({ query: payload })
-      return resServer
     },
     async loadGroupTable () {
       // 先清空table，避免多次更新时数据累加（凡是需要强制刷新的table，都要先清空再更新）

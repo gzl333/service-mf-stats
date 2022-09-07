@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, Ref, computed } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed, Ref } from 'vue'
 import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 import emitter from 'boot/mitt'
@@ -26,10 +26,10 @@ const serverColumns = computed(() => [
   { name: 'ipv4', align: 'center', label: (() => tc('ip地址'))() },
   { name: 'service_name', label: (() => tc('服务单元'))(), align: 'center' },
   { name: 'configuration', label: (() => tc('初始配置'))(), align: 'center' },
-  { name: 'total_public_ip_hours', label: (() => tc('公网IP(个*天)'))(), align: 'center' },
-  { name: 'total_cpu_hours', label: (() => tc('vCPU(核*天）'))(), align: 'center' },
-  { name: 'total_ram_hours', label: (() => tc('内存(GB*天)'))(), align: 'center' },
-  { name: 'total_disk_hours', label: (() => tc('本地硬盘(GB*天)'))(), align: 'center' },
+  { name: 'total_public_ip_hours', label: (() => tc('公网IP'))(), align: 'center' },
+  { name: 'total_cpu_hours', label: (() => tc('vCPU'))(), align: 'center' },
+  { name: 'total_ram_hours', label: (() => tc('内存'))(), align: 'center' },
+  { name: 'total_disk_hours', label: (() => tc('本地硬盘'))(), align: 'center' },
   { name: 'total_original_amount', label: (() => tc('计费金额(总)'))(), align: 'center' },
   { name: 'total_trade_amount', label: (() => tc('实际扣费金额(总)'))(), align: 'center' }
 ])
@@ -93,7 +93,8 @@ onBeforeUnmount(() => {
       <q-separator/>
       <q-table
         flat
-        id="status"
+        id="serverTable"
+        card-class="no-padding"
         :loading="isLoading"
         table-header-class="bg-grey-1 text-grey"
         :rows="serverTableRow"
@@ -105,11 +106,22 @@ onBeforeUnmount(() => {
         hide-pagination
         :pagination="{ rowsPerPage: 0 }"
       >
+<!--        <template v-slot:header="props">-->
+<!--          <q-tr :props="props">-->
+<!--            <q-th-->
+<!--              v-for="col in props.cols"-->
+<!--              :key="col.name"-->
+<!--              :props="props"-->
+<!--              class="no-padding"-->
+<!--            >-->
+<!--              {{ col.label }}-->
+<!--            </q-th>-->
+<!--          </q-tr>-->
+<!--        </template>-->
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="server_id" :props="props">
-              <q-btn
-                @click="goToDetail(props.row.server_id, props.row.service_name, props.row.server.ipv4, props.row.server.vcpus, props.row.server.ram)"
+              <q-btn @click="goToDetail(props.row.server_id, props.row.service_name, props.row.server.ipv4, props.row.server.vcpus, props.row.server.ram)"
                 class="q-ma-none" color="primary" padding="xs" flat dense unelevated>
                 <div class="text">{{ props.row.server_id === '' ? tc('暂无') : props.row.server_id }}</div>
               </q-btn>
@@ -120,24 +132,15 @@ onBeforeUnmount(() => {
                 </q-tooltip>
               </q-btn>
             </q-td>
-            <q-td key="ipv4" :props="props">{{ props.row.server !== null ? props.row.server.ipv4 : tc('暂无') }}</q-td>
-            <q-td key="service_name" :props="props">{{
-                props.row.service_name === null ? tc('暂无') : props.row.service_name
-              }}
-            </q-td>
-            <q-td key="configuration" :props="props">{{
-                props.row.server !== null ? props.row.server.vcpus + tc('核') + Math.round(props.row.server.ram / 1024) + 'GB' + ' ' + tc('内存') : tc('暂无')
-              }}
-            </q-td>
-            <q-td key="total_public_ip_hours" :props="props">{{
-                Math.round(props.row.total_public_ip_hours / 24)
-              }}
-            </q-td>
-            <q-td key="total_cpu_hours" :props="props">{{ Math.round(props.row.total_cpu_hours / 24) }}</q-td>
-            <q-td key="total_ram_hours" :props="props">{{ Math.round(props.row.total_ram_hours / 24) }}</q-td>
-            <q-td key="total_disk_hours" :props="props">{{ Math.round(props.row.total_disk_hours / 24) }}</q-td>
-            <q-td key="total_original_amount" :props="props">{{ props.row.total_original_amount }}</q-td>
-            <q-td key="total_trade_amount" :props="props">{{ props.row.total_trade_amount }}</q-td>
+            <q-td class="no-padding" key="ipv4" :props="props">{{ props.row.server !== null ? props.row.server.ipv4 : tc('暂无') }}</q-td>
+            <q-td key="service_name" :props="props">{{props.row.service_name === null ? tc('暂无') : props.row.service_name }}</q-td>
+            <q-td class="no-padding" key="configuration" :props="props">{{props.row.server !== null ? props.row.server.vcpus + ' ' + tc('核') + ' ' + Math.round(props.row.server.ram / 1024) + ' GB' : tc('暂无') }}</q-td>
+            <q-td class="no-padding" key="total_public_ip_hours" :props="props">{{Math.round(props.row.total_public_ip_hours / 24) + ' (个*天)' }}</q-td>
+            <q-td class="no-padding" key="total_cpu_hours" :props="props">{{ Math.round(props.row.total_cpu_hours / 24) + ' (核*天）' }}</q-td>
+            <q-td class="no-padding" key="total_ram_hours" :props="props">{{ Math.round(props.row.total_ram_hours / 24) + ' (GB*天)' }}</q-td>
+            <q-td class="no-padding" key="total_disk_hours" :props="props">{{ Math.round(props.row.total_disk_hours / 24) + ' (GB*天)' }}</q-td>
+            <q-td class="no-padding" key="total_original_amount" :props="props">{{ props.row.total_original_amount }}</q-td>
+            <q-td class="no-padding" key="total_trade_amount" :props="props">{{ props.row.total_trade_amount }}</q-td>
           </q-tr>
         </template>
       </q-table>

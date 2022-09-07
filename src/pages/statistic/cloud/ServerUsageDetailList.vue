@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { onMounted, ref, Ref } from 'vue'
-// import { navigateToUrl } from 'single-spa'
-import { useStore } from 'stores/store'
+import { onMounted, ref } from 'vue'
+import { useStore, DateInterface, PersonalServerMeteringInterface } from 'stores/store'
 import { useRoute, useRouter } from 'vue-router'
 import { i18n } from 'boot/i18n'
 import ServerUsageTable from 'components/public/ServerUsageTable.vue'
@@ -22,11 +21,11 @@ const router = useRouter()
 const { tc } = i18n.global
 const totalAmount = ref(0)
 const actualAmount = ref(0)
-const dateStart = ref('')
-const dateEnd = ref('')
-const monthOptions: Ref = ref([])
-const yearOptions: Ref = ref([])
-const tableRow: Ref = ref([])
+const dateStart = ref()
+const dateEnd = ref()
+const monthOptions = ref<DateInterface[]>([])
+const yearOptions = ref<DateInterface[]>([])
+const tableRow = ref<PersonalServerMeteringInterface[]>([])
 const myDate = new Date()
 const year = myDate.getFullYear()
 const month = myDate.getMonth() + 1
@@ -55,14 +54,14 @@ const getFormatDate = () => {
   return year + seperator1 + currentMonth + seperator1 + strDate
 }
 const currentDate = getFormatDate()
-const query: Ref = ref({
+const query = ref<Record<string, string | number | boolean>>({
   page: 1,
   page_size: 10,
   date_start: year + '-' + '01-01',
   date_end: currentDate,
   'as-admin': true
 })
-const exportQuery: Ref = ref({
+const exportQuery = ref<Record<string, string | boolean>>({
   date_start: year + '-' + '01-01',
   date_end: currentDate,
   'as-admin': true,
@@ -169,14 +168,14 @@ const getDetailData = async () => {
   totalAmount.value = 0
   actualAmount.value = 0
   if (route.meta.type === 'user') {
-    query.value.user_id = route.params.userid
-    exportQuery.value.user_id = route.params.userid
+    query.value.user_id = route.params.userid as string
+    exportQuery.value.user_id = route.params.userid as string
   } else if (route.meta.type === 'group') {
-    query.value.vo_id = route.params.groupId
-    exportQuery.value.vo_id = route.params.groupId
+    query.value.vo_id = route.params.groupId as string
+    exportQuery.value.vo_id = route.params.groupId as string
   } else if (route.meta.type === 'service') {
-    query.value.service_id = route.params.serviceId
-    exportQuery.value.service_id = route.params.serviceId
+    query.value.service_id = route.params.serviceId as string
+    exportQuery.value.service_id = route.params.serviceId as string
   }
   const data = await store.getServerMetering(query.value)
   for (const elem of data.data.results) {
@@ -229,13 +228,14 @@ const exportAll = async () => {
       multiLine: false
     })
   } else {
-    const fileData = await store.getServerHostFile(exportQuery.value)
+    const fileData = await store.getServerMetering(exportQuery.value)
     exportAllData(fileData.data, i18n.global.locale === 'zh' ? '云主机用量统计' : 'Servers Usage Statistics')
   }
 }
 onMounted(async () => {
   initSelectYear()
   await getDetailData()
+  console.log(tableRow.value)
 })
 </script>
 
@@ -263,16 +263,18 @@ onMounted(async () => {
         <q-btn outline no-caps :label="tc('导出全部数据')" class="q-ml-md" @click="exportAll"/>
       </div>
     </div>
-    <div class="row q-mt-xl text-subtitle1 text-bold">
+    <div class="row q-mt-md text-subtitle1 text-bold">
       <div>
         {{ route.meta.type === 'user' ? tc('用户名') + '：' : route.meta.type === 'group' ? tc('组名称') + '：' : tc('服务名称') + '：' }}{{ route.query.name }}
       </div>
       <div class="q-ml-xl">{{ tc('云主机数量合计') }}：{{ route.query.count }}</div>
       <div class="q-ml-xl">{{ tc('计费周期') }}：{{ dateStart }}-{{ dateEnd }}</div>
-      <div class="q-ml-xl">{{ tc('计费金额合计') }}：{{ totalAmount.toFixed(2) }} {{ tc('点') }}</div>
-      <div>{{ tc('实际扣费金额合计') }}：{{ actualAmount.toFixed(2) }} {{ tc('点') }}</div>
+<!--      <div class="col-3">{{ tc('计费金额合计') }}：{{ totalAmount.toFixed(2) }} {{ tc('点') }}</div>-->
+<!--      <div class="col-3">{{ tc('实际扣费金额合计') }}：{{ actualAmount.toFixed(2) }} {{ tc('点') }}</div>-->
     </div>
+    <div class="q-mt-md">
     <server-usage-table :table-row="tableRow"/>
+    </div>
     <div class="row q-mt-lg text-grey justify-between items-center">
       <div class="row items-center">
         <span class="q-pr-md" v-if="i18n.global.locale === 'zh'">共{{ paginationTable.count }}条数据</span>

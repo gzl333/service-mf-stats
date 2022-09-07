@@ -39,16 +39,18 @@ const routes: RouteRecordRaw[] = [
           {
             path: 'month',
             meta: {
-              isPersonal: true
+              isPersonal: true,
+              time: 'current'
             },
-            component: () => import('pages/personal/CurrentMonthList.vue')
+            component: () => import('pages/personal/MonthList.vue')
           },
           {
             path: 'last',
             meta: {
-              isPersonal: true
+              isPersonal: true,
+              time: 'last'
             },
-            component: () => import('pages/personal/LastMonthList.vue')
+            component: () => import('pages/personal/MonthList.vue')
           },
           {
             path: 'history',
@@ -73,11 +75,11 @@ const routes: RouteRecordRaw[] = [
         children: [
           {
             path: 'current',
-            component: () => import('pages/group/CurrentMonthList.vue')
+            component: () => import('pages/group/MonthList.vue')
           },
           {
             path: 'last',
-            component: () => import('pages/group/LastMonthList.vue')
+            component: () => import('pages/group/MonthList.vue')
           },
           {
             path: 'history',

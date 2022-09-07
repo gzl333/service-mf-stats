@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { onMounted, Ref, ref, computed } from 'vue'
-import { useStore } from 'stores/store'
+import { GroupServerMeteringInterface, useStore } from 'stores/store'
 // import { useRoute } from 'vue-router'
-// import { navigateToUrl } from 'single-spa'
 import { i18n } from 'boot/i18n'
 import GroupUsageTable from 'components/group/GroupUsageTable.vue'
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
@@ -23,7 +22,7 @@ const store = useStore()
 const { tc } = i18n.global
 const filterOptions = computed(() => store.getServices)
 const groupOptions = computed(() => store.getGroupOptions)
-const tableRow: Ref = ref([])
+const tableRow = ref<GroupServerMeteringInterface[]>([])
 const startDate = getHistoryStartFormatDate()
 const currentDate = getNowFormatDate(1)
 const dateFrom = ref(startDate)
@@ -57,11 +56,37 @@ const exportQuery: Ref = ref({
 const getSingleDetailData = async () => {
   tableRow.value = []
   paginationTable.value.count = 0
-  let obj: Record<string, string> = {}
+  let obj: GroupServerMeteringInterface = {
+    ipv4: '',
+    vo_id: '',
+    server_id: '',
+    service_name: '',
+    ram: undefined,
+    vcpus: undefined,
+    total_cpu_hours: undefined,
+    total_disk_hours: undefined,
+    total_original_amount: undefined,
+    total_public_ip_hours: undefined,
+    total_ram_hours: undefined,
+    total_trade_amount: undefined
+  }
   // query.value.vo_id = groupId.value.value
   const data = await store.getServerMetering(query.value)
   for (const elem of data.data.results) {
-    obj = {}
+    obj = {
+      ipv4: '',
+      vo_id: '',
+      server_id: '',
+      service_name: '',
+      ram: undefined,
+      vcpus: undefined,
+      total_cpu_hours: undefined,
+      total_disk_hours: undefined,
+      total_original_amount: undefined,
+      total_public_ip_hours: undefined,
+      total_ram_hours: undefined,
+      total_trade_amount: undefined
+    }
     obj.server_id = elem.server_id
     obj.ipv4 = elem.server.ipv4
     obj.service_name = elem.service_name
@@ -87,12 +112,38 @@ const selectDate = () => {
 const getDetailData = async () => {
   tableRow.value = []
   paginationTable.value.count = 0
-  let obj: Record<string, string> = {}
+  let obj: GroupServerMeteringInterface = {
+    ipv4: '',
+    vo_id: '',
+    server_id: '',
+    service_name: '',
+    ram: undefined,
+    vcpus: undefined,
+    total_cpu_hours: undefined,
+    total_disk_hours: undefined,
+    total_original_amount: undefined,
+    total_public_ip_hours: undefined,
+    total_ram_hours: undefined,
+    total_trade_amount: undefined
+  }
   for (const id of store.tables.groupTable.allIds) {
     query.value.vo_id = id
     const data = await store.getServerMetering(query.value)
     for (const elem of data.data.results) {
-      obj = {}
+      obj = {
+        ipv4: '',
+        vo_id: '',
+        server_id: '',
+        service_name: '',
+        ram: undefined,
+        vcpus: undefined,
+        total_cpu_hours: undefined,
+        total_disk_hours: undefined,
+        total_original_amount: undefined,
+        total_public_ip_hours: undefined,
+        total_ram_hours: undefined,
+        total_trade_amount: undefined
+      }
       obj.server_id = elem.server_id
       obj.ipv4 = elem.server.ipv4
       obj.service_name = elem.service_name
@@ -173,7 +224,7 @@ const exportAll = async () => {
       multiLine: false
     })
   } else {
-    const fileData = await store.getServerHostFile(exportQuery.value)
+    const fileData = await store.getServerMetering(exportQuery.value)
     exportAllData(fileData.data, i18n.global.locale === 'zh' ? '项目组云主机历史用量统计' : 'Historical Usage Statistics Of Group Servers')
   }
 }
@@ -183,6 +234,15 @@ onMounted(async () => {
   }
   await getDetailData()
 })
+const myLocale = {
+  days: 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_'),
+  daysShort: 'Sun_Mon_Tue_Wed_Thu_Fri_Sat'.split('_'),
+  months: 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_'),
+  monthsShort: 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_'),
+  firstDayOfWeek: 1,
+  format24h: true,
+  pluralDay: 'dias'
+}
 </script>
 
 <template>
@@ -194,7 +254,7 @@ onMounted(async () => {
           <template v-slot:append>
             <q-icon name="event" class="cursor-pointer">
               <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
-                <q-date v-model="dateFrom" @update:model-value="selectDate">
+                <q-date v-model="dateFrom" @update:model-value="selectDate" :locale="myLocale">
                   <div class="row items-center justify-end">
                     <q-btn v-close-popup no-caps :label="tc('确定')" color="primary" flat/>
                   </div>
@@ -231,7 +291,9 @@ onMounted(async () => {
         <q-btn outline no-caps :label="tc('导出全部数据')" class="q-ml-md" @click="exportAll"/>
       </div>
     </div>
+    <div class="q-mt-md">
     <group-usage-table :tableRow="tableRow"/>
+    </div>
     <div class="row q-py-md text-grey justify-between items-center">
       <div class="row items-center">
         <span class="q-pr-md" v-if="i18n.global.locale === 'zh'">共{{ paginationTable.count }}条数据</span>

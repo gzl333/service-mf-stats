@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { onMounted, Ref, ref, computed } from 'vue'
-import { useStore } from 'stores/store'
-// import { useRoute } from 'vue-router'
-// import { navigateToUrl } from 'single-spa'
+import { onMounted, ref, computed } from 'vue'
+import { useStore, PersonalServerMeteringInterface } from 'stores/store'
+import { useRoute } from 'vue-router'
 import { i18n } from 'boot/i18n'
-import ServerUsageTable from 'components/public/ServerUsageTable.vue'
-import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
 import { Notify } from 'quasar'
-import { getLastFormatDate } from 'src/hooks/processTime'
+import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
+import { getNowFormatDate, getLastFormatDate } from 'src/hooks/processTime'
+import ServerUsageTable from 'components/public/ServerUsageTable.vue'
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -16,15 +15,16 @@ import { getLastFormatDate } from 'src/hooks/processTime'
 //   }
 // })
 // const emits = defineEmits(['change', 'delete'])
-
 const store = useStore()
-// const route = useRoute()
+const route = useRoute()
 // const router = useRouter()
 const { tc } = i18n.global
 const filterOptions = computed(() => store.getServices)
-const tableRow: Ref = ref([])
-const startDate = getLastFormatDate(0)
-const endDate = getLastFormatDate(1)
+const tableRow = ref<PersonalServerMeteringInterface[]>([])
+const currentMonthStartDate = getNowFormatDate(0)
+const currentMonthEndDate = getNowFormatDate(1)
+const lastMonthStartDate = getLastFormatDate(0)
+const lastMonthEndDate = getLastFormatDate(1)
 const paginationTable = ref({
   page: 1,
   count: 0,
@@ -35,18 +35,18 @@ const serviceId = ref({
   labelEn: 'All Servers',
   value: ''
 })
-const query: Ref = ref({
+const query = ref<Record<string, string | number>>({
   page: 1,
   page_size: 10,
-  date_start: startDate,
-  date_end: endDate
+  date_start: route.meta.time === 'current' ? currentMonthStartDate : lastMonthStartDate,
+  date_end: route.meta.time === 'current' ? currentMonthEndDate : lastMonthEndDate
 })
-const exportQuery: Ref = ref({
-  date_start: startDate,
-  date_end: endDate,
+const exportQuery: Record<string, string | boolean> = {
+  date_start: route.meta.time === 'current' ? currentMonthStartDate : lastMonthStartDate,
+  date_end: route.meta.time === 'current' ? currentMonthEndDate : lastMonthEndDate,
   download: true
-})
-const getDetailData = async () => {
+}
+const getMonthData = async () => {
   tableRow.value = []
   const data = await store.getServerMetering(query.value)
   for (const elem of data.data.results) {
@@ -57,25 +57,24 @@ const getDetailData = async () => {
 const selectService = (val: Record<string, string>) => {
   if (val.value !== '') {
     query.value.service_id = val.value
-    exportQuery.value.service_id = val.value
-    getDetailData()
+    exportQuery.service_id = val.value
+    getMonthData()
   } else {
     delete query.value.service_id
-    delete exportQuery.value.service_id
-    getDetailData()
+    delete exportQuery.service_id
+    getMonthData()
   }
 }
 const changePagination = async (val: number) => {
   query.value.page = val
-  await getDetailData()
+  await getMonthData()
 }
 const changePageSize = async () => {
   query.value.page_size = paginationTable.value.rowsPerPage
   query.value.page = 1
   paginationTable.value.page = 1
-  await getDetailData()
+  await getMonthData()
 }
-// 导出当页数据
 const exportFile = () => {
   if (tableRow.value.length === 0) {
     Notify.create({
@@ -92,7 +91,6 @@ const exportFile = () => {
     exportExcel(i18n.global.locale === 'zh' ? '个人云主机用量统计.xlsx' : ' Personal Servers Statistics.xlsx', '#ServerUsageTable')
   }
 }
-// 导出全部数据
 const exportAll = async () => {
   if (tableRow.value.length === 0) {
     Notify.create({
@@ -106,17 +104,17 @@ const exportAll = async () => {
       multiLine: false
     })
   } else {
-    const fileData = await store.getServerHostFile(exportQuery.value)
-    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '个人云主机上月用量统计' : 'Personal Servers Statistics In Last Month')
+    const fileData = await store.getServerMetering(exportQuery)
+    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '个人云主机本月用量统计' : 'Personal Servers Statistics In Current Month')
   }
 }
 onMounted(async () => {
-  await getDetailData()
+  await getMonthData()
 })
 </script>
 
 <template>
-  <div class="PersonalList">
+  <div class="MonthList">
     <div class="row items-center justify-between">
       <div class="col-4 row">
         <q-select outlined dense v-model="serviceId" :options="filterOptions" @update:model-value="selectService" :label="tc('筛选服务')" class="col-8" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
@@ -126,7 +124,9 @@ onMounted(async () => {
         <q-btn outline no-caps :label="tc('导出全部数据')" class="q-ml-md" @click="exportAll"/>
       </div>
     </div>
+    <div class="q-mt-md">
     <server-usage-table :tableRow="tableRow"/>
+    </div>
     <div class="row q-py-md text-grey justify-between items-center">
       <div class="row items-center">
         <span class="q-pr-md" v-if="i18n.global.locale === 'zh'">共{{ paginationTable.count }}条数据</span>
@@ -150,6 +150,6 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
-.PersonalList {
+.MonthList {
 }
 </style>

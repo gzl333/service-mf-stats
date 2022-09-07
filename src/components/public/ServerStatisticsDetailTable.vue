@@ -23,10 +23,10 @@ const columns = computed(() => [
   { name: 'date', align: 'center', label: (() => tc('计费日期'))() },
   { name: 'payment_status', label: (() => tc('扣费状态'))(), align: 'center' },
   { name: route.meta.isPersonal ? 'username' : 'vo_name', label: route.meta.isPersonal ? (() => tc('用户名'))() : (() => tc('项目组'))(), align: 'center' },
-  { name: 'public_ip_hours', label: (() => tc('公网IP(个*天)'))(), align: 'center' },
-  { name: 'cpu_hours', label: (() => tc('vCPU(核*天）'))(), align: 'center' },
-  { name: 'ram_hours', label: (() => tc('内存(GB*天)'))(), align: 'center' },
-  { name: 'disk_hours', label: (() => tc('本地硬盘(GB*天)'))(), align: 'center' },
+  { name: 'public_ip_hours', label: (() => tc('公网IP'))(), align: 'center' },
+  { name: 'cpu_hours', label: (() => tc('vCPU'))(), align: 'center' },
+  { name: 'ram_hours', label: (() => tc('内存'))(), align: 'center' },
+  { name: 'disk_hours', label: (() => tc('本地硬盘'))(), align: 'center' },
   { name: 'original_amount', label: (() => tc('计费金额合计'))(), align: 'center' },
   { name: 'trade_amount', label: (() => tc('实际扣费金额合计'))(), align: 'center' }
 ])
@@ -34,7 +34,6 @@ const columns = computed(() => [
 
 <template>
   <div class="ServerStatisticsDetailTable">
-    <div class="q-mt-xl">
       <q-table
         flat
         id="serverTable"
@@ -56,10 +55,10 @@ const columns = computed(() => [
             </q-td>
             <q-td v-if="route.meta.isPersonal" key="username" :props="props">{{ props.row.username }}</q-td>
             <q-td v-else key="vo_name" :props="props">{{ props.row.vo_name }}</q-td>
-            <q-td key="public_ip_hours" :props="props">{{ Math.round(props.row.public_ip_hours / 24) }}</q-td>
-            <q-td key="cpu_hours" :props="props">{{ Math.round(props.row.cpu_hours / 24) }}</q-td>
-            <q-td key="ram_hours" :props="props">{{ Math.round(props.row.ram_hours / 24) }}</q-td>
-            <q-td key="disk_hours" :props="props">{{ Math.round(props.row.disk_hours / 24) }}</q-td>
+            <q-td key="public_ip_hours" :props="props">{{ Math.round(props.row.public_ip_hours / 24) + ' ' + tc('(个*天)') }}</q-td>
+            <q-td key="cpu_hours" :props="props">{{ Math.round(props.row.cpu_hours / 24) + ' ' +  tc('(核*天）') }}</q-td>
+            <q-td key="ram_hours" :props="props">{{ Math.round(props.row.ram_hours / 24) + ' ' + tc('(GB*天)') }}</q-td>
+            <q-td key="disk_hours" :props="props">{{ Math.round(props.row.disk_hours / 24) + ' ' + tc('(GB*天)') }}</q-td>
             <q-td key="original_amount" :props="props">{{ props.row.original_amount }}</q-td>
             <q-td key="trade_amount" :props="props">{{ props.row.trade_amount }}</q-td>
           </q-tr>
@@ -67,7 +66,6 @@ const columns = computed(() => [
       </q-table>
       <q-separator/>
     </div>
-  </div>
 </template>
 
 <style lang="scss" scoped>

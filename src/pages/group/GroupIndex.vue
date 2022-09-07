@@ -53,7 +53,7 @@ const changeTab = async (name: string) => {
       </div>
       <q-separator/>
       <div class="row justify-center q-pt-xl">
-        <router-view class="content-fixed-width"/>
+        <router-view class="content-fixed-width" :key="$route.fullPath"/>
       </div>
     </div>
   </div>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { onMounted, Ref, ref, computed } from 'vue'
-import { useStore } from 'stores/store'
+import { onMounted, ref, computed } from 'vue'
+import { useStore, PersonalServerMeteringInterface } from 'stores/store'
 // import { useRoute } from 'vue-router'
 // import { navigateToUrl } from 'single-spa'
 import { i18n } from 'boot/i18n'
@@ -22,7 +22,7 @@ const store = useStore()
 // const router = useRouter()
 const { tc } = i18n.global
 const filterOptions = computed(() => store.getServices)
-const tableRow: Ref = ref([])
+const tableRow = ref<PersonalServerMeteringInterface[]>([])
 const paginationTable = ref({
   page: 1,
   count: 0,
@@ -37,13 +37,13 @@ const startDate = getHistoryStartFormatDate()
 const currentDate = getNowFormatDate(1)
 const dateFrom = ref(startDate)
 const dateTo = ref(currentDate)
-const query: Ref = ref({
+const query = ref<Record<string, string | number>>({
   page: 1,
   page_size: 10,
   date_start: startDate,
   date_end: currentDate
 })
-const exportQuery: Ref = ref({
+const exportQuery = ref<Record<string, string | boolean>>({
   date_start: startDate,
   date_end: currentDate,
   download: true
@@ -115,7 +115,7 @@ const exportAll = async () => {
       multiLine: false
     })
   } else {
-    const fileData = await store.getServerHostFile(exportQuery.value)
+    const fileData = await store.getServerMetering(exportQuery.value)
     exportAllData(fileData.data, i18n.global.locale === 'zh' ? '个人云主机历史用量统计' : 'Historical Usage Statistics Of Personal Servers')
   }
 }
@@ -125,7 +125,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="PersonalList">
+  <div class="HistoryList">
     <div class="row items-center justify-between">
       <div class="col-8 row items-center q-gutter-x-md">
         <div class="col-3">
@@ -168,7 +168,9 @@ onMounted(async () => {
         <q-btn outline no-caps :label="tc('导出全部数据')" class="q-ml-md" @click="exportAll"/>
       </div>
     </div>
-    <server-usage-table :tableRow="tableRow"/>
+    <div class="q-mt-md">
+      <server-usage-table :tableRow="tableRow"/>
+    </div>
     <div class="row q-py-md text-grey justify-between items-center">
       <div class="row items-center">
         <span class="q-pr-md" v-if="i18n.global.locale === 'zh'">共{{ paginationTable.count }}条数据</span>
@@ -192,6 +194,6 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
-.PersonalList {
+.HistoryList {
 }
 </style>
