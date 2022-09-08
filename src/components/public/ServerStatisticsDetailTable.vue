@@ -5,7 +5,6 @@
 // import { useStore } from 'stores/store'
 import { useRoute } from 'vue-router'
 import { i18n } from 'boot/i18n'
-// import { dateFormat } from 'src/hooks/processTime'
 import PayStatusChip from '../statistic/PayStatusChip.vue'
 import { computed } from 'vue'
 const props = defineProps({
@@ -22,7 +21,7 @@ const { tc } = i18n.global
 const columns = computed(() => [
   { name: 'date', align: 'center', label: (() => tc('计费日期'))() },
   { name: 'payment_status', label: (() => tc('扣费状态'))(), align: 'center' },
-  { name: route.meta.isPersonal ? 'username' : 'vo_name', label: route.meta.isPersonal ? (() => tc('用户名'))() : (() => tc('项目组'))(), align: 'center' },
+  { name: route.meta.isGroup ? 'vo_name' : 'username', label: route.meta.isGroup ? (() => tc('项目组'))() : (() => tc('用户名'))(), align: 'center' },
   { name: 'public_ip_hours', label: (() => tc('公网IP'))(), align: 'center' },
   { name: 'cpu_hours', label: (() => tc('vCPU'))(), align: 'center' },
   { name: 'ram_hours', label: (() => tc('内存'))(), align: 'center' },
@@ -53,8 +52,8 @@ const columns = computed(() => [
             <q-td key="payment_status" :props="props">
               <pay-status-chip class="non-selectable" :status="props.row.payment_status"/>
             </q-td>
-            <q-td v-if="route.meta.isPersonal" key="username" :props="props">{{ props.row.username }}</q-td>
-            <q-td v-else key="vo_name" :props="props">{{ props.row.vo_name }}</q-td>
+            <q-td v-if="route.meta.isGroup" key="vo_name" :props="props">{{ props.row.vo_name }}</q-td>
+            <q-td v-else key="username" :props="props">{{ props.row.username }}</q-td>
             <q-td key="public_ip_hours" :props="props">{{ Math.round(props.row.public_ip_hours / 24) + ' ' + tc('(个*天)') }}</q-td>
             <q-td key="cpu_hours" :props="props">{{ Math.round(props.row.cpu_hours / 24) + ' ' +  tc('(核*天）') }}</q-td>
             <q-td key="ram_hours" :props="props">{{ Math.round(props.row.ram_hours / 24) + ' ' + tc('(GB*天)') }}</q-td>

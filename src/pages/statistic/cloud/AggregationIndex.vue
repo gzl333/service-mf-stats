@@ -184,31 +184,33 @@ const search = async () => {
 }
 // 导出当页数据
 const exportFile = () => {
+  const date = new Date()
   // name表示生成excel的文件名     tableName表示表格的id
   if (activeItem.value === 'user') {
-    exportExcel(i18n.global.locale === 'zh' ? '用户用量列表.xlsx' : 'User Usage List.xlsx', '#userTable')
+    exportExcel(i18n.global.locale === 'zh' ? '用户用量列表-' + date.toLocaleTimeString() + '.xlsx' : 'User Usage List-' + date.toLocaleTimeString() + '.xlsx', '#userTable')
   } else if (activeItem.value === 'group') {
-    exportExcel(i18n.global.locale === 'zh' ? '项目组用量列表.xlsx' : 'Group Usage List.xlsx', '#groupTable')
+    exportExcel(i18n.global.locale === 'zh' ? '项目组用量列表-' + date.toLocaleTimeString() + '.xlsx' : 'Group Usage List-' + date.toLocaleTimeString() + '.xlsx', '#groupTable')
   } else if (activeItem.value === 'server') {
-    exportExcel(i18n.global.locale === 'zh' ? '云主机用量列表.xlsx' : 'Servers Usage List.xlsx', '#serverTable')
+    exportExcel(i18n.global.locale === 'zh' ? '云主机用量列表-' + date.toLocaleTimeString() + '.xlsx' : 'Servers Usage List-' + date.toLocaleTimeString() + '.xlsx', '#serverTable')
   } else if (activeItem.value === 'service') {
-    exportExcel(i18n.global.locale === 'zh' ? '服务用量列表.xlsx' : 'service Usage List.xlsx', '#serviceTable')
+    exportExcel(i18n.global.locale === 'zh' ? '服务用量列表-' + date.toLocaleTimeString() + '.xlsx' : 'service Usage List-' + date.toLocaleTimeString() + '.xlsx', '#serviceTable')
   }
 }
 // 导出全部数据
 const exportAll = async () => {
+  const date = new Date()
   if (activeItem.value === 'user') {
     const fileData = await store.getUserMetering(exportQuery.value)
-    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '按用户计量计费聚合统计' : 'Aggregate Statistics Of Metering By User')
+    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '按用户计量计费聚合统计' + date.toLocaleTimeString() : 'Aggregate Statistics Of Metering By User-' + date.toLocaleTimeString())
   } else if (activeItem.value === 'group') {
     const fileData = await store.getGroupMetering(exportQuery.value)
-    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '按项目组计量计费聚合统计' : 'Aggregate Statistics Of Metering By Group')
+    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '按项目组计量计费聚合统计' + date.toLocaleTimeString() : 'Aggregate Statistics Of Metering By Group-' + date.toLocaleTimeString())
   } else if (activeItem.value === 'server') {
     const fileData = await store.getServerMetering(exportQuery.value)
-    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '按云主机计量计费聚合统计' : 'Aggregate Statistics Of Metering By Server')
+    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '按云主机计量计费聚合统计' + date.toLocaleTimeString() : 'Aggregate Statistics Of Metering By Server-' + date.toLocaleTimeString())
   } else if (activeItem.value === 'service') {
     const fileData = await store.getServiceMetering(exportQuery.value)
-    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '按服务计量计费聚合统计' : 'Aggregate Statistics Of Metering By Service')
+    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '按服务计量计费聚合统计' + date.toLocaleTimeString() : 'Aggregate Statistics Of Metering By Service-' + date.toLocaleTimeString())
   }
 }
 const changeTab = async (name: string) => {
@@ -273,16 +275,16 @@ onMounted(async () => {
         active-bg-color="grey-3"
         style="width: 10%"
       >
-        <q-tab no-caps name="server" class="q-pl-none text-weight-bold" @click="changeTab('server')" :ripple="false">
+        <q-tab no-caps name="server" class="text-weight-bold" @click="changeTab('server')" :ripple="false">
           {{ tc('按云主机uuid') }}
         </q-tab>
-        <q-tab no-caps name="service"  class="q-pl-none text-weight-bold" @click="changeTab('service')" :ripple="false">
+        <q-tab no-caps name="service"  class="text-weight-bold" @click="changeTab('service')" :ripple="false">
           {{ tc('按服务单元') }}
         </q-tab>
-        <q-tab no-caps name="group"  class="q-pl-none text-weight-bold" @click="changeTab('group')" :ripple="false">
+        <q-tab no-caps name="group"  class="text-weight-bold" @click="changeTab('group')" :ripple="false">
           {{ tc('按项目组id') }}
         </q-tab>
-        <q-tab no-caps name="user"  class="q-pl-none text-weight-bold" @click="changeTab('user')" :ripple="false">
+        <q-tab no-caps name="user"  class="text-weight-bold" @click="changeTab('user')" :ripple="false">
           {{ tc('按用户id') }}
         </q-tab>
       </q-tabs>

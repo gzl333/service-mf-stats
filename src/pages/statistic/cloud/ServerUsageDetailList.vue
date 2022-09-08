@@ -5,7 +5,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { i18n } from 'boot/i18n'
 import ServerUsageTable from 'components/public/ServerUsageTable.vue'
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
-import { Notify } from 'quasar'
+import { exportNotify } from 'src/hooks/ExportNotify'
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -201,41 +201,24 @@ const search = async () => {
 }
 const exportFile = () => {
   if (tableRow.value.length === 0) {
-    Notify.create({
-      classes: 'notification-negative shadow-15',
-      icon: 'mdi-alert',
-      textColor: 'negative',
-      message: tc('暂无数据'),
-      position: 'bottom',
-      closeBtn: true,
-      timeout: 5000,
-      multiLine: false
-    })
+    exportNotify()
   } else {
-    exportExcel(i18n.global.locale === 'zh' ? '云主机用量统计.xlsx' : 'Servers Usage Statistics.xlsx', '#ServerUsageTable')
+    const date = new Date()
+    exportExcel(i18n.global.locale === 'zh' ? '云主机用量统计-' + date.toLocaleTimeString() + '.xlsx' : 'Servers Usage Statistics-' + date.toLocaleTimeString() + '.xlsx', '#ServerUsageTable')
   }
 }
 const exportAll = async () => {
   if (tableRow.value.length === 0) {
-    Notify.create({
-      classes: 'notification-negative shadow-15',
-      icon: 'mdi-alert',
-      textColor: 'negative',
-      message: tc('暂无数据'),
-      position: 'bottom',
-      closeBtn: true,
-      timeout: 5000,
-      multiLine: false
-    })
+    exportNotify()
   } else {
+    const date = new Date()
     const fileData = await store.getServerMetering(exportQuery.value)
-    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '云主机用量统计' : 'Servers Usage Statistics')
+    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '云主机用量统计' + date.toLocaleTimeString() : 'Servers Usage Statistics' + date.toLocaleTimeString())
   }
 }
 onMounted(async () => {
   initSelectYear()
   await getDetailData()
-  console.log(tableRow.value)
 })
 </script>
 
@@ -251,16 +234,16 @@ onMounted(async () => {
         <div class="col-3">
           <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" :label="tc('请选择')" @update:model-value="changeYear"/>
         </div>
-        <div class="col-3 q-ml-md">
+        <div class="col-3 q-ml-sm">
           <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" :label="tc('请选择')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
         </div>
-        <div class="q-ml-md">
+        <div class="q-ml-sm">
           <q-btn outline no-caps :label="tc('搜索')" @click="search" class="q-px-lg"/>
         </div>
       </div>
       <div>
-        <q-btn outline no-caps :label="tc('导出当页数据')" class="q-ml-md" @click="exportFile"/>
-        <q-btn outline no-caps :label="tc('导出全部数据')" class="q-ml-md" @click="exportAll"/>
+        <q-btn outline no-caps :label="tc('导出当页数据')" @click="exportFile"/>
+        <q-btn outline no-caps :label="tc('导出全部数据')" class="q-ml-sm" @click="exportAll"/>
       </div>
     </div>
     <div class="row q-mt-md text-subtitle1 text-bold">

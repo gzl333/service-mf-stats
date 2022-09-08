@@ -3,9 +3,9 @@ import { onMounted, ref, computed } from 'vue'
 import { useStore, PersonalServerMeteringInterface } from 'stores/store'
 import { useRoute } from 'vue-router'
 import { i18n } from 'boot/i18n'
-import { Notify } from 'quasar'
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
 import { getNowFormatDate, getLastFormatDate } from 'src/hooks/processTime'
+import { exportNotify } from 'src/hooks/ExportNotify'
 import ServerUsageTable from 'components/public/ServerUsageTable.vue'
 // const props = defineProps({
 //   foo: {
@@ -19,7 +19,7 @@ const store = useStore()
 const route = useRoute()
 // const router = useRouter()
 const { tc } = i18n.global
-const filterOptions = computed(() => store.getServices)
+const serviceOptions = computed(() => store.getServices)
 const tableRow = ref<PersonalServerMeteringInterface[]>([])
 const currentMonthStartDate = getNowFormatDate(0)
 const currentMonthEndDate = getNowFormatDate(1)
@@ -77,35 +77,19 @@ const changePageSize = async () => {
 }
 const exportFile = () => {
   if (tableRow.value.length === 0) {
-    Notify.create({
-      classes: 'notification-negative shadow-15',
-      icon: 'mdi-alert',
-      textColor: 'negative',
-      message: tc('暂无数据'),
-      position: 'bottom',
-      closeBtn: true,
-      timeout: 5000,
-      multiLine: false
-    })
+    exportNotify()
   } else {
-    exportExcel(i18n.global.locale === 'zh' ? '个人云主机用量统计.xlsx' : ' Personal Servers Statistics.xlsx', '#ServerUsageTable')
+    const date = new Date()
+    exportExcel(i18n.global.locale === 'zh' ? '个人云主机用量统计-' + date.toLocaleTimeString() + '.xlsx' : ' Personal Servers Statistics-' + date.toLocaleTimeString() + '.xlsx', '#ServerUsageTable')
   }
 }
 const exportAll = async () => {
   if (tableRow.value.length === 0) {
-    Notify.create({
-      classes: 'notification-negative shadow-15',
-      icon: 'mdi-alert',
-      textColor: 'negative',
-      message: tc('暂无数据'),
-      position: 'bottom',
-      closeBtn: true,
-      timeout: 5000,
-      multiLine: false
-    })
+    exportNotify()
   } else {
+    const date = new Date()
     const fileData = await store.getServerMetering(exportQuery)
-    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '个人云主机本月用量统计' : 'Personal Servers Statistics In Current Month')
+    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '个人云主机本月用量统计-' + date.toLocaleTimeString() : 'Personal Servers Statistics In Current Month-' + date.toLocaleTimeString())
   }
 }
 onMounted(async () => {
@@ -115,17 +99,18 @@ onMounted(async () => {
 
 <template>
   <div class="MonthList">
-    <div class="row items-center justify-between">
+    <div class="row items-center justify-between q-mt-xl">
       <div class="col-4 row">
-        <q-select outlined dense v-model="serviceId" :options="filterOptions" @update:model-value="selectService" :label="tc('筛选服务')" class="col-8" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
+        <q-select outlined dense v-model="serviceId" :options="serviceOptions" @update:model-value="selectService"
+                  :label="tc('筛选服务')" class="col-8" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
       </div>
       <div>
-        <q-btn outline no-caps :label="tc('导出当页数据')" class="q-ml-md" @click="exportFile"/>
-        <q-btn outline no-caps :label="tc('导出全部数据')" class="q-ml-md" @click="exportAll"/>
+        <q-btn outline no-caps :label="tc('导出当页数据')" @click="exportFile"/>
+        <q-btn outline no-caps :label="tc('导出全部数据')" class="q-ml-sm" @click="exportAll"/>
       </div>
     </div>
     <div class="q-mt-md">
-    <server-usage-table :tableRow="tableRow"/>
+      <server-usage-table :tableRow="tableRow"/>
     </div>
     <div class="row q-py-md text-grey justify-between items-center">
       <div class="row items-center">

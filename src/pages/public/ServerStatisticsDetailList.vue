@@ -4,9 +4,9 @@ import { useStore, MeteringDetailInterface, DateInterface } from 'stores/store'
 import { useRoute, useRouter } from 'vue-router'
 import ServerStatisticsDetailTable from 'components/public/ServerStatisticsDetailTable.vue'
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
-// import { getNowFormatDate } from 'src/hooks/processTime'
-import { Notify } from 'quasar'
+import { exportNotify } from 'src/hooks/ExportNotify'
 import { i18n } from 'boot/i18n'
+
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -40,7 +40,7 @@ const getFormatDate = () => {
   return year + seperator1 + currentMonth + seperator1 + strDate
 }
 const currentDate = getFormatDate()
-const query = ref<Record<string, string | number |boolean>>({
+const query = ref<Record<string, string | number | boolean>>({
   page: 1,
   page_size: 10,
   date_start: year + '-' + '01-01',
@@ -188,35 +188,19 @@ const search = async () => {
 }
 const exportFile = () => {
   if (tableRow.value.length === 0) {
-    Notify.create({
-      classes: 'notification-negative shadow-15',
-      icon: 'mdi-alert',
-      textColor: 'negative',
-      message: tc('暂无数据'),
-      position: 'bottom',
-      closeBtn: true,
-      timeout: 5000,
-      multiLine: false
-    })
+    exportNotify()
   } else {
-    exportExcel(i18n.global.locale === 'zh' ? '云主机用量统计.xlsx' : 'Servers Usage Statistics.xlsx', '#serverTable')
+    const date = new Date()
+    exportExcel(i18n.global.locale === 'zh' ? '云主机用量统计-' + date.toLocaleTimeString() + '.xlsx' : 'Servers Usage Statistics-' + date.toLocaleTimeString() + '.xlsx', '#serverTable')
   }
 }
 const exportAll = async () => {
   if (tableRow.value.length === 0) {
-    Notify.create({
-      classes: 'notification-negative shadow-15',
-      icon: 'mdi-alert',
-      textColor: 'negative',
-      message: tc('暂无数据'),
-      position: 'bottom',
-      closeBtn: true,
-      timeout: 5000,
-      multiLine: false
-    })
+    exportNotify()
   } else {
+    const date = new Date()
     const fileData = await store.getMeteringDetail(exportQuery.value)
-    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '云主机用量统计' : 'Servers Usage Statistics')
+    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '云主机用量统计-' + date.toLocaleTimeString() : 'Servers Usage Statistics-' + date.toLocaleTimeString())
   }
 }
 onMounted(() => {
@@ -235,18 +219,20 @@ onMounted(() => {
     <div class="row q-mt-lg justify-between">
       <div class="row col-5 items-center">
         <div class="col-3">
-          <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" :label="tc('请选择')" @update:model-value="changeYear"/>
+          <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" :label="tc('请选择')"
+                    @update:model-value="changeYear"/>
         </div>
-        <div class="col-3 q-ml-md">
-          <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" :label="tc('请选择')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
+        <div class="col-3 q-ml-sm">
+          <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" :label="tc('请选择')"
+                    :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
         </div>
-        <div class="q-ml-md">
+        <div class="q-ml-sm">
           <q-btn outline no-caps :label="tc('搜索')" @click="search" class="q-px-lg"/>
         </div>
       </div>
       <div>
-        <q-btn outline no-caps :label="tc('导出当页数据')" class="q-ml-md" @click="exportFile"/>
-        <q-btn outline no-caps :label="tc('导出全部数据')" class="q-ml-md" @click="exportAll"/>
+        <q-btn outline no-caps :label="tc('导出当页数据')" @click="exportFile"/>
+        <q-btn outline no-caps :label="tc('导出全部数据')" class="q-ml-sm" @click="exportAll"/>
       </div>
     </div>
     <div class="q-mt-md">
@@ -264,14 +250,16 @@ onMounted(() => {
               <div class="text-subtitle1 q-mt-lg">{{ route.query.service }}</div>
             </div>
             <div class="col-2 text-center">
-              <div class="text-subtitle1">{{ tc('用户') }}</div>
+              <div class="text-subtitle1">{{ route.meta.isGroup ? tc('项目组') : tc('用户') }}</div>
               <q-separator/>
-              <div class="text-subtitle1 q-mt-lg">{{ tableRow[0]?.username }}</div>
+              <div class="text-subtitle1 q-mt-lg">{{ route.meta.isGroup ? tableRow[0]?.vo_name : tableRow[0]?.username }}</div>
             </div>
             <div class="col-2 text-center">
               <div class="text-subtitle1">{{ tc('初始配置') }}</div>
               <q-separator/>
-              <div class="text-subtitle1 q-mt-lg">{{ route.query.vcpus + ' ' + tc('核') + ' ' + route.query.ram / 1024 + ' GB' }}</div>
+              <div class="text-subtitle1 q-mt-lg">
+                {{ route.query.vcpus + ' ' + tc('核') + ' ' + route.query.ram / 1024 + ' GB' }}
+              </div>
             </div>
             <div class="col-2 text-center">
               <div class="text-subtitle1">{{ tc('公网ip') }}</div>
@@ -283,7 +271,7 @@ onMounted(() => {
       </q-card>
     </div>
     <div class="q-mt-md">
-    <server-statistics-detail-table :tableRow="tableRow"/>
+      <server-statistics-detail-table :tableRow="tableRow"/>
     </div>
     <div class="row text-grey justify-between items-center q-mt-md">
       <div class="row items-center">

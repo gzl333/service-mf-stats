@@ -33,13 +33,12 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: 'personal',
-        redirect: '/my/stats/personal/month',
+        redirect: '/my/stats/personal/current',
         component: () => import('pages/personal/PersonalIndex.vue'),
         children: [
           {
-            path: 'month',
+            path: 'current',
             meta: {
-              isPersonal: true,
               time: 'current'
             },
             component: () => import('pages/personal/MonthList.vue')
@@ -47,24 +46,20 @@ const routes: RouteRecordRaw[] = [
           {
             path: 'last',
             meta: {
-              isPersonal: true,
               time: 'last'
             },
             component: () => import('pages/personal/MonthList.vue')
           },
           {
             path: 'history',
-            meta: {
-              isPersonal: true
-            },
             component: () => import('pages/personal/HistoryList.vue')
           },
           {
             path: 'detail/:serverId',
             meta: {
-              isPersonal: true
+              isGroup: false
             },
-            component: () => import('pages/public/ServerUsageDetailList.vue')
+            component: () => import('pages/public/ServerStatisticsDetailList.vue')
           }
         ]
       },
@@ -75,10 +70,16 @@ const routes: RouteRecordRaw[] = [
         children: [
           {
             path: 'current',
+            meta: {
+              time: 'current'
+            },
             component: () => import('pages/group/MonthList.vue')
           },
           {
             path: 'last',
+            meta: {
+              time: 'last'
+            },
             component: () => import('pages/group/MonthList.vue')
           },
           {
@@ -87,7 +88,10 @@ const routes: RouteRecordRaw[] = [
           },
           {
             path: 'detail/:serverId',
-            component: () => import('pages/public/ServerUsageDetailList.vue')
+            meta: {
+              isGroup: true
+            },
+            component: () => import('pages/public/ServerStatisticsDetailList.vue')
           }
         ]
       },
@@ -160,9 +164,9 @@ const routes: RouteRecordRaw[] = [
                 path: 'server/:serverId',
                 meta: {
                   requireServiceAdmin: true, // 服务管理员权限才能访问
-                  isPersonal: true
+                  ifGroup: false
                 },
-                component: () => import('pages/statistic/cloud/ServerStatisticsDetailList.vue')
+                component: () => import('pages/public/ServerStatisticsDetailList.vue')
               },
               {
                 path: 'service/:serviceId',

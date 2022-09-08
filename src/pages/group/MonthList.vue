@@ -3,10 +3,10 @@ import { onMounted, ref, computed } from 'vue'
 import { useStore, GroupServerMeteringInterface } from 'stores/store'
 import { useRoute } from 'vue-router'
 import { i18n } from 'boot/i18n'
-import GroupUsageTable from 'components/group/GroupUsageTable.vue'
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
-import { Notify } from 'quasar'
 import { getLastFormatDate, getNowFormatDate } from 'src/hooks/processTime'
+import { exportNotify } from 'src/hooks/ExportNotify'
+import GroupUsageTable from 'components/group/GroupUsageTable.vue'
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -20,7 +20,7 @@ const store = useStore()
 const route = useRoute()
 // const router = useRouter()
 const { tc } = i18n.global
-const filterOptions = computed(() => store.getServices)
+const serviceOptions = computed(() => store.getServices)
 const groupOptions = computed(() => store.getGroupOptions)
 const tableRow = ref<GroupServerMeteringInterface[]>([])
 const currentMonthStartDate = getNowFormatDate(0)
@@ -53,7 +53,7 @@ const exportQuery: Record<string, string | boolean> = {
   date_end: route.meta.time === 'current' ? currentMonthEndDate : lastMonthEndDate,
   download: true
 }
-const getSingleDetailData = async () => {
+const getSingleGroupMonthData = async () => {
   tableRow.value = []
   paginationTable.value.count = 0
   let obj: GroupServerMeteringInterface = {
@@ -103,7 +103,7 @@ const getSingleDetailData = async () => {
   }
   paginationTable.value.count = data.data.count
 }
-const getDetailData = async () => {
+const getMonthData = async () => {
   tableRow.value = []
   paginationTable.value.count = 0
   let obj: GroupServerMeteringInterface = {
@@ -172,73 +172,57 @@ const selectGroup = (val: Record<string, string>) => {
 }
 const search = async () => {
   if (groupId.value.value === '0') {
-    await getDetailData()
+    await getMonthData()
   } else {
-    await getSingleDetailData()
+    await getSingleGroupMonthData()
   }
 }
 const changePagination = async (val: number) => {
   query.value.page = val
-  await getDetailData()
+  await getMonthData()
 }
 const changePageSize = async () => {
   query.value.page_size = paginationTable.value.rowsPerPage
   query.value.page = 1
   paginationTable.value.page = 1
-  await getDetailData()
+  await getMonthData()
 }
 const exportFile = () => {
   if (tableRow.value.length === 0) {
-    Notify.create({
-      classes: 'notification-negative shadow-15',
-      icon: 'mdi-alert',
-      textColor: 'negative',
-      message: tc('暂无数据'),
-      position: 'bottom',
-      closeBtn: true,
-      timeout: 5000,
-      multiLine: false
-    })
+    exportNotify()
   } else {
-    exportExcel(i18n.global.locale === 'zh' ? '项目组云主机用量统计.xlsx' : ' Group Servers Statistics.xlsx', '#GroupUsageTable')
+    const date = new Date()
+    exportExcel(i18n.global.locale === 'zh' ? '项目组云主机用量统计-' + date.toLocaleTimeString() + '.xlsx' : ' Group Servers Statistics-' + date.toLocaleTimeString() + '.xlsx', '#GroupUsageTable')
   }
 }
 const exportAll = async () => {
   if (tableRow.value.length === 0) {
-    Notify.create({
-      classes: 'notification-negative shadow-15',
-      icon: 'mdi-alert',
-      textColor: 'negative',
-      message: tc('暂无数据'),
-      position: 'bottom',
-      closeBtn: true,
-      timeout: 5000,
-      multiLine: false
-    })
+    exportNotify()
   } else {
+    const date = new Date()
     const fileData = await store.getServerMetering(exportQuery)
-    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '项目组云主机本月用量统计' : 'Group Servers Statistics In Current Month')
+    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '项目组云主机本月用量统计-' + date.toLocaleTimeString() : 'Group Servers Statistics In Current Month-' + date.toLocaleTimeString())
   }
 }
 onMounted(async () => {
   if (store.tables.groupTable.allIds.length === 0) {
     await store.loadGroupTable()
   }
-  await getDetailData()
+  await getMonthData()
 })
 </script>
 
 <template>
   <div class="MonthList">
-    <div class="row items-center justify-between">
+    <div class="row items-center justify-between q-mt-xl">
       <div class="col-5 row">
         <q-select class="col-5" outlined dense v-model="groupId" :options="groupOptions" @update:model-value="selectGroup" :label="tc('筛选项目组')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
-        <q-select outlined dense v-model="serviceId" :options="filterOptions" @update:model-value="selectService" :label="tc('筛选服务')" class="col-5 q-ml-xs" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
+        <q-select outlined dense v-model="serviceId" :options="serviceOptions" @update:model-value="selectService" :label="tc('筛选服务')" class="col-5 q-ml-xs" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
         <q-btn class="q-ml-xs" outline no-caps :label="tc('搜索')" @click="search"/>
       </div>
       <div>
         <q-btn outline no-caps :label="tc('导出当页数据')" @click="exportFile"/>
-        <q-btn outline no-caps :label="tc('导出全部数据')" class="q-ml-xs" @click="exportAll"/>
+        <q-btn outline no-caps :label="tc('导出全部数据')" class="q-ml-sm" @click="exportAll"/>
       </div>
     </div>
     <div class="q-mt-md">

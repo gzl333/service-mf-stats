@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { navigateToUrl } from 'single-spa'
 // import { useStore } from 'stores/store'
-import { useRoute } from 'vue-router'
+// import { useRoute } from 'vue-router'
 import { i18n } from 'boot/i18n'
 
 const props = defineProps({
@@ -13,7 +13,7 @@ const props = defineProps({
 })
 // const emits = defineEmits(['change', 'delete'])
 // const store = useStore()
-const route = useRoute()
+// const route = useRoute()
 // const router = useRouter()
 const { tc } = i18n.global
 const columns = computed(() => [
@@ -86,11 +86,10 @@ const goToDetail = (serverId: string, serviceName: string, ipv4: string, vcpus: 
       <template v-slot:body="props">
         <q-tr :props="props">
           <q-td key="ipv4" :props="props">
-            <q-btn v-if="route.meta.isPersonal" class="q-ma-none" :label="props.row.server.ipv4" color="primary"
+            <q-btn class="q-ma-none" :label="props.row.server.ipv4" color="primary"
                    padding="xs"
                    @click="goToDetail(props.row.server_id, props.row.service_name, props.row.server.ipv4, props.row.server.vcpus, props.row.server.ram)"
                    flat dense unelevated></q-btn>
-            <span v-else>{{ props.row.server.ipv4 }}</span>
           </q-td>
           <q-td key="service_name" :props="props">{{ props.row.service_name }}</q-td>
           <q-td key="configuration" :props="props">{{

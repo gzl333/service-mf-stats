@@ -2,12 +2,11 @@
 import { onMounted, ref, computed } from 'vue'
 import { useStore, PersonalServerMeteringInterface } from 'stores/store'
 // import { useRoute } from 'vue-router'
-// import { navigateToUrl } from 'single-spa'
 import { i18n } from 'boot/i18n'
-import ServerUsageTable from 'components/public/ServerUsageTable.vue'
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
-import { Notify } from 'quasar'
 import { getHistoryStartFormatDate, getNowFormatDate } from 'src/hooks/processTime'
+import { exportNotify } from 'src/hooks/ExportNotify'
+import ServerUsageTable from 'components/public/ServerUsageTable.vue'
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -21,7 +20,7 @@ const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
 const { tc } = i18n.global
-const filterOptions = computed(() => store.getServices)
+const serviceOptions = computed(() => store.getServices)
 const tableRow = ref<PersonalServerMeteringInterface[]>([])
 const paginationTable = ref({
   page: 1,
@@ -48,7 +47,7 @@ const exportQuery = ref<Record<string, string | boolean>>({
   date_end: currentDate,
   download: true
 })
-const getDetailData = async () => {
+const getHistoryData = async () => {
   tableRow.value = []
   const data = await store.getServerMetering(query.value)
   for (const elem of data.data.results) {
@@ -73,60 +72,44 @@ const selectService = (val: Record<string, string>) => {
 }
 const changePagination = async (val: number) => {
   query.value.page = val
-  await getDetailData()
+  await getHistoryData()
 }
 const changePageSize = async () => {
   query.value.page_size = paginationTable.value.rowsPerPage
   query.value.page = 1
   paginationTable.value.page = 1
-  await getDetailData()
+  await getHistoryData()
 }
 const search = async () => {
-  await getDetailData()
+  await getHistoryData()
 }
 // 导出当页数据
 const exportFile = () => {
   if (tableRow.value.length === 0) {
-    Notify.create({
-      classes: 'notification-negative shadow-15',
-      icon: 'mdi-alert',
-      textColor: 'negative',
-      message: tc('暂无数据'),
-      position: 'bottom',
-      closeBtn: true,
-      timeout: 5000,
-      multiLine: false
-    })
+    exportNotify()
   } else {
-    exportExcel(i18n.global.locale === 'zh' ? '个人云主机用量统计.xlsx' : ' Personal Servers Statistics.xlsx', '#ServerUsageTable')
+    const date = new Date()
+    exportExcel(i18n.global.locale === 'zh' ? '个人云主机用量统计-' + date.toLocaleTimeString() + '.xlsx' : ' Personal Servers Statistics-' + date.toLocaleTimeString() + '.xlsx', '#ServerUsageTable')
   }
 }
 // 导出全部数据
 const exportAll = async () => {
   if (tableRow.value.length === 0) {
-    Notify.create({
-      classes: 'notification-negative shadow-15',
-      icon: 'mdi-alert',
-      textColor: 'negative',
-      message: tc('暂无数据'),
-      position: 'bottom',
-      closeBtn: true,
-      timeout: 5000,
-      multiLine: false
-    })
+    exportNotify()
   } else {
+    const date = new Date()
     const fileData = await store.getServerMetering(exportQuery.value)
-    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '个人云主机历史用量统计' : 'Historical Usage Statistics Of Personal Servers')
+    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '个人云主机历史用量统计-' + date.toLocaleTimeString() : 'Historical Usage Statistics Of Personal Servers-' + date.toLocaleTimeString())
   }
 }
 onMounted(async () => {
-  await getDetailData()
+  await getHistoryData()
 })
 </script>
 
 <template>
   <div class="HistoryList">
-    <div class="row items-center justify-between">
+    <div class="row items-center justify-between q-mt-xl">
       <div class="col-8 row items-center q-gutter-x-md">
         <div class="col-3">
           <q-input filled dense v-model="dateFrom" mask="date">
@@ -159,13 +142,13 @@ onMounted(async () => {
             </template>
           </q-input>
         </div>
-        <q-select outlined dense v-model="serviceId" :options="filterOptions" @update:model-value="selectService"
+        <q-select outlined dense v-model="serviceId" :options="serviceOptions" @update:model-value="selectService"
                   :label="tc('筛选服务')" class="col-3" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
         <q-btn outline no-caps :label="tc('搜索')" class="q-px-lg" @click="search"/>
       </div>
       <div class="col-4 row justify-end">
         <q-btn outline no-caps :label="tc('导出当页数据')" @click="exportFile"/>
-        <q-btn outline no-caps :label="tc('导出全部数据')" class="q-ml-md" @click="exportAll"/>
+        <q-btn outline no-caps :label="tc('导出全部数据')" class="q-ml-sm" @click="exportAll"/>
       </div>
     </div>
     <div class="q-mt-md">

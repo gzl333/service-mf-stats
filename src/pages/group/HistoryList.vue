@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { onMounted, Ref, ref, computed } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { GroupServerMeteringInterface, useStore } from 'stores/store'
 // import { useRoute } from 'vue-router'
 import { i18n } from 'boot/i18n'
-import GroupUsageTable from 'components/group/GroupUsageTable.vue'
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
-import { Notify } from 'quasar'
 import { getHistoryStartFormatDate, getNowFormatDate } from 'src/hooks/processTime'
+import { exportNotify } from 'src/hooks/ExportNotify'
+import GroupUsageTable from 'components/group/GroupUsageTable.vue'
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -42,18 +42,18 @@ const serviceId = ref({
   labelEn: 'All Servers',
   value: ''
 })
-const query: Ref = ref({
+const query = ref<Record<string, string | number>>({
   page: 1,
   page_size: 10,
   date_start: startDate,
   date_end: currentDate
 })
-const exportQuery: Ref = ref({
+const exportQuery = ref<Record<string, string | boolean>>({
   date_start: startDate,
   date_end: currentDate,
   download: true
 })
-const getSingleDetailData = async () => {
+const getSingleGroupHistoryData = async () => {
   tableRow.value = []
   paginationTable.value.count = 0
   let obj: GroupServerMeteringInterface = {
@@ -109,7 +109,7 @@ const selectDate = () => {
   exportQuery.value.date_start = dateFrom.value.replace(/(\/)/g, '-')
   exportQuery.value.date_end = dateTo.value.replace(/(\/)/g, '-')
 }
-const getDetailData = async () => {
+const getHistoryData = async () => {
   tableRow.value = []
   paginationTable.value.count = 0
   let obj: GroupServerMeteringInterface = {
@@ -180,59 +180,43 @@ const selectGroup = (val: Record<string, string>) => {
 }
 const changePagination = async (val: number) => {
   query.value.page = val
-  await getDetailData()
+  await getHistoryData()
 }
 const changePageSize = async () => {
   query.value.page_size = paginationTable.value.rowsPerPage
   query.value.page = 1
   paginationTable.value.page = 1
-  await getDetailData()
+  await getHistoryData()
 }
 const search = async () => {
   if (groupId.value.value === '0') {
-    await getDetailData()
+    await getHistoryData()
   } else {
-    await getSingleDetailData()
+    await getSingleGroupHistoryData()
   }
 }
 const exportFile = () => {
   if (tableRow.value.length === 0) {
-    Notify.create({
-      classes: 'notification-negative shadow-15',
-      icon: 'mdi-alert',
-      textColor: 'negative',
-      message: tc('暂无数据'),
-      position: 'bottom',
-      closeBtn: true,
-      timeout: 5000,
-      multiLine: false
-    })
+    exportNotify()
   } else {
-    exportExcel(i18n.global.locale === 'zh' ? '项目组云主机用量统计.xlsx' : ' Group Servers Statistics.xlsx', '#GroupUsageTable')
+    const date = new Date()
+    exportExcel(i18n.global.locale === 'zh' ? '项目组云主机用量统计-' + date.toLocaleTimeString() + '.xlsx' : ' Group Servers Statistics-' + date.toLocaleTimeString() + '.xlsx', '#GroupUsageTable')
   }
 }
 const exportAll = async () => {
   if (tableRow.value.length === 0) {
-    Notify.create({
-      classes: 'notification-negative shadow-15',
-      icon: 'mdi-alert',
-      textColor: 'negative',
-      message: tc('暂无数据'),
-      position: 'bottom',
-      closeBtn: true,
-      timeout: 5000,
-      multiLine: false
-    })
+    exportNotify()
   } else {
+    const date = new Date()
     const fileData = await store.getServerMetering(exportQuery.value)
-    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '项目组云主机历史用量统计' : 'Historical Usage Statistics Of Group Servers')
+    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '项目组云主机历史用量统计-' + date.toLocaleTimeString() : 'Historical Usage Statistics Of Group Servers-' + date.toLocaleTimeString())
   }
 }
 onMounted(async () => {
   if (store.tables.groupTable.allIds.length === 0) {
     await store.loadGroupTable()
   }
-  await getDetailData()
+  await getHistoryData()
 })
 const myLocale = {
   days: 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_'),
@@ -247,7 +231,7 @@ const myLocale = {
 
 <template>
   <div class="HistoryList">
-    <div class="row items-center justify-between">
+    <div class="row items-center justify-between q-mt-xl">
       <div class="col-3 row items-center">
       <div class="col-5">
         <q-input filled dense v-model="dateFrom" mask="date">
@@ -287,8 +271,8 @@ const myLocale = {
         <q-btn outline no-caps :label="tc('搜索')" @click="search"/>
       </div>
       <div class="col-4 row justify-end">
-        <q-btn outline no-caps :label="tc('导出当页数据')" class="q-ml-xl" @click="exportFile"/>
-        <q-btn outline no-caps :label="tc('导出全部数据')" class="q-ml-md" @click="exportAll"/>
+        <q-btn outline no-caps :label="tc('导出当页数据')" @click="exportFile"/>
+        <q-btn outline no-caps :label="tc('导出全部数据')" class="q-ml-sm" @click="exportAll"/>
       </div>
     </div>
     <div class="q-mt-md">

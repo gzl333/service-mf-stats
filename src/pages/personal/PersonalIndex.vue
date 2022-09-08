@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { navigateToUrl } from 'single-spa'
-// import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
 import { i18n } from 'boot/i18n'
@@ -20,7 +19,7 @@ const { tc } = i18n.global
 // const route = useRoute()
 // const router = useRouter()
 const activeItem = ref(store.items.currentPath[1])
-const changeTab = async (name: string) => {
+const changeTab = (name: string) => {
   activeItem.value = name
   navigateToUrl(`/my/stats/personal/${name}`)
 }
@@ -39,8 +38,8 @@ const changeTab = async (name: string) => {
             indicator-color="primary"
             active-color="primary"
           >
-            <q-tab no-caps name="month" class="q-px-none q-py-md q-mr-md" :ripple="false" :label="tc('本月数据')"
-                   icon="las la-digital-tachograph" @click="changeTab('month')">
+            <q-tab no-caps name="current" class="q-px-none q-py-md q-mr-md" :ripple="false" :label="tc('本月数据')"
+                   icon="las la-digital-tachograph" @click="changeTab('current')">
             </q-tab>
             <q-tab no-caps name="last" class="q-px-none q-py-md q-mr-md" :ripple="false" :label="tc('上月数据')"
                    icon="las la-calendar" @click="changeTab('last')">
@@ -52,7 +51,7 @@ const changeTab = async (name: string) => {
         </div>
       </div>
       <q-separator/>
-      <div class="row justify-center q-pt-xl">
+      <div class="row justify-center">
         <router-view class="content-fixed-width" :key="$route.fullPath"/>
       </div>
     </div>
