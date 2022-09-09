@@ -33,7 +33,7 @@ export default {
   // public
   // ServerUsageDetailList
   云主机用量详情: 'Servers Usage Details',
-  请选择: 'Please select',
+  请选择: 'Please Select',
   公网ip: 'Public IP',
   // group
   // CurrentMonthList

@@ -251,7 +251,7 @@ export const useStore = defineStore('stats', {
       serviceOptions.unshift({
         value: '',
         label: '全部服务',
-        labelEn: 'All Servers'
+        labelEn: 'All Services'
       })
       return serviceOptions
     },

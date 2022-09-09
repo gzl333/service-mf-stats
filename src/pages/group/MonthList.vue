@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue'
+import { onBeforeMount, ref, computed } from 'vue'
 import { useStore, GroupServerMeteringInterface } from 'stores/store'
 import { useRoute } from 'vue-router'
 import { i18n } from 'boot/i18n'
@@ -39,7 +39,7 @@ const groupId = ref({
 })
 const serviceId = ref({
   label: '全部服务',
-  labelEn: 'All Servers',
+  labelEn: 'All Services',
   value: ''
 })
 const query = ref<Record<string, string | number>>({
@@ -204,7 +204,7 @@ const exportAll = async () => {
     exportAllData(fileData.data, i18n.global.locale === 'zh' ? '项目组云主机本月用量统计-' + date.toLocaleTimeString() : 'Group Servers Statistics In Current Month-' + date.toLocaleTimeString())
   }
 }
-onMounted(async () => {
+onBeforeMount(async () => {
   if (store.tables.groupTable.allIds.length === 0) {
     await store.loadGroupTable()
   }
@@ -215,10 +215,10 @@ onMounted(async () => {
 <template>
   <div class="MonthList">
     <div class="row items-center justify-between q-mt-xl">
-      <div class="col-5 row">
+      <div class="col-6 row">
         <q-select class="col-5" outlined dense v-model="groupId" :options="groupOptions" @update:model-value="selectGroup" :label="tc('筛选项目组')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
-        <q-select outlined dense v-model="serviceId" :options="serviceOptions" @update:model-value="selectService" :label="tc('筛选服务')" class="col-5 q-ml-xs" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
-        <q-btn class="q-ml-xs" outline no-caps :label="tc('搜索')" @click="search"/>
+        <q-select outlined dense v-model="serviceId" :options="serviceOptions" @update:model-value="selectService" :label="tc('筛选服务')" class="col-5 q-ml-sm" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
+        <q-btn class="q-ml-sm" outline no-caps :label="tc('搜索')" @click="search"/>
       </div>
       <div>
         <q-btn outline no-caps :label="tc('导出当页数据')" @click="exportFile"/>

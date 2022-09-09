@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue'
+import { ref, computed, onBeforeMount } from 'vue'
 import { useStore, PersonalServerMeteringInterface } from 'stores/store'
 import { useRoute } from 'vue-router'
 import { i18n } from 'boot/i18n'
@@ -32,7 +32,7 @@ const paginationTable = ref({
 })
 const serviceId = ref({
   label: '全部服务',
-  labelEn: 'All Servers',
+  labelEn: 'All Services',
   value: ''
 })
 const query = ref<Record<string, string | number>>({
@@ -92,7 +92,7 @@ const exportAll = async () => {
     exportAllData(fileData.data, i18n.global.locale === 'zh' ? '个人云主机本月用量统计-' + date.toLocaleTimeString() : 'Personal Servers Statistics In Current Month-' + date.toLocaleTimeString())
   }
 }
-onMounted(async () => {
+onBeforeMount(async () => {
   await getMonthData()
 })
 </script>
@@ -100,7 +100,7 @@ onMounted(async () => {
 <template>
   <div class="MonthList">
     <div class="row items-center justify-between q-mt-xl">
-      <div class="col-4 row">
+      <div class="col-3">
         <q-select outlined dense v-model="serviceId" :options="serviceOptions" @update:model-value="selectService"
                   :label="tc('筛选服务')" class="col-8" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
       </div>

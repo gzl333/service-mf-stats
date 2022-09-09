@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue'
+import { onBeforeMount, ref, computed } from 'vue'
 import { useStore, PersonalServerMeteringInterface } from 'stores/store'
 // import { useRoute } from 'vue-router'
 import { i18n } from 'boot/i18n'
@@ -22,6 +22,10 @@ const store = useStore()
 const { tc } = i18n.global
 const serviceOptions = computed(() => store.getServices)
 const tableRow = ref<PersonalServerMeteringInterface[]>([])
+const startDate = getHistoryStartFormatDate()
+const currentDate = getNowFormatDate(1)
+const dateFrom = ref(startDate)
+const dateTo = ref(currentDate)
 const paginationTable = ref({
   page: 1,
   count: 0,
@@ -29,13 +33,9 @@ const paginationTable = ref({
 })
 const serviceId = ref({
   label: '全部服务',
-  labelEn: 'All Servers',
+  labelEn: 'All Services',
   value: ''
 })
-const startDate = getHistoryStartFormatDate()
-const currentDate = getNowFormatDate(1)
-const dateFrom = ref(startDate)
-const dateTo = ref(currentDate)
 const query = ref<Record<string, string | number>>({
   page: 1,
   page_size: 10,
@@ -47,6 +47,15 @@ const exportQuery = ref<Record<string, string | boolean>>({
   date_end: currentDate,
   download: true
 })
+const myLocale = {
+  days: 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_'),
+  daysShort: 'Sun_Mon_Tue_Wed_Thu_Fri_Sat'.split('_'),
+  months: 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_'),
+  monthsShort: 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_'),
+  firstDayOfWeek: 1,
+  format24h: true,
+  pluralDay: 'dias'
+}
 const getHistoryData = async () => {
   tableRow.value = []
   const data = await store.getServerMetering(query.value)
@@ -102,7 +111,7 @@ const exportAll = async () => {
     exportAllData(fileData.data, i18n.global.locale === 'zh' ? '个人云主机历史用量统计-' + date.toLocaleTimeString() : 'Historical Usage Statistics Of Personal Servers-' + date.toLocaleTimeString())
   }
 }
-onMounted(async () => {
+onBeforeMount(async () => {
   await getHistoryData()
 })
 </script>
@@ -110,13 +119,13 @@ onMounted(async () => {
 <template>
   <div class="HistoryList">
     <div class="row items-center justify-between q-mt-xl">
-      <div class="col-8 row items-center q-gutter-x-md">
+      <div class="col-8 row items-center q-gutter-x-sm">
         <div class="col-3">
           <q-input filled dense v-model="dateFrom" mask="date">
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
-                  <q-date v-model="dateFrom" @update:model-value="selectDate">
+                  <q-date minimal v-model="dateFrom" @update:model-value="selectDate" :locale="i18n.global.locale === 'en' ? myLocale : ''">
                     <div class="row items-center justify-end">
                       <q-btn no-caps v-close-popup :label="tc('确定')" color="primary" flat/>
                     </div>
@@ -132,7 +141,7 @@ onMounted(async () => {
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
-                  <q-date v-model="dateTo" @update:model-value="selectDate">
+                  <q-date minimal v-model="dateTo" @update:model-value="selectDate" :locale="i18n.global.locale === 'en' ? myLocale : ''">
                     <div class="row items-center justify-end">
                       <q-btn no-caps v-close-popup :label="tc('确定')" color="primary" flat/>
                     </div>

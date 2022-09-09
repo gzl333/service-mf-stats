@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, Ref, computed } from 'vue'
+import { ref, onBeforeMount, onBeforeUnmount, Ref, computed } from 'vue'
 import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
@@ -96,7 +96,7 @@ const changePagination = async (val: number) => {
 const goToDetail = (userid: string, username: string, count: string) => {
   navigateToUrl(`/my/stats/statistic/list/user/${userid}?name=${username}&count=${count}`)
 }
-onMounted(async () => {
+onBeforeMount(async () => {
   await getUserAggregationData()
 })
 onBeforeUnmount(() => {

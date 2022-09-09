@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onBeforeMount } from 'vue'
 import { useStore, MeteringDetailInterface, DateInterface } from 'stores/store'
 import { useRoute, useRouter } from 'vue-router'
 import ServerStatisticsDetailTable from 'components/public/ServerStatisticsDetailTable.vue'
@@ -203,7 +203,7 @@ const exportAll = async () => {
     exportAllData(fileData.data, i18n.global.locale === 'zh' ? '云主机用量统计-' + date.toLocaleTimeString() : 'Servers Usage Statistics-' + date.toLocaleTimeString())
   }
 }
-onMounted(() => {
+onBeforeMount(() => {
   initSelectYear()
   getDetailData()
 })

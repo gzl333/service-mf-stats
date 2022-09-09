@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue'
+import { onBeforeMount, ref, computed } from 'vue'
 import { GroupServerMeteringInterface, useStore } from 'stores/store'
 // import { useRoute } from 'vue-router'
 import { i18n } from 'boot/i18n'
@@ -39,7 +39,7 @@ const groupId = ref({
 })
 const serviceId = ref({
   label: '全部服务',
-  labelEn: 'All Servers',
+  labelEn: 'All Services',
   value: ''
 })
 const query = ref<Record<string, string | number>>({
@@ -53,6 +53,15 @@ const exportQuery = ref<Record<string, string | boolean>>({
   date_end: currentDate,
   download: true
 })
+const myLocale = {
+  days: 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_'),
+  daysShort: 'Sun_Mon_Tue_Wed_Thu_Fri_Sat'.split('_'),
+  months: 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_'),
+  monthsShort: 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_'),
+  firstDayOfWeek: 1,
+  format24h: true,
+  pluralDay: 'dias'
+}
 const getSingleGroupHistoryData = async () => {
   tableRow.value = []
   paginationTable.value.count = 0
@@ -212,21 +221,12 @@ const exportAll = async () => {
     exportAllData(fileData.data, i18n.global.locale === 'zh' ? '项目组云主机历史用量统计-' + date.toLocaleTimeString() : 'Historical Usage Statistics Of Group Servers-' + date.toLocaleTimeString())
   }
 }
-onMounted(async () => {
+onBeforeMount(async () => {
   if (store.tables.groupTable.allIds.length === 0) {
     await store.loadGroupTable()
   }
   await getHistoryData()
 })
-const myLocale = {
-  days: 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_'),
-  daysShort: 'Sun_Mon_Tue_Wed_Thu_Fri_Sat'.split('_'),
-  months: 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_'),
-  monthsShort: 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_'),
-  firstDayOfWeek: 1,
-  format24h: true,
-  pluralDay: 'dias'
-}
 </script>
 
 <template>
@@ -238,7 +238,7 @@ const myLocale = {
           <template v-slot:append>
             <q-icon name="event" class="cursor-pointer">
               <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
-                <q-date v-model="dateFrom" @update:model-value="selectDate" :locale="myLocale">
+                <q-date minimal v-model="dateFrom" @update:model-value="selectDate" :locale="i18n.global.locale === 'en' ? myLocale : ''">
                   <div class="row items-center justify-end">
                     <q-btn v-close-popup no-caps :label="tc('确定')" color="primary" flat/>
                   </div>
@@ -248,13 +248,13 @@ const myLocale = {
           </template>
         </q-input>
       </div>
-      <div class="text-center col-1">{{ tc('至') }}</div>
-      <div class="col-5">
+      <div class="text-center q-ml-sm">{{ tc('至') }}</div>
+      <div class="col-5 q-ml-sm">
         <q-input filled dense v-model="dateTo" mask="date">
           <template v-slot:append>
             <q-icon name="event" class="cursor-pointer">
               <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
-                <q-date v-model="dateTo" @update:model-value="selectDate">
+                <q-date minimal v-model="dateTo" @update:model-value="selectDate" :locale="i18n.global.locale === 'en' ? myLocale : ''">
                   <div class="row items-center justify-end">
                     <q-btn v-close-popup no-caps :label="tc('确定')" color="primary" flat/>
                   </div>

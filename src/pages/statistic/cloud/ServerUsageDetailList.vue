@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 import { useStore, DateInterface, PersonalServerMeteringInterface } from 'stores/store'
 import { useRoute, useRouter } from 'vue-router'
 import { i18n } from 'boot/i18n'
@@ -216,7 +216,7 @@ const exportAll = async () => {
     exportAllData(fileData.data, i18n.global.locale === 'zh' ? '云主机用量统计' + date.toLocaleTimeString() : 'Servers Usage Statistics' + date.toLocaleTimeString())
   }
 }
-onMounted(async () => {
+onBeforeMount(async () => {
   initSelectYear()
   await getDetailData()
 })

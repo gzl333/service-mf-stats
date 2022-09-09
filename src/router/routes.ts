@@ -39,19 +39,24 @@ const routes: RouteRecordRaw[] = [
           {
             path: 'current',
             meta: {
-              time: 'current'
+              time: 'current',
+              isPersonal: true
             },
             component: () => import('pages/personal/MonthList.vue')
           },
           {
             path: 'last',
             meta: {
-              time: 'last'
+              time: 'last',
+              isPersonal: true
             },
             component: () => import('pages/personal/MonthList.vue')
           },
           {
             path: 'history',
+            meta: {
+              isPersonal: true
+            },
             component: () => import('pages/personal/HistoryList.vue')
           },
           {
@@ -172,7 +177,8 @@ const routes: RouteRecordRaw[] = [
                 path: 'service/:serviceId',
                 meta: {
                   requireServiceAdmin: true, // 服务管理员权限才能访问
-                  type: 'service'
+                  type: 'service',
+                  isPersonal: false
                 },
                 component: () => import('pages/statistic/cloud/ServerUsageDetailList.vue')
               },
@@ -180,7 +186,8 @@ const routes: RouteRecordRaw[] = [
                 path: 'group/:groupId',
                 meta: {
                   requireServiceAdmin: true, // 服务管理员权限才能访问
-                  type: 'group'
+                  type: 'group',
+                  isPersonal: false
                 },
                 component: () => import('pages/statistic/cloud/ServerUsageDetailList.vue')
               },
@@ -188,9 +195,26 @@ const routes: RouteRecordRaw[] = [
                 path: 'user/:userid',
                 meta: {
                   requireServiceAdmin: true, // 服务管理员权限才能访问
-                  type: 'user'
+                  type: 'user',
+                  isPersonal: false
                 },
                 component: () => import('pages/statistic/cloud/ServerUsageDetailList.vue')
+              },
+              {
+                path: 'details/:serverId',
+                meta: {
+                  requireServiceAdmin: true, // 服务管理员权限才能访问
+                  isGroup: false
+                },
+                component: () => import('pages/public/ServerStatisticsDetailList.vue')
+              },
+              {
+                path: 'detail/:serverId',
+                meta: {
+                  requireServiceAdmin: true, // 服务管理员权限才能访问
+                  isGroup: true
+                },
+                component: () => import('pages/public/ServerStatisticsDetailList.vue')
               }
             ]
           }

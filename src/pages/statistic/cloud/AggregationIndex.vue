@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 import { useStore, DateInterface } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
 import { i18n } from 'boot/i18n'
@@ -239,7 +239,7 @@ const changeTab = async (name: string) => {
   }
   navigateToUrl(`/my/stats/statistic/list/cloud/${name}`)
 }
-onMounted(async () => {
+onBeforeMount(async () => {
   initSelectYear()
 })
 </script>
@@ -247,7 +247,7 @@ onMounted(async () => {
 <template>
   <div class="AggregationIndex">
     <div class="row q-mt-xl justify-between items-center">
-      <div class="row col-7">
+      <div class="row col-7 items-center">
         <div class="col-2">
           <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" :label="tc('请选择')" @update:model-value="changeYear" />
         </div>

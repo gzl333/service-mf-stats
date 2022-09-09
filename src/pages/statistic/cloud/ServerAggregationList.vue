@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, computed, Ref } from 'vue'
+import { ref, onBeforeMount, onBeforeUnmount, computed, Ref } from 'vue'
 import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 import emitter from 'boot/mitt'
@@ -79,7 +79,7 @@ const changePagination = async (val: number) => {
 const goToDetail = (serverId: string, serviceName: string, ipv4: string, vcpus: string, ram: string) => {
   navigateToUrl(`/my/stats/statistic/list/server/${serverId}?service=${serviceName}&ipv4=${ipv4}&vcpus=${vcpus}&ram=${ram}`)
 }
-onMounted(async () => {
+onBeforeMount(async () => {
   await getServerAggregationData()
 })
 onBeforeUnmount(() => {
@@ -120,7 +120,7 @@ onBeforeUnmount(() => {
 <!--        </template>-->
         <template v-slot:body="props">
           <q-tr :props="props">
-            <q-td key="server_id" :props="props">
+            <q-td class="no-padding" key="server_id" :props="props">
               <q-btn @click="goToDetail(props.row.server_id, props.row.service_name, props.row.server.ipv4, props.row.server.vcpus, props.row.server.ram)"
                 class="q-ma-none" color="primary" padding="xs" flat dense unelevated>
                 <div class="text">{{ props.row.server_id === '' ? tc('暂无') : props.row.server_id }}</div>
@@ -133,7 +133,7 @@ onBeforeUnmount(() => {
               </q-btn>
             </q-td>
             <q-td class="no-padding" key="ipv4" :props="props">{{ props.row.server !== null ? props.row.server.ipv4 : tc('暂无') }}</q-td>
-            <q-td key="service_name" :props="props">{{props.row.service_name === null ? tc('暂无') : props.row.service_name }}</q-td>
+            <q-td class="no-padding" key="service_name" :props="props">{{props.row.service_name === null ? tc('暂无') : props.row.service_name }}</q-td>
             <q-td class="no-padding" key="configuration" :props="props">{{props.row.server !== null ? props.row.server.vcpus + ' ' + tc('核') + ' ' + Math.round(props.row.server.ram / 1024) + ' GB' : tc('暂无') }}</q-td>
             <q-td class="no-padding" key="total_public_ip_hours" :props="props">{{Math.round(props.row.total_public_ip_hours / 24) + ' (个*天)' }}</q-td>
             <q-td class="no-padding" key="total_cpu_hours" :props="props">{{ Math.round(props.row.total_cpu_hours / 24) + ' (核*天）' }}</q-td>

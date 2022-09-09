@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, onMounted, Ref } from 'vue'
+import { computed, ref, onBeforeMount, Ref } from 'vue'
 // import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
@@ -33,7 +33,7 @@ const changeTab = async (label: string, voId: string) => {
   groupId.value = voId
   groupTabActive.value = 'available'
 }
-onMounted(async () => {
+onBeforeMount(async () => {
   if (store.tables.groupTable.allIds.length === 0) {
     await store.loadGroupTable()
   }
