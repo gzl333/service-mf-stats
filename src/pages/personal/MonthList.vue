@@ -19,7 +19,7 @@ const store = useStore()
 const route = useRoute()
 // const router = useRouter()
 const { tc } = i18n.global
-const serviceOptions = computed(() => store.getServices)
+const serviceOptions = computed(() => store.getServices('enable'))
 const tableRow = ref<PersonalServerMeteringInterface[]>([])
 const currentMonthStartDate = getNowFormatDate(0)
 const currentMonthEndDate = getNowFormatDate(1)

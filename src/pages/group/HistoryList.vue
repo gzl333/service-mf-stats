@@ -20,7 +20,7 @@ const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
 const { tc } = i18n.global
-const filterOptions = computed(() => store.getServices)
+const filterOptions = computed(() => store.getServices('enable'))
 const groupOptions = computed(() => store.getGroupOptions)
 const tableRow = ref<GroupServerMeteringInterface[]>([])
 const startDate = getHistoryStartFormatDate()
@@ -233,41 +233,47 @@ onBeforeMount(async () => {
   <div class="HistoryList">
     <div class="row items-center justify-between q-mt-xl">
       <div class="col-3 row items-center">
-      <div class="col-5">
-        <q-input filled dense v-model="dateFrom" mask="date">
-          <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
-                <q-date minimal v-model="dateFrom" @update:model-value="selectDate" :locale="i18n.global.locale === 'en' ? myLocale : ''">
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup no-caps :label="tc('确定')" color="primary" flat/>
-                  </div>
-                </q-date>
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
-      </div>
-      <div class="text-center q-ml-sm">{{ tc('至') }}</div>
-      <div class="col-5 q-ml-sm">
-        <q-input filled dense v-model="dateTo" mask="date">
-          <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
-                <q-date minimal v-model="dateTo" @update:model-value="selectDate" :locale="i18n.global.locale === 'en' ? myLocale : ''">
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup no-caps :label="tc('确定')" color="primary" flat/>
-                  </div>
-                </q-date>
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
-      </div>
+        <div class="col-5">
+          <q-input filled dense v-model="dateFrom" mask="date">
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
+                  <q-date minimal v-model="dateFrom" @update:model-value="selectDate"
+                          :locale="i18n.global.locale === 'en' ? myLocale : ''">
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup no-caps :label="tc('确定')" color="primary" flat/>
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
+        </div>
+        <div class="text-center q-ml-sm">{{ tc('至') }}</div>
+        <div class="col-5 q-ml-sm">
+          <q-input filled dense v-model="dateTo" mask="date">
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
+                  <q-date minimal v-model="dateTo" @update:model-value="selectDate"
+                          :locale="i18n.global.locale === 'en' ? myLocale : ''">
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup no-caps :label="tc('确定')" color="primary" flat/>
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
+        </div>
       </div>
       <div class="col-5 row justify-between">
-        <q-select class="col-5" outlined dense v-model="groupId" :options="groupOptions" @update:model-value="selectGroup" :label="tc('筛选项目组')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
-        <q-select class="col-5" outlined dense v-model="serviceId" :options="filterOptions" @update:model-value="selectService" :label="tc('筛选服务')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
+        <q-select class="col-5" outlined dense v-model="groupId" :options="groupOptions"
+                  @update:model-value="selectGroup" :label="tc('筛选项目组')"
+                  :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
+        <q-select class="col-5" outlined dense v-model="serviceId" :options="filterOptions"
+                  @update:model-value="selectService" :label="tc('筛选服务')"
+                  :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
         <q-btn outline no-caps :label="tc('搜索')" @click="search"/>
       </div>
       <div class="col-4 row justify-end">
@@ -276,7 +282,7 @@ onBeforeMount(async () => {
       </div>
     </div>
     <div class="q-mt-md">
-    <group-usage-table :tableRow="tableRow"/>
+      <group-usage-table :tableRow="tableRow"/>
     </div>
     <div class="row q-py-md text-grey justify-between items-center">
       <div class="row items-center">

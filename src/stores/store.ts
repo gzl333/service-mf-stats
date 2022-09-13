@@ -42,12 +42,14 @@ export interface ServiceInterface {
   name: string
   name_en: string
   service_type: string
+  cloud_type: string
   add_time: string
   need_vpn: boolean
-  status: number
+  status: string
   data_center: string
   longitude: number
   latitude: number
+  pay_app_service_id: string
 }
 
 export interface GroupInterface {
@@ -237,16 +239,28 @@ export const useStore = defineStore('stats', {
     }
   }),
   getters: {
-    getServices (state): { value: string; label: string; }[] {
+    getServices: (state) => (type: string) : { value: string; label: string; }[] => {
       const serviceOptions = []
-      for (const service of Object.values(state.tables.serviceTable.byId)) {
-        serviceOptions.push(
-          {
-            value: service.id,
-            label: service.name,
-            labelEn: service.name_en
-          }
-        )
+      if (type !== 'all') {
+        for (const service of Object.values(state.tables.serviceTable.byId).filter(item => item.status === type)) {
+          serviceOptions.push(
+            {
+              value: service.id,
+              label: service.name,
+              labelEn: service.name_en
+            }
+          )
+        }
+      } else {
+        for (const service of Object.values(state.tables.serviceTable.byId)) {
+          serviceOptions.push(
+            {
+              value: service.id,
+              label: service.name,
+              labelEn: service.name_en
+            }
+          )
+        }
       }
       serviceOptions.unshift({
         value: '',
@@ -255,6 +269,24 @@ export const useStore = defineStore('stats', {
       })
       return serviceOptions
     },
+    // getServices (state): { value: string; label: string; }[] {
+    //   const serviceOptions = []
+    //   for (const service of Object.values(state.tables.serviceTable.byId)) {
+    //     serviceOptions.push(
+    //       {
+    //         value: service.id,
+    //         label: service.name,
+    //         labelEn: service.name_en
+    //       }
+    //     )
+    //   }
+    //   serviceOptions.unshift({
+    //     value: '',
+    //     label: '全部服务',
+    //     labelEn: 'All Services'
+    //   })
+    //   return serviceOptions
+    // },
     getGroupOptions (state): { value: string; label: string; }[] {
       let groupOptions = []
       for (const group of Object.values(state.tables.groupTable.byId)) {

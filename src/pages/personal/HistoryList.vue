@@ -20,7 +20,7 @@ const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
 const { tc } = i18n.global
-const serviceOptions = computed(() => store.getServices)
+const serviceOptions = computed(() => store.getServices('enable'))
 const tableRow = ref<PersonalServerMeteringInterface[]>([])
 const startDate = getHistoryStartFormatDate()
 const currentDate = getNowFormatDate(1)
@@ -65,6 +65,8 @@ const getHistoryData = async () => {
   paginationTable.value.count = data.data.count
 }
 const selectDate = () => {
+  console.log(dateFrom.value)
+  console.log(dateTo.value)
   query.value.date_start = dateFrom.value.replace(/(\/)/g, '-')
   query.value.date_end = dateTo.value.replace(/(\/)/g, '-')
   exportQuery.value.date_start = dateFrom.value.replace(/(\/)/g, '-')

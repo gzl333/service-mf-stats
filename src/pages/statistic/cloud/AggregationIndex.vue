@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, ref } from 'vue'
+import { onBeforeMount, ref, computed } from 'vue'
 import { useStore, DateInterface } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
 import { i18n } from 'boot/i18n'
@@ -19,6 +19,7 @@ const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
 const { tc } = i18n.global
+const serviceOptions = computed(() => store.getServices('all'))
 const activeItem = ref(store.items.currentPath[3])
 const isDisable = ref(false)
 const myDate = new Date()
@@ -28,6 +29,11 @@ const month = myDate.getMonth() + 1
 let currentMonth: number | string = myDate.getMonth() + 1
 let strDate: number | string = myDate.getDate()
 const monthArray = ['January', 'february', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+const serviceId = ref({
+  label: '全部服务',
+  labelEn: 'All Services',
+  value: ''
+})
 const searchName = ref('')
 const searchQuery = ref({
   year: {
@@ -116,6 +122,15 @@ const changeYear = (val: Record<string, number>) => {
     }
   }
 }
+const selectService = (val: Record<string, string>) => {
+  if (val.value !== '') {
+    query.value.service_id = val.value
+    exportQuery.value.service_id = val.value
+  } else {
+    delete query.value.service_id
+    delete exportQuery.value.service_id
+  }
+}
 const initQuery = () => {
   query.value.page = 1
   let dateStart = ''
@@ -156,13 +171,6 @@ const initQuery = () => {
   query.value.date_end = dateEnd
   exportQuery.value.date_start = dateStart
   exportQuery.value.date_end = dateEnd
-  if (searchName.value !== '' && searchName.value !== null) {
-    query.value.service_id = searchName.value
-    exportQuery.value.service_id = searchName.value
-  } else {
-    delete query.value.service_id
-    delete exportQuery.value.service_id
-  }
 }
 const search = async () => {
   if (activeItem.value === 'user') {
@@ -255,7 +263,8 @@ onBeforeMount(async () => {
           <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" :label="tc('请选择')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
         </div>
         <div class="col-4 q-ml-md">
-          <q-input outlined dense clearable :disable="isDisable" v-model="searchName" :label="tc('搜索服务')"/>
+          <q-select outlined dense v-model="serviceId" :options="serviceOptions" @update:model-value="selectService" :disable="isDisable"
+                    :label="tc('筛选服务')" class="col-8" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
         </div>
         <div class="col-2 q-ml-md">
           <q-btn outline no-caps :label="tc('搜索')" class="q-px-lg" @click="search"/>
