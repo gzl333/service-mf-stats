@@ -113,10 +113,8 @@ const getSingleGroupHistoryData = async () => {
   paginationTable.value.count = data.data.count
 }
 const selectDate = () => {
-  query.value.date_start = dateFrom.value.replace(/(\/)/g, '-')
-  query.value.date_end = dateTo.value.replace(/(\/)/g, '-')
-  exportQuery.value.date_start = dateFrom.value.replace(/(\/)/g, '-')
-  exportQuery.value.date_end = dateTo.value.replace(/(\/)/g, '-')
+  dateFrom.value = query.value.date_start as string
+  dateTo.value = query.value.date_end as string
 }
 const getHistoryData = async () => {
   tableRow.value = []
@@ -208,6 +206,8 @@ const exportFile = () => {
   if (tableRow.value.length === 0) {
     exportNotify()
   } else {
+    exportQuery.value.date_start = query.value.date_start as string
+    exportQuery.value.date_end = query.value.date_end as string
     const date = new Date()
     exportExcel(i18n.global.locale === 'zh' ? '项目组云主机用量统计-' + date.toLocaleTimeString() + '.xlsx' : ' Group Servers Statistics-' + date.toLocaleTimeString() + '.xlsx', '#GroupUsageTable')
   }
@@ -238,8 +238,8 @@ onBeforeMount(async () => {
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
-                  <q-date minimal v-model="dateFrom" @update:model-value="selectDate"
-                          :locale="i18n.global.locale === 'en' ? myLocale : ''">
+                  <q-date minimal v-model="query.date_start" @update:model-value="selectDate"
+                          mask="YYYY-MM-DD" :locale="i18n.global.locale === 'en' ? myLocale : ''">
                     <div class="row items-center justify-end">
                       <q-btn v-close-popup no-caps :label="tc('确定')" color="primary" flat/>
                     </div>
@@ -255,8 +255,8 @@ onBeforeMount(async () => {
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
-                  <q-date minimal v-model="dateTo" @update:model-value="selectDate"
-                          :locale="i18n.global.locale === 'en' ? myLocale : ''">
+                  <q-date minimal v-model="query.date_end" @update:model-value="selectDate"
+                          mask="YYYY-MM-DD" :locale="i18n.global.locale === 'en' ? myLocale : ''">
                     <div class="row items-center justify-end">
                       <q-btn v-close-popup no-caps :label="tc('确定')" color="primary" flat/>
                     </div>
