@@ -241,8 +241,8 @@ export const useStore = defineStore('stats', {
   getters: {
     getServices: (state) => (type: string) : { value: string; label: string; }[] => {
       const serviceOptions = []
-      if (type !== 'all') {
-        for (const service of Object.values(state.tables.serviceTable.byId).filter(item => item.status === type)) {
+      if (type === 'all') {
+        for (const service of Object.values(state.tables.serviceTable.byId)) {
           serviceOptions.push(
             {
               value: service.id,
@@ -252,7 +252,7 @@ export const useStore = defineStore('stats', {
           )
         }
       } else {
-        for (const service of Object.values(state.tables.serviceTable.byId)) {
+        for (const service of Object.values(state.tables.serviceTable.byId).filter(item => item.status === type)) {
           serviceOptions.push(
             {
               value: service.id,

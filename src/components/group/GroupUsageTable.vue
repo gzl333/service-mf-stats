@@ -31,8 +31,8 @@ const columns = computed(() => [
   { name: 'total_trade_amount', label: (() => tc('实际扣费金额'))(), align: 'center' }
 ])
 
-const goToDetail = (serverId: string, serviceName: string, ipv4: string, vcpus: string, ram: string) => {
-  navigateToUrl(`/my/stats/group/detail/${serverId}?service=${serviceName}&ipv4=${ipv4}&vcpus=${vcpus}&ram=${ram}`)
+const goToDetail = (serverId: string, ipv4: string, vcpus: string, ram: string) => {
+  navigateToUrl(`/my/stats/group/detail/${serverId}?ipv4=${ipv4}&vcpus=${vcpus}&ram=${ram}`)
 }
 </script>
 
@@ -55,7 +55,7 @@ const goToDetail = (serverId: string, serviceName: string, ipv4: string, vcpus: 
           <q-tr :props="props">
             <q-td class="no-padding" key="ipv4" :props="props">
               <q-btn class="q-ma-none" :label="props.row.ipv4" color="primary" padding="xs"
-                     @click="goToDetail(props.row.server_id, props.row.service_name, props.row.ipv4, props.row.vcpus, props.row.ram)"
+                     @click="goToDetail(props.row.server_id, props.row.ipv4, props.row.vcpus, props.row.ram)"
                      flat dense unelevated></q-btn>
             </q-td>
             <q-td key="service_name" :props="props">{{ props.row.service_name }}</q-td>

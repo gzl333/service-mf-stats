@@ -76,8 +76,8 @@ const changePagination = async (val: number) => {
   serverTableRow.value = data.data.results
   isLoading.value = false
 }
-const goToDetail = (serverId: string, serviceName: string, ipv4: string, vcpus: string, ram: string) => {
-  navigateToUrl(`/my/stats/statistic/list/server/${serverId}?service=${serviceName}&ipv4=${ipv4}&vcpus=${vcpus}&ram=${ram}`)
+const goToDetail = (serverId: string, ipv4: string, vcpus: string, ram: string) => {
+  navigateToUrl(`/my/stats/statistic/list/server/${serverId}?ipv4=${ipv4}&vcpus=${vcpus}&ram=${ram}`)
 }
 onBeforeMount(async () => {
   await getServerAggregationData()
@@ -121,7 +121,7 @@ onBeforeUnmount(() => {
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td class="no-padding" key="server_id" :props="props">
-              <q-btn @click="goToDetail(props.row.server_id, props.row.service_name, props.row.server.ipv4, props.row.server.vcpus, props.row.server.ram)"
+              <q-btn @click="goToDetail(props.row.server_id, props.row.server.ipv4, props.row.server.vcpus, props.row.server.ram)"
                 class="q-ma-none" color="primary" padding="xs" flat dense unelevated>
                 <div class="text">{{ props.row.server_id === '' ? tc('暂无') : props.row.server_id }}</div>
               </q-btn>

@@ -5,7 +5,7 @@
 // import { useStore } from 'stores/store'
 import { useRoute } from 'vue-router'
 import { i18n } from 'boot/i18n'
-import PayStatusChip from '../statistic/PayStatusChip.vue'
+// import PayStatusChip from '../statistic/PayStatusChip.vue'
 import { computed } from 'vue'
 const props = defineProps({
   tableRow: {
@@ -20,12 +20,14 @@ const route = useRoute()
 const { tc } = i18n.global
 const columns = computed(() => [
   { name: 'date', align: 'center', label: (() => tc('计费日期'))() },
-  { name: 'payment_status', label: (() => tc('扣费状态'))(), align: 'center' },
+  // { name: 'payment_status', label: (() => tc('扣费状态'))(), align: 'center' },
+  { name: 'pay_type', label: (() => tc('支付方式'))(), align: 'center' },
   { name: route.meta.isGroup ? 'vo_name' : 'username', label: route.meta.isGroup ? (() => tc('项目组'))() : (() => tc('用户名'))(), align: 'center' },
   { name: 'public_ip_hours', label: (() => tc('公网IP'))(), align: 'center' },
   { name: 'cpu_hours', label: (() => tc('vCPU'))(), align: 'center' },
   { name: 'ram_hours', label: (() => tc('内存'))(), align: 'center' },
   { name: 'disk_hours', label: (() => tc('本地硬盘'))(), align: 'center' },
+  { name: 'snapshot_hours', label: (() => tc('快照'))(), align: 'center' },
   { name: 'original_amount', label: (() => tc('计费金额合计'))(), align: 'center' },
   { name: 'trade_amount', label: (() => tc('实际扣费金额合计'))(), align: 'center' }
 ])
@@ -49,15 +51,17 @@ const columns = computed(() => [
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="date" :props="props">{{ props.row.date }}</q-td>
-            <q-td key="payment_status" :props="props">
-              <pay-status-chip class="non-selectable" :status="props.row.payment_status"/>
-            </q-td>
-            <q-td v-if="route.meta.isGroup" key="vo_name" :props="props">{{ props.row.vo_name }}</q-td>
-            <q-td v-else key="username" :props="props">{{ props.row.username }}</q-td>
+<!--            <q-td key="payment_status" :props="props">-->
+<!--              <pay-status-chip class="non-selectable" :status="props.row.payment_status"/>-->
+<!--            </q-td>-->
+            <q-td key="pay_type" :props="props">{{ props.row.pay_type }}</q-td>
+            <q-td v-if="props.row.owner_type === 'user'"  key="username" :props="props">{{ props.row.username }}</q-td>
+            <q-td v-if="props.row.owner_type === 'vo'" key="vo_name" :props="props">{{ props.row.vo_name }}</q-td>
             <q-td key="public_ip_hours" :props="props">{{ Math.round(props.row.public_ip_hours / 24) + ' ' + tc('(个*天)') }}</q-td>
             <q-td key="cpu_hours" :props="props">{{ Math.round(props.row.cpu_hours / 24) + ' ' +  tc('(核*天）') }}</q-td>
             <q-td key="ram_hours" :props="props">{{ Math.round(props.row.ram_hours / 24) + ' ' + tc('(GB*天)') }}</q-td>
             <q-td key="disk_hours" :props="props">{{ Math.round(props.row.disk_hours / 24) + ' ' + tc('(GB*天)') }}</q-td>
+            <q-td key="snapshot_hours" :props="props">{{ Math.round(props.row.snapshot_hours / 24) + ' ' + tc('(GB*天)') }}</q-td>
             <q-td key="original_amount" :props="props">{{ props.row.original_amount }}</q-td>
             <q-td key="trade_amount" :props="props">{{ props.row.trade_amount }}</q-td>
           </q-tr>

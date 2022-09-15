@@ -240,30 +240,25 @@ onBeforeMount(() => {
         <q-card-section>
           <div class="row">
             <div class="col-3 text-center">
-              <div class="text-subtitle1">UUID</div>
-              <q-separator/>
-              <div class="q-mt-lg">{{ route.params.serverId }}</div>
+              <div>UUID</div>
+              <div class="text-subtitle1 q-mt-lg">{{ route.params.serverId }}</div>
             </div>
             <div class="col-3 text-center">
-              <div class="text-subtitle1">{{ tc('服务单元') }}</div>
-              <q-separator/>
-              <div class="text-subtitle1 q-mt-lg">{{ route.query.service }}</div>
+              <div>{{ tc('服务单元') }}</div>
+              <div class="text-subtitle1 q-mt-lg">{{ store.tables.serviceTable.byId[tableRow[0]?.service_id]?.name }}</div>
             </div>
             <div class="col-2 text-center">
-              <div class="text-subtitle1">{{ route.meta.isGroup ? tc('项目组') : tc('用户') }}</div>
-              <q-separator/>
+              <div>{{ route.meta.isGroup ? tc('项目组') : tc('用户') }}</div>
               <div class="text-subtitle1 q-mt-lg">{{ route.meta.isGroup ? tableRow[0]?.vo_name : tableRow[0]?.username }}</div>
             </div>
             <div class="col-2 text-center">
-              <div class="text-subtitle1">{{ tc('初始配置') }}</div>
-              <q-separator/>
+              <div>{{ tc('初始配置') }}</div>
               <div class="text-subtitle1 q-mt-lg">
                 {{ route.query.vcpus + ' ' + tc('核') + ' ' + route.query.ram / 1024 + ' GB' }}
               </div>
             </div>
             <div class="col-2 text-center">
-              <div class="text-subtitle1">{{ tc('公网ip') }}</div>
-              <q-separator/>
+              <div>{{ tc('公网IP') }}</div>
               <div class="text-subtitle1 q-mt-lg">{{ route.query.ipv4 }}</div>
             </div>
           </div>

@@ -63,14 +63,14 @@ const columns = computed(() => [
     align: 'center'
   }
 ])
-const goToDetail = (serverId: string, serviceName: string, ipv4: string, vcpus: string, ram: string) => {
+const goToDetail = (serverId: string, ipv4: string, vcpus: string, ram: string) => {
   if (route.meta.isPersonal) {
-    navigateToUrl(`/my/stats/personal/detail/${serverId}?service=${serviceName}&ipv4=${ipv4}&vcpus=${vcpus}&ram=${ram}`)
+    navigateToUrl(`/my/stats/personal/detail/${serverId}?ipv4=${ipv4}&vcpus=${vcpus}&ram=${ram}`)
   } else {
     if (route.meta.type === 'group') {
-      navigateToUrl(`/my/stats/statistic/list/detail/${serverId}?service=${serviceName}&ipv4=${ipv4}&vcpus=${vcpus}&ram=${ram}`)
+      navigateToUrl(`/my/stats/statistic/list/detail/${serverId}?ipv4=${ipv4}&vcpus=${vcpus}&ram=${ram}`)
     } else {
-      navigateToUrl(`/my/stats/statistic/list/details/${serverId}?service=${serviceName}&ipv4=${ipv4}&vcpus=${vcpus}&ram=${ram}`)
+      navigateToUrl(`/my/stats/statistic/list/details/${serverId}?ipv4=${ipv4}&vcpus=${vcpus}&ram=${ram}`)
     }
   }
 }
@@ -96,7 +96,7 @@ const goToDetail = (serverId: string, serviceName: string, ipv4: string, vcpus: 
           <q-td class="no-padding" key="ipv4" :props="props">
             <q-btn class="q-ma-none" :label="props.row.server.ipv4" color="primary"
                    padding="xs"
-                   @click="goToDetail(props.row.server_id, props.row.service_name, props.row.server.ipv4, props.row.server.vcpus, props.row.server.ram)"
+                   @click="goToDetail(props.row.server_id, props.row.server.ipv4, props.row.server.vcpus, props.row.server.ram)"
                    flat dense unelevated></q-btn>
           </q-td>
           <q-td key="service_name" :props="props">{{ props.row.service_name }}</q-td>
