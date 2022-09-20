@@ -22,16 +22,16 @@ const store = useStore()
 // const router = useRouter()
 const { tc } = i18n.global
 const serverColumns = computed(() => [
-  { name: 'server_id', label: (() => tc('云主机uuid'))(), align: 'center' },
-  { name: 'ipv4', align: 'center', label: (() => tc('ip地址'))() },
-  { name: 'service_name', label: (() => tc('服务单元'))(), align: 'center' },
-  { name: 'configuration', label: (() => tc('初始配置'))(), align: 'center' },
-  { name: 'total_public_ip_hours', label: (() => tc('公网IP'))(), align: 'center' },
+  { name: 'server_id', label: (() => tc('pages.statistic.cloud.ServerAggregationList.uuid'))(), align: 'center' },
+  { name: 'ipv4', align: 'center', label: (() => tc('components.public.ServerUsageTable.ip'))() },
+  { name: 'service_name', label: (() => tc('components.public.ServerUsageTable.service_unit'))(), align: 'center' },
+  { name: 'configuration', label: (() => tc('components.public.ServerUsageTable.initial_configuration'))(), align: 'center' },
+  { name: 'total_public_ip_hours', label: (() => tc('pages.public.ServerUsageDetailList.public_ip'))(), align: 'center' },
   { name: 'total_cpu_hours', label: (() => tc('vCPU'))(), align: 'center' },
-  { name: 'total_ram_hours', label: (() => tc('内存'))(), align: 'center' },
-  { name: 'total_disk_hours', label: (() => tc('本地硬盘'))(), align: 'center' },
-  { name: 'total_original_amount', label: (() => tc('计费金额(总)'))(), align: 'center' },
-  { name: 'total_trade_amount', label: (() => tc('实际扣费金额(总)'))(), align: 'center' }
+  { name: 'total_ram_hours', label: (() => tc('components.public.ServerUsageTable.memory'))(), align: 'center' },
+  { name: 'total_disk_hours', label: (() => tc('components.public.ServerUsageTable.local_disk'))(), align: 'center' },
+  { name: 'total_original_amount', label: (() => tc('pages.statistic.cloud.ServerAggregationList.billing_amount'))(), align: 'center' },
+  { name: 'total_trade_amount', label: (() => tc('pages.statistic.cloud.ServerAggregationList.actual_billing_amount'))(), align: 'center' }
 ])
 const paginationTable = ref({
   page: 1,
@@ -101,8 +101,8 @@ onBeforeUnmount(() => {
         :columns="serverColumns"
         row-key="name"
         color="primary"
-        :loading-label="tc('网络请求中，请稍候...')"
-        :no-data-label="tc('暂无数据')"
+        :loading-label="tc('components.group.GroupTable.notify_loading')"
+        :no-data-label="tc('pages.personal.CurrentMonthList.no_data')"
         hide-pagination
         :pagination="{ rowsPerPage: 0 }"
       >
@@ -123,22 +123,22 @@ onBeforeUnmount(() => {
             <q-td class="no-padding" key="server_id" :props="props">
               <q-btn @click="goToDetail(props.row.server_id, props.row.server.ipv4, props.row.server.vcpus, props.row.server.ram)"
                 class="q-ma-none" color="primary" padding="xs" flat dense unelevated>
-                <div class="text">{{ props.row.server_id === '' ? tc('暂无') : props.row.server_id }}</div>
+                <div class="text">{{ props.row.server_id === '' ? tc('pages.statistic.cloud.ServerAggregationList.no_yet') : props.row.server_id }}</div>
               </q-btn>
               <q-btn class="col-shrink q-px-xs q-ma-none" flat dense icon="content_copy" size="xs" color="primary"
                      @click="clickToCopy(props.row.server_id)">
                 <q-tooltip>
-                  {{ tc('复制到剪切板') }}
+                  {{ tc('pages.statistic.cloud.ServerAggregationList.copy_to_clipboard') }}
                 </q-tooltip>
               </q-btn>
             </q-td>
-            <q-td class="no-padding" key="ipv4" :props="props">{{ props.row.server !== null ? props.row.server.ipv4 : tc('暂无') }}</q-td>
-            <q-td class="no-padding" key="service_name" :props="props">{{props.row.service_name === null ? tc('暂无') : props.row.service_name }}</q-td>
-            <q-td class="no-padding" key="configuration" :props="props">{{props.row.server !== null ? props.row.server.vcpus + ' ' + tc('核') + ' ' + Math.round(props.row.server.ram / 1024) + ' GB' : tc('暂无') }}</q-td>
-            <q-td class="no-padding" key="total_public_ip_hours" :props="props">{{Math.round(props.row.total_public_ip_hours / 24) + ' (个*天)' }}</q-td>
-            <q-td class="no-padding" key="total_cpu_hours" :props="props">{{ Math.round(props.row.total_cpu_hours / 24) + ' (核*天）' }}</q-td>
-            <q-td class="no-padding" key="total_ram_hours" :props="props">{{ Math.round(props.row.total_ram_hours / 24) + ' (GB*天)' }}</q-td>
-            <q-td class="no-padding" key="total_disk_hours" :props="props">{{ Math.round(props.row.total_disk_hours / 24) + ' (GB*天)' }}</q-td>
+            <q-td class="no-padding" key="ipv4" :props="props">{{ props.row.server !== null ? props.row.server.ipv4 : tc('pages.statistic.cloud.ServerAggregationList.no_yet') }}</q-td>
+            <q-td class="no-padding" key="service_name" :props="props">{{props.row.service_name === null ? tc('pages.statistic.cloud.ServerAggregationList.no_yet') : props.row.service_name }}</q-td>
+            <q-td class="no-padding" key="configuration" :props="props">{{props.row.server !== null ? props.row.server.vcpus + ' ' + tc('components.public.ServerUsageTable.core') + ' ' + Math.round(props.row.server.ram / 1024) + ' GB' : tc('pages.statistic.cloud.ServerAggregationList.no_yet') }}</q-td>
+            <q-td class="no-padding" key="total_public_ip_hours" :props="props">{{Math.round(props.row.total_public_ip_hours / 24) + ' ' + tc('components.public.ServerUsageTable.piece_days') }}</q-td>
+            <q-td class="no-padding" key="total_cpu_hours" :props="props">{{ Math.round(props.row.total_cpu_hours / 24) + ' ' + tc('components.public.ServerUsageTable.core_day') }}</q-td>
+            <q-td class="no-padding" key="total_ram_hours" :props="props">{{ Math.round(props.row.total_ram_hours / 24) + ' ' + tc('components.public.ServerUsageTable.gb_days') }}</q-td>
+            <q-td class="no-padding" key="total_disk_hours" :props="props">{{ Math.round(props.row.total_disk_hours / 24) + ' ' + tc('components.public.ServerUsageTable.gb_days') }}</q-td>
             <q-td class="no-padding" key="total_original_amount" :props="props">{{ props.row.total_original_amount }}</q-td>
             <q-td class="no-padding" key="total_trade_amount" :props="props">{{ props.row.total_trade_amount }}</q-td>
           </q-tr>
@@ -152,7 +152,7 @@ onBeforeUnmount(() => {
           <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense
                     borderless @update:model-value="changePageSize">
           </q-select>
-          <span>/{{ tc('页') }}</span>
+          <span>/{{ tc('pages.personal.CurrentMonthList.page') }}</span>
         </div>
         <q-pagination
           v-model="paginationTable.page"

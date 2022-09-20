@@ -127,7 +127,7 @@ onBeforeMount(async () => {
                 <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
                   <q-date minimal v-model="query.date_start" @update:model-value="selectDate" :locale="i18n.global.locale === 'en' ? myLocale : ''" mask="YYYY-MM-DD">
                     <div class="row items-center justify-end">
-                      <q-btn no-caps v-close-popup :label="tc('确定')" color="primary" flat/>
+                      <q-btn no-caps v-close-popup :label="tc('pages.personal.HistoryList.confirm')" color="primary" flat/>
                     </div>
                   </q-date>
                 </q-popup-proxy>
@@ -135,7 +135,7 @@ onBeforeMount(async () => {
             </template>
           </q-input>
         </div>
-        <div class="text-center">{{ tc('至') }}</div>
+        <div class="text-center">{{ tc('pages.personal.HistoryList.to') }}</div>
         <div class="col-3">
           <q-input filled dense v-model="dateTo" mask="date">
             <template v-slot:append>
@@ -143,7 +143,7 @@ onBeforeMount(async () => {
                 <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
                   <q-date minimal v-model="query.date_end" @update:model-value="selectDate" :locale="i18n.global.locale === 'en' ? myLocale : ''" mask="YYYY-MM-DD">
                     <div class="row items-center justify-end">
-                      <q-btn no-caps v-close-popup :label="tc('确定')" color="primary" flat/>
+                      <q-btn no-caps v-close-popup :label="tc('pages.personal.HistoryList.confirm')" color="primary" flat/>
                     </div>
                   </q-date>
                 </q-popup-proxy>
@@ -152,12 +152,12 @@ onBeforeMount(async () => {
           </q-input>
         </div>
         <q-select outlined dense v-model="serviceId" :options="serviceOptions" @update:model-value="selectService"
-                  :label="tc('筛选服务')" class="col-3" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
-        <q-btn outline no-caps :label="tc('搜索')" class="q-px-lg" @click="search"/>
+                  :label="tc('pages.personal.CurrentMonthList.filter_service')" class="col-3" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
+        <q-btn outline no-caps :label="tc('pages.personal.HistoryList.search')" class="q-px-lg" @click="search"/>
       </div>
       <div class="col-4 row justify-end">
-        <q-btn outline no-caps :label="tc('导出当页数据')" @click="exportFile"/>
-        <q-btn outline no-caps :label="tc('导出全部数据')" class="q-ml-sm" @click="exportAll"/>
+        <q-btn outline no-caps :label="tc('pages.personal.CurrentMonthList.export_current_page_data')" @click="exportFile"/>
+        <q-btn outline no-caps :label="tc('pages.personal.CurrentMonthList.export_all_data')" class="q-ml-sm" @click="exportAll"/>
       </div>
     </div>
     <div class="q-mt-md">
@@ -170,7 +170,7 @@ onBeforeMount(async () => {
         <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense
                   borderless @update:model-value="changePageSize">
         </q-select>
-        <span>/{{ tc('页') }}</span>
+        <span>/{{ tc('pages.personal.CurrentMonthList.page') }}</span>
       </div>
       <q-pagination
         v-model="paginationTable.page"

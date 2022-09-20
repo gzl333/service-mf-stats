@@ -36,7 +36,8 @@ console.log(store.tables)
 
             <q-item>
               <q-item-section class="column items-center q-py-sm text-center text-weight-bold text-grey-8">
-                {{ tc('用量账单') }}
+<!--                {{ tc('用量账单') }}-->
+                {{ tc('layout.StatsLayout.usage_billing') }}
               </q-item-section>
             </q-item>
 
@@ -60,7 +61,7 @@ console.log(store.tables)
             >
               <q-item-section class="column items-center">
                 <q-icon name="las la-user" size="lg"/>
-                <div class="active-text text-center">{{ tc('个人云主机') }}</div>
+                <div class="active-text text-center">{{ tc('layout.StatsLayout.personal_server') }}</div>
               </q-item-section>
             </q-item>
 
@@ -72,7 +73,7 @@ console.log(store.tables)
             >
               <q-item-section class="column items-center">
                 <q-icon name="las la-user-friends" size="lg"/>
-                <div class="active-text text-center">{{ tc('项目组云主机') }}</div>
+                <div class="active-text text-center">{{ tc('layout.StatsLayout.group_server') }}</div>
               </q-item-section>
             </q-item>
 
@@ -84,7 +85,7 @@ console.log(store.tables)
 <!--            >-->
 <!--              <q-item-section class="column items-center">-->
 <!--                <q-icon name="las la-object-ungroup" size="lg"/>-->
-<!--                <div class="active-text text-center">{{ tc('对象存储') }}</div>-->
+<!--                <div class="active-text text-center">{{ tc('pages.statistic.cloud.StatisticsIndex.storage') }}</div>-->
 <!--              </q-item-section>-->
 <!--            </q-item>-->
 
@@ -97,7 +98,7 @@ console.log(store.tables)
             >
               <q-item-section class="column items-center">
                 <q-icon name="las la-server" size="lg"/>
-                <div class="active-text text-center">{{ tc('用量管理统计') }}</div>
+                <div class="active-text text-center">{{ tc('layout.StatsLayout.usage_management_statistics') }}</div>
               </q-item-section>
             </q-item>
 
@@ -121,7 +122,7 @@ console.log(store.tables)
           <div class="row justify-center q-pt-lg">
             <q-icon class="text-center" name="info" color="grey-5" size="xs">
               <q-tooltip class="bg-grey-3">
-                <div class="text-grey text-caption text-center">{{ tc('发布时间') }}</div>
+                <div class="text-grey text-caption text-center">{{ tc('layout.StatsLayout.release_time') }}</div>
                 <div class="text-grey text-caption text-center">
                   {{ new Date(releaseTime).toLocaleString(i18n.global.locale) }}
                 </div>

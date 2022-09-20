@@ -30,7 +30,7 @@ const changeTab = (name: string) => {
     <div class="column">
       <div class="row justify-center">
         <div class="content-fixed-width">
-          <div class="text-h6 q-pt-lg q-px-none">{{ tc('个人云主机') }}</div>
+          <div class="text-h6 q-pt-lg q-px-none">{{ tc('pages.personal.PersonalIndex.personal_servers') }}</div>
           <q-tabs
             v-model="activeItem"
             inline-label
@@ -38,13 +38,13 @@ const changeTab = (name: string) => {
             indicator-color="primary"
             active-color="primary"
           >
-            <q-tab no-caps name="current" class="q-px-none q-py-md q-mr-md" :ripple="false" :label="tc('本月数据')"
+            <q-tab no-caps name="current" class="q-px-none q-py-md q-mr-md" :ripple="false" :label="tc('pages.personal.PersonalIndex.current_month_data')"
                    icon="las la-digital-tachograph" @click="changeTab('current')">
             </q-tab>
-            <q-tab no-caps name="last" class="q-px-none q-py-md q-mr-md" :ripple="false" :label="tc('上月数据')"
+            <q-tab no-caps name="last" class="q-px-none q-py-md q-mr-md" :ripple="false" :label="tc('pages.personal.PersonalIndex.last_month_data')"
                    icon="las la-calendar" @click="changeTab('last')">
             </q-tab>
-            <q-tab no-caps name="history" class="q-px-none q-py-md q-mr-md" :ripple="false" :label="tc('历史数据')"
+            <q-tab no-caps name="history" class="q-px-none q-py-md q-mr-md" :ripple="false" :label="tc('pages.personal.PersonalIndex.history_data')"
                    icon="las la-history" @click="changeTab('history')">
             </q-tab>
           </q-tabs>

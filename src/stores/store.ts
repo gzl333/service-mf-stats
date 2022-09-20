@@ -13,6 +13,9 @@ export interface idTable<T> {
 export interface totalTable {
   isLoaded: boolean
 }
+export interface totalTables {
+  status: 'init' | 'loading' | 'total' | 'error'
+}
 export interface DataCenterInterface {
   // 来自registry接口
   id: string
@@ -176,6 +179,100 @@ export interface MeteringDetailInterface {
   vo_id: string
   vo_name: string
 }
+export interface SingleMemberInterface {
+  id: string
+  user: {
+    id: string
+    username: string
+  }
+  role: 'member' | 'leader'
+  join_time: string
+  inviter: string
+}
+export interface GroupMemberInterface {
+  members: SingleMemberInterface[]
+  owner: {
+    id: string
+    username: string
+  }
+}
+export interface ServerInterface {
+  // 来自server接口
+  id: string
+  name: string
+  vcpus: number
+  ram: number
+  ipv4: string
+  public_ip: boolean
+  image: string
+  creation_time: string
+  expiration_time: string
+  remarks: string
+  classification: string
+  image_id: string
+  image_desc: string
+  default_user: string
+  default_password: string
+  pay_type: 'prepaid' | 'postpaid'
+  endpoint_url: string
+  service: string // 简化成serviceId
+  user_quota: string
+  center_quota: number
+  vo_id: string | null
+  user: {
+    id: string
+    username: string
+  }
+  lock: 'free' | 'lock-delete' | 'lock-operation'
+
+  // 来自vnc接口
+  vnc?: string
+  // 来自status接口，类型为number
+  status?: number
+}
+export interface OrderResourceInterface {
+  delivered_time: string
+  id: string
+  order_id: string
+  resource_type: string
+  instance_id: string
+  instance_status: string
+}
+export interface OrderInterface {
+  id: string
+  order_type: string
+  status: string
+  total_amount: string
+  pay_amount: string
+  payable_amount: string
+  balance_amount: string
+  coupon_amount: string
+  service_id: string
+  service_name: string
+  resource_type: string
+  instance_config: {
+    vm_cpu: number
+    vm_ram: number
+    vm_systemdisk_size: number
+    vm_public_ip: boolean
+    vm_image_id: string
+    vm_network_id: number
+    vm_azone_id: string
+    vm_azone_name: string
+  },
+  period: number
+  payment_time: string
+  pay_type: 'prepaid' | 'postpaid'
+  creation_time: string
+  user_id: string
+  username: string
+  vo_id: string
+  vo_name: string
+  owner_type: string
+  cancelled_time: string
+  app_service_id: string
+  resources: OrderResourceInterface[]
+}
 
 export interface DataCenterTableInterface extends totalTable, idTable<DataCenterInterface> {
 }
@@ -194,7 +291,15 @@ export interface GroupBalanceTableInterface extends totalTable, idTable<GroupBal
 
 export interface CouponTableInterface extends totalTable, idTable<CouponInterface> {
 }
-
+// 组配额table: groupId -> groupMember
+export interface GroupMemberTableInterface extends totalTables, idTable<GroupMemberInterface> {
+}
+// 项目组云主机
+export interface GroupServerTableInterface extends totalTables, idTable<ServerInterface> {
+}
+// 组订单table
+export interface GroupOrderTableInterface extends totalTables, idTable<OrderInterface> {
+}
 export const useStore = defineStore('stats', {
   state: () => ({
     items: {
@@ -221,6 +326,16 @@ export const useStore = defineStore('stats', {
         allIds: [],
         isLoaded: false
       } as GroupTableInterface,
+      groupMemberTable: {
+        byId: {},
+        allIds: [],
+        status: 'init'
+      } as GroupMemberTableInterface,
+      groupServerTable: {
+        byId: {},
+        allIds: [],
+        status: 'init'
+      } as GroupServerTableInterface,
       groupBalanceTable: {
         byId: {},
         allIds: [],
@@ -235,10 +350,62 @@ export const useStore = defineStore('stats', {
         byId: {},
         allIds: [],
         isLoaded: false
-      } as CouponTableInterface
+      } as CouponTableInterface,
+      groupOrderTable: {
+        byId: {},
+        allIds: [],
+        status: 'init'
+      } as GroupOrderTableInterface
     }
   }),
   getters: {
+    getGroupOrdersByGroupId: (state) => (groupId: string): OrderInterface[] => {
+      const sortFn = (a: OrderInterface, b: OrderInterface) => new Date(b.creation_time).getTime() - new Date(a.creation_time).getTime()
+      if (groupId === '0') {
+        return Object.values(state.tables.groupOrderTable.byId).sort(sortFn)
+      } else {
+        const orders: OrderInterface[] = []
+        for (const order of Object.values(state.tables.groupOrderTable.byId)) {
+          if (groupId === order.vo_id) {
+            orders.push(order)
+          }
+        }
+        return orders.sort(sortFn)
+      }
+    },
+    getGroupServersByGroupId: (state) => (groupId: string): ServerInterface[] => {
+      const sortFn = (a: ServerInterface, b: ServerInterface) => new Date(b.creation_time).getTime() - new Date(a.creation_time).getTime()
+      if (groupId === '0') {
+        return Object.values(state.tables.groupServerTable.byId).sort(sortFn)
+      } else {
+        const servers: ServerInterface[] = []
+        for (const server of Object.values(state.tables.groupServerTable.byId)) {
+          if (groupId === server.vo_id) {
+            servers.push(server)
+          }
+        }
+        return servers.sort(sortFn)
+      }
+    },
+    getGroupsByFilter: (state) => (filter: string): GroupInterface[] => {
+      // 排序函数，按照组创建时间降序排列
+      const sortFn = (a: GroupInterface, b: GroupInterface) => new Date(b.creation_time).getTime() - new Date(a.creation_time).getTime()
+      if (filter === 'all') {
+        return Object.values(state.tables.groupTable.byId).sort(sortFn)
+      } else {
+        const groups: GroupInterface[] = []
+        for (const group of Object.values(state.tables.groupTable.byId)) {
+          if (filter === 'owner' && group.myRole === 'owner') {
+            groups.push(group)
+          } else if (filter === 'member' && group.myRole === 'member') {
+            groups.push(group)
+          } else if (filter === 'leader' && group.myRole === 'leader') {
+            groups.push(group)
+          }
+        }
+        return groups.sort(sortFn)
+      }
+    },
     getServices: (state) => (type: string) : { value: string; label: string; }[] => {
       const serviceOptions = []
       if (type === 'all') {
@@ -465,22 +632,117 @@ export const useStore = defineStore('stats', {
             void this.loadServiceTable().then(() => {
               this.storeUserRole().then(() => {
                 this.loadGroupTable().then(() => {
-                  this.loadPersonalBalance()
-                  if (!this.tables.groupBalanceTable.isLoaded) {
-                    this.loadGroupBalanceTable()
-                  }
-                  if (!this.tables.personalCouponTable.isLoaded) {
-                    this.loadPersonalCouponTable()
-                  }
-                  if (!this.tables.groupCouponTable.isLoaded) {
-                    this.loadGroupCouponTable()
-                  }
+                  this.loadGroupMemberTable().then(() => {
+                    this.loadPersonalBalance()
+                    if (!this.tables.groupBalanceTable.isLoaded) {
+                      this.loadGroupBalanceTable()
+                    }
+                    if (!this.tables.personalCouponTable.isLoaded) {
+                      this.loadPersonalCouponTable()
+                    }
+                    if (!this.tables.groupCouponTable.isLoaded) {
+                      this.loadGroupCouponTable()
+                    }
+                    this.loadGroupServerTable()
+                  })
                 })
               })
             })
           }
         })
       }
+    },
+    async loadGroupOrderTable () {
+      this.tables.groupOrderTable = {
+        byId: {},
+        allIds: [],
+        status: 'init'
+      }
+      this.tables.groupOrderTable.status = 'loading'
+      for (const groupId of this.tables.groupTable.allIds) {
+        const respGetOrder = await stats.stats.order.getOrder({ query: { vo_id: groupId } })
+        const order = new schema.Entity('order')
+        for (const data of respGetOrder.data.orders) {
+          // orderId补充进group的order字段
+          this.tables.groupTable.byId[groupId].order.push(data.id)
+          // get order details
+          const respGetOrderId = await stats.stats.order.getOrderId({ path: { id: data.id } })
+          const normalizedData = normalize(respGetOrderId.data, order)
+          Object.assign(this.tables.groupOrderTable.byId, normalizedData.entities.order)
+          this.tables.groupOrderTable.allIds.unshift(Object.keys(normalizedData.entities.order as Record<string, unknown>)[0])
+          this.tables.groupOrderTable.allIds = [...new Set(this.tables.groupOrderTable.allIds)]
+        }
+      }
+      this.tables.groupOrderTable.status = 'total'
+    },
+    // 更新整个groupServerTable，调用点在group模块里
+    async loadGroupServerTable () {
+      // 先清空table，避免多次更新时数据累加（凡是需要强制刷新的table，都要先清空再更新）
+      this.tables.groupServerTable = {
+        byId: {},
+        allIds: [],
+        status: 'init'
+      }
+      this.tables.groupServerTable.status = 'loading'
+      // 根据groupTable,建立groupServerTable
+      for (const groupId of this.tables.groupTable.allIds) {
+        // 发送请求
+        const respGroupServer = await stats.stats.vo.getServerVo({
+          path: {
+            vo_id: groupId
+          },
+          query: {
+            page_size: 999
+          }
+        })
+        // 将响应normalize
+        const service = new schema.Entity('service')
+        const user_quota = new schema.Entity('user_quota')
+        const server = new schema.Entity('server', {
+          service,
+          user_quota
+        })
+        for (const data of respGroupServer.data.servers) {
+          const normalizedData = normalize(data, server)
+          Object.assign(this.tables.groupServerTable.byId, normalizedData.entities.server)
+          this.tables.groupServerTable.allIds.unshift(Object.keys(normalizedData.entities.server as Record<string, unknown>)[0])
+          this.tables.groupServerTable.allIds = [...new Set(this.tables.groupServerTable.allIds)]
+        }
+      }
+      this.tables.groupServerTable.status = 'total'
+    },
+    // 根据groupTable,建立groupMemberTable
+    async loadGroupMemberTable () {
+      // 先清空table，避免多次更新时数据累加（凡是需要强制刷新的table，都要先清空再更新）
+      this.tables.groupMemberTable = {
+        byId: {},
+        allIds: [],
+        status: 'init'
+      }
+      this.tables.groupMemberTable.status = 'loading'
+      for (const groupId of this.tables.groupTable.allIds) {
+        const respGroupMember = await stats.stats.vo.getVoListMembers({ path: { id: groupId } })
+        // 是否把组长添加进member列表？
+        // 把groupId字段补充进去
+        Object.assign(respGroupMember.data, { id: groupId })
+        // normalize
+        const groupMember = new schema.Entity('groupMember')
+        const normalizedData = normalize(respGroupMember.data, groupMember)
+        // 存入state
+        Object.assign(this.tables.groupMemberTable.byId, normalizedData.entities.groupMember)
+        this.tables.groupMemberTable.allIds.unshift(Object.keys(normalizedData.entities.groupMember as Record<string, unknown>)[0])
+        this.tables.groupMemberTable.allIds = [...new Set(this.tables.groupMemberTable.allIds)]
+        // 给groupTable补充role字段
+        const storeMain = useStoreMain()
+        const currentId = storeMain.items.tokenDecoded.email
+        for (const member of respGroupMember.data.members) {
+          if (member.user.username === currentId && member.role === 'leader') {
+            this.tables.groupTable.byId[groupId].myRole = 'leader'
+          }
+        }
+      }
+      // load table的最后再改status
+      this.tables.groupMemberTable.status = 'total'
     },
     async loadDataCenterTable () {
       this.tables.dataCenterTable = {

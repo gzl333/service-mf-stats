@@ -22,10 +22,10 @@ const { tc } = i18n.global
 
 const serviceColumns = computed(() => [
   // { name: 'service_id', label: 'ID', align: 'center' },
-  { name: 'name', align: 'center', label: (() => tc('服务单元'))() },
-  { name: 'total_original_amount', label: (() => tc('计费金额合计'))(), align: 'center' },
-  { name: 'total_trade_amount', label: (() => tc('实际扣费金额合计'))(), align: 'center' },
-  { name: 'total_server', label: (() => tc('云主机数量合计'))(), align: 'center' }
+  { name: 'name', align: 'center', label: (() => tc('components.public.ServerUsageTable.service_unit'))() },
+  { name: 'total_original_amount', label: (() => tc('components.public.ServerStatisticsDetailTable.total_billing_amount'))(), align: 'center' },
+  { name: 'total_trade_amount', label: (() => tc('components.public.ServerStatisticsDetailTable.total_amount_of_actual_deduction'))(), align: 'center' },
+  { name: 'total_server', label: (() => tc('pages.statistic.cloud.GroupAggregationList.total_number_of_servers'))(), align: 'center' }
 ])
 const isLoading = ref(false)
 const paginationTable = ref({
@@ -93,8 +93,8 @@ onBeforeUnmount(() => {
         :columns="serviceColumns"
         row-key="name"
         color="primary"
-        :loading-label="tc('网络请求中，请稍候...')"
-        :no-data-label="tc('暂无数据')"
+        :loading-label="tc('components.group.GroupTable.notify_loading')"
+        :no-data-label="tc('pages.personal.CurrentMonthList.no_data')"
         hide-pagination
         :pagination="{ rowsPerPage: 0 }"
       >
@@ -121,7 +121,7 @@ onBeforeUnmount(() => {
           <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense
                     borderless @update:model-value="changePageSize">
           </q-select>
-          <span>/{{ tc('页') }}</span>
+          <span>/{{ tc('pages.personal.CurrentMonthList.page') }}</span>
         </div>
         <q-pagination
           v-model="paginationTable.page"

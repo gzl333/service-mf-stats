@@ -20,21 +20,21 @@ const columns = computed(() => [
   {
     name: 'ipv4',
     align: 'center',
-    label: (() => tc('ip地址'))()
+    label: (() => tc('components.public.ServerUsageTable.ip'))()
   },
   {
     name: 'service_name',
-    label: (() => tc('服务单元'))(),
+    label: (() => tc('components.public.ServerUsageTable.service_unit'))(),
     align: 'center'
   },
   {
     name: 'configuration',
-    label: (() => tc('初始配置'))(),
+    label: (() => tc('components.public.ServerUsageTable.initial_configuration'))(),
     align: 'center'
   },
   {
     name: 'total_public_ip_hours',
-    label: (() => tc('公网IP'))(),
+    label: (() => tc('pages.public.ServerUsageDetailList.public_ip'))(),
     align: 'center'
   },
   {
@@ -44,22 +44,22 @@ const columns = computed(() => [
   },
   {
     name: 'total_ram_hours',
-    label: (() => tc('内存'))(),
+    label: (() => tc('components.public.ServerUsageTable.memory'))(),
     align: 'center'
   },
   {
     name: 'total_disk_hours',
-    label: (() => tc('本地硬盘'))(),
+    label: (() => tc('components.public.ServerUsageTable.local_disk'))(),
     align: 'center'
   },
   {
     name: 'total_original_amount',
-    label: (() => tc('计费金额'))(),
+    label: (() => tc('components.public.ServerUsageTable.billing_amount'))(),
     align: 'center'
   },
   {
     name: 'total_trade_amount',
-    label: (() => tc('实际扣费金额'))(),
+    label: (() => tc('components.public.ServerUsageTable.actual_deduction_amount'))(),
     align: 'center'
   }
 ])
@@ -86,8 +86,8 @@ const goToDetail = (serverId: string, ipv4: string, vcpus: string, ram: string) 
       :columns="columns"
       row-key="name"
       color="primary"
-      :loading-label="tc('网络请求中，请稍候...')"
-      :no-data-label="tc('暂无数据')"
+      :loading-label="tc('components.group.GroupTable.notify_loading')"
+      :no-data-label="tc('pages.personal.CurrentMonthList.no_data')"
       hide-pagination
       :pagination="{ rowsPerPage: 0 }"
     >
@@ -100,11 +100,11 @@ const goToDetail = (serverId: string, ipv4: string, vcpus: string, ram: string) 
                    flat dense unelevated></q-btn>
           </q-td>
           <q-td key="service_name" :props="props">{{ props.row.service_name }}</q-td>
-          <q-td class="no-padding" key="configuration" :props="props">{{props.row.server.vcpus + ' ' + tc('核') + ' ' + Math.round(props.row.server.ram / 1024) + ' GB' }}</q-td>
-          <q-td key="total_public_ip_hours" :props="props">{{ Math.round(props.row.total_public_ip_hours / 24) + ' ' + tc('(个*天)') }}</q-td>
-          <q-td key="total_cpu_hours" :props="props">{{ Math.round(props.row.total_cpu_hours / 24) + ' ' + tc('(核*天）') }}</q-td>
-          <q-td key="total_ram_hours" :props="props">{{ Math.round(props.row.total_ram_hours / 24) + ' ' + tc('(GB*天)') }}</q-td>
-          <q-td key="total_disk_hours" :props="props">{{ Math.round(props.row.total_disk_hours / 24) + ' ' + tc('(GB*天)') }}</q-td>
+          <q-td class="no-padding" key="configuration" :props="props">{{props.row.server.vcpus + ' ' + tc('components.public.ServerUsageTable.core') + ' ' + Math.round(props.row.server.ram / 1024) + ' GB' }}</q-td>
+          <q-td key="total_public_ip_hours" :props="props">{{ Math.round(props.row.total_public_ip_hours / 24) + ' ' + tc('components.public.ServerUsageTable.piece_days') }}</q-td>
+          <q-td key="total_cpu_hours" :props="props">{{ Math.round(props.row.total_cpu_hours / 24) + ' ' + tc('components.public.ServerUsageTable.core_day') }}</q-td>
+          <q-td key="total_ram_hours" :props="props">{{ Math.round(props.row.total_ram_hours / 24) + ' ' + tc('components.public.ServerUsageTable.gb_days') }}</q-td>
+          <q-td key="total_disk_hours" :props="props">{{ Math.round(props.row.total_disk_hours / 24) + ' ' + tc('components.public.ServerUsageTable.gb_days') }}</q-td>
           <q-td class="no-padding" key="total_original_amount" :props="props">{{ props.row.total_original_amount }}</q-td>
           <q-td class="no-padding" key="total_trade_amount" :props="props">{{ props.row.total_trade_amount }}</q-td>
         </q-tr>

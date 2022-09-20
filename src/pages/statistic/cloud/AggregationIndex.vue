@@ -257,22 +257,22 @@ onBeforeMount(async () => {
     <div class="row q-mt-xl justify-between items-center">
       <div class="row col-7 items-center">
         <div class="col-2">
-          <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" :label="tc('请选择')" @update:model-value="changeYear" />
+          <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" :label="tc('pages.public.ServerUsageDetailList.please_select')" @update:model-value="changeYear" />
         </div>
         <div class="col-2 q-ml-md">
-          <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" :label="tc('请选择')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
+          <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" :label="tc('pages.public.ServerUsageDetailList.please_select')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
         </div>
         <div class="col-4 q-ml-md">
           <q-select outlined dense v-model="serviceId" :options="serviceOptions" @update:model-value="selectService" :disable="isDisable"
-                    :label="tc('筛选服务')" class="col-8" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
+                    :label="tc('pages.personal.CurrentMonthList.filter_service')" class="col-8" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
         </div>
         <div class="col-2 q-ml-md">
-          <q-btn outline no-caps :label="tc('搜索')" class="q-px-lg" @click="search"/>
+          <q-btn outline no-caps :label="tc('pages.personal.HistoryList.search')" class="q-px-lg" @click="search"/>
         </div>
       </div>
       <div class="col-4 row justify-end">
-        <q-btn outline no-caps :label="tc('导出当页数据')" @click="exportFile()"/>
-        <q-btn class="q-ml-sm" outline no-caps :label="tc('导出全部数据')" @click="exportAll"/>
+        <q-btn outline no-caps :label="tc('pages.personal.CurrentMonthList.export_current_page_data')" @click="exportFile()"/>
+        <q-btn class="q-ml-sm" outline no-caps :label="tc('pages.personal.CurrentMonthList.export_all_data')" @click="exportAll"/>
       </div>
     </div>
     <div class="row q-mt-md">
@@ -285,16 +285,16 @@ onBeforeMount(async () => {
         style="width: 10%"
       >
         <q-tab no-caps name="server" class="text-weight-bold" @click="changeTab('server')" :ripple="false">
-          {{ tc('按云主机uuid') }}
+          {{ tc('pages.statistic.cloud.AggregationIndex.by_servers_uuid') }}
         </q-tab>
         <q-tab no-caps name="service"  class="text-weight-bold" @click="changeTab('service')" :ripple="false">
-          {{ tc('按服务单元') }}
+          {{ tc('pages.statistic.cloud.AggregationIndex.by_service_unit') }}
         </q-tab>
         <q-tab no-caps name="group"  class="text-weight-bold" @click="changeTab('group')" :ripple="false">
-          {{ tc('按项目组id') }}
+          {{ tc('pages.statistic.cloud.AggregationIndex.by_group_id') }}
         </q-tab>
         <q-tab no-caps name="user"  class="text-weight-bold" @click="changeTab('user')" :ripple="false">
-          {{ tc('按用户id') }}
+          {{ tc('pages.statistic.cloud.AggregationIndex.by_user_id') }}
         </q-tab>
       </q-tabs>
       <div style="width: 90%">

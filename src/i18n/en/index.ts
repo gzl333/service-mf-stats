@@ -1,97 +1,164 @@
 // en
 export default {
-  翻译测试: 'Translation Test',
-
   // 404
   出错了: 'Error',
   返回: 'Go Back',
 
-  // layout
-  // StatsLayout
-  用量账单: 'Usage & Billing',
-  个人云主机: 'Personal Server',
-  项目组云主机: 'Group Server',
-  用量管理统计: 'Usage Management Statistics',
-  发布时间: 'Release Time',
-
-  // page
-  // personal
-  // CurrentMonthList
-  导出当页数据: 'Export Current Page Data',
-  导出全部数据: 'Export All Data',
-  筛选服务: 'Filter Service',
-  页: 'Page',
-  暂无数据: 'No Data',
-  // HistoryList
-  搜索: 'Search',
-  至: 'To',
-  确定: 'Confirm',
-  // PersonalIndex
-  本月数据: 'Current Month Data',
-  上月数据: 'Last Month Data',
-  历史数据: 'History Data',
-  // public
-  // ServerUsageDetailList
-  云主机用量详情: 'Servers Usage Details',
-  请选择: 'Please Select',
-  公网ip: 'Public IP',
-  // group
-  // CurrentMonthList
-  筛选项目组: 'Filter Group',
-  // statistic
-  // cloud
-  // StatisticsIndex
-  云主机: 'Servers',
-  对象存储: 'Storage',
-  // AggregationIndex
-  搜索服务: 'Search Service',
-  按云主机uuid: 'By Servers UUID',
-  按服务单元: 'By Service Unit',
-  按项目组id: 'By Group ID',
-  按用户id: 'By User ID',
-  // GroupAggregationList
-  项目组名称: 'Group Name',
-  单位: 'Company',
-  云主机数量合计: 'Total Number Of Servers',
-  // ServerAggregationList
-  云主机uuid: 'UUID',
-  '计费金额(总)': 'Billing Amount',
-  '实际扣费金额(总)': 'Actual Billing Amount',
-  暂无: 'Not Yet',
-  复制到剪切板: 'Copy To Clipboard',
-  // UserAggregationList
-  用户: 'User',
-  // ServerUsageDetailList
-  用户名: 'User',
-  组名称: 'Group',
-  服务名称: 'Service',
-  计费周期: 'Billing Cycle',
-
-  // components
-  // public
-  // ServerUsageTable
-  ip地址: 'IP',
-  服务单元: 'Service Unit',
-  初始配置: 'Initial Configuration',
-  公网IP: 'Public IP',
-  本地硬盘: 'Memory',
-  '(个*天)': '(piece * days)',
-  '(核*天）': '(core * day)',
-  '(GB*天)': '(GB * days)',
-  计费金额: 'Billing Amount',
-  实际扣费金额: 'Actual Deduction Amount',
-  '网络请求中，请稍候...': 'Network request in progress, please wait...',
-  核: 'Core',
-  内存: 'Memory',
-  // ServerStatisticsDetailTable
-  计费日期: 'Billing Date',
-  扣费状态: 'Deduction Status',
-  点: 'points',
-  项目组: 'Group',
-  计费金额合计: 'Total Billing Amount',
-  实际扣费金额合计: 'Total Amount Of Actual Deduction',
-  // statistic
-  // PayStatusChip
-  待支付: 'Unpaid',
-  已支付: 'Paid'
+  layout: {
+    StatsLayout: {
+      usage_billing: 'Usage & Billing',
+      personal_server: 'Personal Server',
+      group_server: 'Group Server',
+      usage_management_statistics: 'Usage Management Statistics',
+      release_time: 'Release Time'
+    }
+  },
+  components: {
+    group: {
+      GroupTable: {
+        my_role: 'My Role', // '我的角色',
+        group: 'Group', // '所属组',
+        org: 'Organisation', // 所属单位',
+        remarks: 'Remarks', // '备注',
+        creation_time: 'Creation Time', // '创建时间',
+        members: 'Members', // '成员',
+        server: 'Servers', // '云主机',
+        order: 'Orders', // '订单',
+        coupon: 'Vouchers', // '代金券',
+        balance: 'Balance', // '余额',
+        operation: 'Operation', // '操作',
+        notify_loading: 'Requesting, please wait...', // '网络请求中，请稍候...',
+        notify_no_group: 'No groups available', // '暂无项目组',
+        notify_no_result: 'No search results', // '无搜索结果',
+        details: 'Detail', // '详情',
+        member: '', // '人',
+        servers: '', // '台',
+        orders: '', // '个',
+        coupons: '', // '个',
+        points: 'Points', //  '点',
+        check_details: 'Detail', //  '查看详情',
+        edit_group_info: 'Edit', // '编辑项目组',
+        dismiss_group: 'Dismiss' // '解散项目组'
+      },
+      GroupRoleChip: {
+        owner: 'Owner', // '组长',
+        admin: 'Manager', // '管理员',
+        member: 'Member' // '组员,'
+      }
+    },
+    public: {
+      ServerUsageTable: {
+        ip: 'IP',
+        service_unit: 'Service Unit',
+        initial_configuration: 'Initial Configuration',
+        public_ip: 'Public IP',
+        local_disk: 'Local Disk',
+        piece_days: '(piece * days)',
+        core_day: '(core * day)',
+        gb_days: '(GB * days)',
+        billing_amount: 'Billing Amount',
+        actual_deduction_amount: 'Actual Deduction Amount',
+        network_request_in_progress_please_wait: 'Network request in progress, please wait...',
+        core: 'Core',
+        memory: 'Memory'
+      },
+      ServerStatisticsDetailTable: {
+        payment_method: 'Payment Method',
+        snapshot: 'snapshot',
+        billing_date: 'Billing Date',
+        deduction_status: 'Deduction Status',
+        points: 'Points',
+        group: 'Group',
+        total_billing_amount: 'Total Billing Amount',
+        total_amount_of_actual_deduction: 'Total Amount Of Actual Deduction'
+      }
+    }
+  },
+  pages: {
+    personal: {
+      CurrentMonthList: {
+        export_current_page_data: 'Export Current Page Data',
+        export_all_data: 'Export all data',
+        filter_service: 'Filter Service',
+        page: 'Page',
+        no_data: 'No Data'
+      },
+      HistoryList: {
+        search: 'Search',
+        to: 'To',
+        confirm: 'Confirm'
+      },
+      PersonalIndex: {
+        personal_servers: 'Personal Servers',
+        current_month_data: 'Current Month Data',
+        last_month_data: 'Last Month Data',
+        history_data: 'History Data'
+      }
+    },
+    public: {
+      ServerUsageDetailList: {
+        servers_usage_details: 'Servers Usage Details',
+        please_select: 'Please Select',
+        public_ip: 'Public IP'
+      }
+    },
+    group: {
+      GroupIndex: {
+        group_servers: 'Group Servers',
+        group_list: 'Group List'
+      },
+      GroupList: {
+        all_groups: 'All Groups',
+        as_group_owner: 'As Group Owner',
+        as_group_manager: 'As Group Manager',
+        as_group_member: 'As Group Member',
+        my_role_filter: 'My Role Filter'
+      },
+      GroupMeteringList: {
+        go_back_to_group_list: 'Go Back To Group List'
+      }
+    },
+    statistic: {
+      cloud: {
+        StatisticsIndex: {
+          usage_management_statistics: 'Usage Management Statistics',
+          servers: 'Servers',
+          storage: 'Storage'
+        },
+        AggregationIndex: {
+          by_servers_uuid: 'By Servers UUID',
+          by_service_unit: 'By Service Unit',
+          by_group_id: 'By Group ID',
+          by_user_id: 'By User ID'
+        },
+        GroupAggregationList: {
+          group_name: 'Group Name',
+          company: 'Company',
+          total_number_of_servers: 'Total Number Of Servers'
+        },
+        ServerAggregationList: {
+          uuid: 'UUID',
+          billing_amount: 'Billing Amount',
+          actual_billing_amount: 'Actual Billing Amount',
+          not_yet: 'Not Yet',
+          copy_to_clipboard: 'Copy To Clipboard'
+        },
+        UserAggregationList: {
+          user: 'User'
+        },
+        ServerUsageDetailList: {
+          user: 'User',
+          group: 'Group',
+          service: 'Service',
+          billing_cycle: 'Billing Cycle'
+        }
+      }
+    }
+  },
+  hooks: {
+    useCopyToClipboard: {
+      content_copied_to_clipboard: 'Content copied to clipboard',
+      copied_to_clipboard: 'Copied to clipboard'
+    }
+  }
 }

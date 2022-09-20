@@ -78,18 +78,14 @@ const routes: RouteRecordRaw[] = [
             meta: {
               time: 'current'
             },
-            component: () => import('pages/group/MonthList.vue')
+            component: () => import('pages/group/GroupList.vue')
           },
           {
-            path: 'last',
+            path: 'server/:voId',
             meta: {
-              time: 'last'
+              isGroup: true
             },
-            component: () => import('pages/group/MonthList.vue')
-          },
-          {
-            path: 'history',
-            component: () => import('pages/group/HistoryList.vue')
+            component: () => import('pages/group/GroupMeteringList.vue')
           },
           {
             path: 'detail/:serverId',

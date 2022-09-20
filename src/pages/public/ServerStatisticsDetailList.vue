@@ -214,25 +214,25 @@ onBeforeMount(() => {
     <div class="row items-center title-area q-mt-xl">
       <q-btn icon="arrow_back_ios" color="primary" flat unelevated dense
              @click="router.back()"/>
-      <span class="text-primary text-h6 text-weight-bold">{{ tc('云主机用量详情') }}</span>
+      <span class="text-primary text-h6 text-weight-bold">{{ tc('pages.public.ServerUsageDetailList.servers_usage_details') }}</span>
     </div>
     <div class="row q-mt-lg justify-between">
       <div class="row col-5 items-center">
         <div class="col-3">
-          <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" :label="tc('请选择')"
+          <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" :label="tc('pages.public.ServerUsageDetailList.please_select')"
                     @update:model-value="changeYear"/>
         </div>
         <div class="col-3 q-ml-sm">
-          <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" :label="tc('请选择')"
+          <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" :label="tc('pages.public.ServerUsageDetailList.please_select')"
                     :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
         </div>
         <div class="q-ml-sm">
-          <q-btn outline no-caps :label="tc('搜索')" @click="search" class="q-px-lg"/>
+          <q-btn outline no-caps :label="tc('pages.personal.HistoryList.search')" @click="search" class="q-px-lg"/>
         </div>
       </div>
       <div>
-        <q-btn outline no-caps :label="tc('导出当页数据')" @click="exportFile"/>
-        <q-btn outline no-caps :label="tc('导出全部数据')" class="q-ml-sm" @click="exportAll"/>
+        <q-btn outline no-caps :label="tc('pages.personal.CurrentMonthList.export_current_page_data')" @click="exportFile"/>
+        <q-btn outline no-caps :label="tc('pages.personal.CurrentMonthList.export_all_data')" class="q-ml-sm" @click="exportAll"/>
       </div>
     </div>
     <div class="q-mt-md">
@@ -244,21 +244,21 @@ onBeforeMount(() => {
               <div class="text-subtitle1 q-mt-lg">{{ route.params.serverId }}</div>
             </div>
             <div class="col-3 text-center">
-              <div>{{ tc('服务单元') }}</div>
+              <div>{{ tc('components.public.ServerUsageTable.service_unit') }}</div>
               <div class="text-subtitle1 q-mt-lg">{{ store.tables.serviceTable.byId[tableRow[0]?.service_id]?.name }}</div>
             </div>
             <div class="col-2 text-center">
-              <div>{{ route.meta.isGroup ? tc('项目组') : tc('用户') }}</div>
+              <div>{{ route.meta.isGroup ? tc('components.public.ServerStatisticsDetailTable.group') : tc('pages.statistic.cloud.UserAggregationList.user') }}</div>
               <div class="text-subtitle1 q-mt-lg">{{ route.meta.isGroup ? tableRow[0]?.vo_name : tableRow[0]?.username }}</div>
             </div>
             <div class="col-2 text-center">
-              <div>{{ tc('初始配置') }}</div>
+              <div>{{ tc('components.public.ServerUsageTable.initial_configuration') }}</div>
               <div class="text-subtitle1 q-mt-lg">
-                {{ route.query.vcpus + ' ' + tc('核') + ' ' + route.query.ram / 1024 + ' GB' }}
+                {{ route.query.vcpus + ' ' + tc('components.public.ServerUsageTable.core') + ' ' + route.query.ram / 1024 + ' GB' }}
               </div>
             </div>
             <div class="col-2 text-center">
-              <div>{{ tc('公网IP') }}</div>
+              <div>{{ tc('pages.public.ServerUsageDetailList.public_ip') }}</div>
               <div class="text-subtitle1 q-mt-lg">{{ route.query.ipv4 }}</div>
             </div>
           </div>
@@ -275,7 +275,7 @@ onBeforeMount(() => {
         <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense
                   borderless @update:model-value="changePageSize">
         </q-select>
-        <span>/{{ tc('页') }}</span>
+        <span>/{{ tc('pages.personal.CurrentMonthList.page') }}</span>
       </div>
       <q-pagination
         v-model="paginationTable.page"

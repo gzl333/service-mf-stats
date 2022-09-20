@@ -30,7 +30,7 @@ const changeTab = async (name: string) => {
     <div class="column">
       <div class="row justify-center">
         <div class="content-fixed-width">
-          <div class="text-h6 q-pt-lg q-px-none">{{ tc('用量管理统计') }}</div>
+          <div class="text-h6 q-pt-lg q-px-none">{{ tc('pages.statistic.cloud.StatisticsIndex.usage_management_statistics') }}</div>
           <q-tabs
             v-model="activeItem"
             inline-label
@@ -38,10 +38,10 @@ const changeTab = async (name: string) => {
             indicator-color="primary"
             active-color="primary"
           >
-            <q-tab no-caps name="cloud" class="q-px-none q-py-md q-mr-md" icon="las la-laptop" :label="tc('云主机')"
+            <q-tab no-caps name="cloud" class="q-px-none q-py-md q-mr-md" icon="las la-laptop" :label="tc('pages.statistic.cloud.StatisticsIndex.servers')"
                    @click="changeTab('cloud')" :ripple="false">
             </q-tab>
-            <q-tab no-caps name="storage" class="q-px-none q-py-md q-mr-md" :label="tc('对象存储')"
+            <q-tab no-caps name="storage" class="q-px-none q-py-md q-mr-md" :label="tc('pages.statistic.cloud.StatisticsIndex.storage')"
                    icon="las la-memory" @click="changeTab('storage')" :ripple="false">
             </q-tab>
           </q-tabs>

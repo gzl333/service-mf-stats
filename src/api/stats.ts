@@ -138,6 +138,22 @@ export default {
         params: payload?.query
       }
       return axiosStats.get('/vo', config)
+    },
+    getVoListMembers (payload: { path: { id: string } }) {
+      return axiosStats.get('/vo/' + payload.path.id + '/list-members')
+    },
+    getServerVo (payload: {
+      path: { vo_id: string },
+      query?: {
+        page?: number;
+        page_size?: number;
+        service_id?: string
+      }
+    }) {
+      const config = {
+        params: payload?.query
+      }
+      return axiosStats.get('/server/vo/' + payload.path.vo_id, config)
     }
   },
   account: {
@@ -165,6 +181,30 @@ export default {
         params: payload?.query
       }
       return axiosStats.get('/cashcoupon', config)
+    }
+  },
+  order: {
+    getOrder (payload?: {
+      query?: {
+        page?: number,
+        page_size?: number,
+        resource_type?: 'vm' | 'disk' | 'bucket',
+        order_type?: 'new' | 'renewal' | 'upgrade' | 'downgrade',
+        status?: 'paid' | 'unpaid' | 'cancelled' | 'refund',
+        time_start?: string,
+        time_end?: string,
+        vo_id?: string
+      }
+    }) {
+      const config = {
+        params: payload?.query
+      }
+      return axiosStats.get('/order', config)
+    },
+    getOrderId (payload: {
+      path: { id: string }
+    }) {
+      return axiosStats.get('/order/' + payload.path.id)
     }
   }
 }
