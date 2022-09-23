@@ -190,12 +190,13 @@ const changePageSize = () => {
   paginationTable.value.page = 1
   getConsumptionDetailData()
 }
-const changePagination = (val: number) => {
-  query.value.page = val
+const changePagination = () => {
+  query.value.page = paginationTable.value.page
   getConsumptionDetailData()
 }
 const search = () => {
   initQuery()
+  paginationTable.value.page = 1
   getConsumptionDetailData()
 }
 const exportFile = () => {
@@ -281,7 +282,7 @@ onMounted(async () => {
         direction-links
         outline
         :ripple="false"
-        @update:model-value="changePagination"
+        @click="changePagination"
       />
     </div>
   </div>

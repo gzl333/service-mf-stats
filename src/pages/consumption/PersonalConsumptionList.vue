@@ -80,8 +80,8 @@ const selectService = (val: Record<string, string>) => {
     delete exportQuery.value.service_id
   }
 }
-const changePagination = (val: number) => {
-  query.value.page = val
+const changePagination = () => {
+  query.value.page = paginationTable.value.page
   getPersonalConsumptionData()
 }
 const changePageSize = () => {
@@ -91,6 +91,8 @@ const changePageSize = () => {
   getPersonalConsumptionData()
 }
 const search = () => {
+  query.value.page = 1
+  paginationTable.value.page = 1
   getPersonalConsumptionData()
 }
 // 导出当页数据
@@ -182,7 +184,7 @@ onMounted(() => {
         direction-links
         outline
         :ripple="false"
-        @update:model-value="changePagination"
+        @click="changePagination"
       />
     </div>
   </div>

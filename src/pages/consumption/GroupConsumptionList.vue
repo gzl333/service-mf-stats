@@ -59,49 +59,6 @@ const exportQuery: Record<string, string | boolean> = {
   vo_id: route.params.voId as string,
   download: true
 }
-const selectService = (val: Record<string, string>) => {
-  if (val.value !== '') {
-    query.value.service_id = val.value
-    exportQuery.service_id = val.value
-  } else {
-    delete query.value.service_id
-    delete exportQuery.service_id
-  }
-}
-const selectDate = () => {
-  dateFrom.value = query.value.date_start as string
-  dateTo.value = query.value.date_end as string
-}
-const search = () => {
-  getGroupConsumptionData()
-}
-const changePagination = (val: number) => {
-  query.value.page = val
-  getGroupConsumptionData()
-}
-const changePageSize = () => {
-  query.value.page_size = paginationTable.value.rowsPerPage
-  query.value.page = 1
-  paginationTable.value.page = 1
-  getGroupConsumptionData()
-}
-const exportFile = () => {
-  if (tableRow.value.length === 0) {
-    exportNotify()
-  } else {
-    const date = new Date()
-    exportExcel(i18n.global.locale === 'zh' ? '项目组云主机用量统计-' + date.toLocaleTimeString() + '.xlsx' : ' Group Servers Statistics-' + date.toLocaleTimeString() + '.xlsx', '#GroupUsageTable')
-  }
-}
-const exportAll = async () => {
-  if (tableRow.value.length === 0) {
-    exportNotify()
-  } else {
-    const date = new Date()
-    const fileData = await store.getServerMetering(exportQuery)
-    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '项目组云主机用量统计-' + date.toLocaleTimeString() : 'Group Servers Statistics-' + date.toLocaleTimeString())
-  }
-}
 const getGroupConsumptionData = async () => {
   childRef.value.startLoading()
   tableRow.value = []
@@ -151,6 +108,51 @@ const getGroupConsumptionData = async () => {
   }
   paginationTable.value.count = data.data.count
   childRef.value.endLoading()
+}
+const selectService = (val: Record<string, string>) => {
+  if (val.value !== '') {
+    query.value.service_id = val.value
+    exportQuery.service_id = val.value
+  } else {
+    delete query.value.service_id
+    delete exportQuery.service_id
+  }
+}
+const selectDate = () => {
+  dateFrom.value = query.value.date_start as string
+  dateTo.value = query.value.date_end as string
+}
+const search = () => {
+  query.value.page = 1
+  paginationTable.value.page = 1
+  getGroupConsumptionData()
+}
+const changePagination = () => {
+  query.value.page = paginationTable.value.page
+  getGroupConsumptionData()
+}
+const changePageSize = () => {
+  query.value.page_size = paginationTable.value.rowsPerPage
+  query.value.page = 1
+  paginationTable.value.page = 1
+  getGroupConsumptionData()
+}
+const exportFile = () => {
+  if (tableRow.value.length === 0) {
+    exportNotify()
+  } else {
+    const date = new Date()
+    exportExcel(i18n.global.locale === 'zh' ? '项目组云主机用量统计-' + date.toLocaleTimeString() + '.xlsx' : ' Group Servers Statistics-' + date.toLocaleTimeString() + '.xlsx', '#GroupUsageTable')
+  }
+}
+const exportAll = async () => {
+  if (tableRow.value.length === 0) {
+    exportNotify()
+  } else {
+    const date = new Date()
+    const fileData = await store.getServerMetering(exportQuery)
+    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '项目组云主机用量统计-' + date.toLocaleTimeString() : 'Group Servers Statistics-' + date.toLocaleTimeString())
+  }
 }
 onMounted(() => {
   getGroupConsumptionData()
@@ -228,7 +230,7 @@ onMounted(() => {
         direction-links
         outline
         :ripple="false"
-        @update:model-value="changePagination"
+        @click="changePagination"
       />
     </div>
   </div>

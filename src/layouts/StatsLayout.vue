@@ -19,6 +19,7 @@ const store = useStore()
 const { tc } = i18n.global
 const activeItem = computed(() => store.items.currentPath[0])
 const releaseTime = process.env.releaseTime
+store.loadAllItems()
 store.loadAllTables()
 console.log(store.items)
 console.log(store.tables)

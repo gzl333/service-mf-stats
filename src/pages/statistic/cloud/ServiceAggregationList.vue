@@ -46,6 +46,7 @@ const query: Ref = ref({
 })
 emitter.on('service', async (value) => {
   query.value = value
+  paginationTable.value.page = 1
   await getServiceAggregationData()
 })
 const getServiceAggregationData = async () => {
@@ -61,8 +62,8 @@ const changePageSize = () => {
   paginationTable.value.page = 1
   getServiceAggregationData()
 }
-const changePagination = (val: number) => {
-  query.value.page = val
+const changePagination = () => {
+  query.value.page = paginationTable.value.page
   getServiceAggregationData()
 }
 const goToDetail = (serviceId: string, serviceName: string, serviceCount: string) => {

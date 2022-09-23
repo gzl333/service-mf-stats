@@ -53,6 +53,7 @@ const query: Ref = ref({
 const clickToCopy = useCopyToClipboard()
 emitter.on('server', async (value) => {
   query.value = value
+  paginationTable.value.page = 1
   await getServerAggregationData()
 })
 const getServerAggregationData = async () => {
@@ -68,8 +69,8 @@ const changePageSize = () => {
   paginationTable.value.page = 1
   getServerAggregationData()
 }
-const changePagination = (val: number) => {
-  query.value.page = val
+const changePagination = () => {
+  query.value.page = paginationTable.value.page
   getServerAggregationData()
 }
 const goToDetail = (serverId: string, ipv4: string, vcpus: string, ram: string) => {
@@ -157,7 +158,7 @@ onBeforeUnmount(() => {
           direction-links
           outline
           :ripple="false"
-          @update:model-value="changePagination"
+          @click="changePagination"
         />
       </div>
     </div>

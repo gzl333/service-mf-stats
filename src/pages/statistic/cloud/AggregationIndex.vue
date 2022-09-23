@@ -122,15 +122,6 @@ const changeYear = (val: Record<string, number>) => {
     }
   }
 }
-const selectService = (val: Record<string, string>) => {
-  if (val.value !== '') {
-    query.value.service_id = val.value
-    exportQuery.value.service_id = val.value
-  } else {
-    delete query.value.service_id
-    delete exportQuery.value.service_id
-  }
-}
 const initQuery = () => {
   query.value.page = 1
   let dateStart = ''
@@ -172,6 +163,15 @@ const initQuery = () => {
   exportQuery.value.date_start = dateStart
   exportQuery.value.date_end = dateEnd
 }
+const selectService = (val: Record<string, string>) => {
+  if (val.value !== '') {
+    query.value.service_id = val.value
+    exportQuery.value.service_id = val.value
+  } else {
+    delete query.value.service_id
+    delete exportQuery.value.service_id
+  }
+}
 const search = async () => {
   if (activeItem.value === 'user') {
     initQuery()
@@ -189,6 +189,43 @@ const search = async () => {
     initQuery()
     emitter.emit('service', query.value)
   }
+}
+const changeTab = async (name: string) => {
+  activeItem.value = name
+  searchQuery.value = {
+    year: {
+      label: year,
+      value: year
+    },
+    month: {
+      label: '全年',
+      labelEn: 'Annual',
+      value: 0
+    }
+  }
+  serviceId.value = {
+    label: '全部服务',
+    labelEn: 'All Services',
+    value: ''
+  }
+  searchName.value = ''
+  query.value.date_start = searchQuery.value.year.value + '-01-01'
+  query.value.date_end = currentDate
+  exportQuery.value.date_start = searchQuery.value.year.value + '-01-01'
+  exportQuery.value.date_end = currentDate
+  changeYear(searchQuery.value.year)
+  if (name === 'service') {
+    isDisable.value = true
+  } else {
+    isDisable.value = false
+  }
+  navigateToUrl(`/my/stats/statistic/list/cloud/${name}`)
+}
+const changeModel = (val: string) => {
+  if (query.value.service_id) {
+    delete query.value.service_id
+  }
+  changeTab(val)
 }
 // 导出当页数据
 const exportFile = () => {
@@ -220,32 +257,6 @@ const exportAll = async () => {
     const fileData = await store.getServiceMetering(exportQuery.value)
     exportAllData(fileData.data, i18n.global.locale === 'zh' ? '按服务计量计费聚合统计' + date.toLocaleTimeString() : 'Aggregate Statistics Of Metering By Service-' + date.toLocaleTimeString())
   }
-}
-const changeTab = async (name: string) => {
-  activeItem.value = name
-  searchQuery.value = {
-    year: {
-      label: year,
-      value: year
-    },
-    month: {
-      label: '全年',
-      labelEn: 'Annual',
-      value: 0
-    }
-  }
-  searchName.value = ''
-  query.value.date_start = searchQuery.value.year.value + '-01-01'
-  query.value.date_end = currentDate
-  exportQuery.value.date_start = searchQuery.value.year.value + '-01-01'
-  exportQuery.value.date_end = currentDate
-  changeYear(searchQuery.value.year)
-  if (name === 'service') {
-    isDisable.value = true
-  } else {
-    isDisable.value = false
-  }
-  navigateToUrl(`/my/stats/statistic/list/cloud/${name}`)
 }
 onBeforeMount(async () => {
   initSelectYear()
@@ -283,17 +294,18 @@ onBeforeMount(async () => {
         active-color="primary"
         active-bg-color="grey-3"
         style="width: 10%"
+        @update:model-value="changeModel"
       >
-        <q-tab no-caps name="server" class="text-weight-bold" @click="changeTab('server')" :ripple="false">
+        <q-tab no-caps name="server" class="text-weight-bold" :ripple="false">
           {{ tc('byServersUuid') }}
         </q-tab>
-        <q-tab no-caps name="service"  class="text-weight-bold" @click="changeTab('service')" :ripple="false">
+        <q-tab no-caps name="service"  class="text-weight-bold" :ripple="false">
           {{ tc('byServiceUnit') }}
         </q-tab>
-        <q-tab no-caps name="group"  class="text-weight-bold" @click="changeTab('group')" :ripple="false">
+        <q-tab no-caps name="group"  class="text-weight-bold" :ripple="false">
           {{ tc('byGroupId') }}
         </q-tab>
-        <q-tab no-caps name="user"  class="text-weight-bold" @click="changeTab('user')" :ripple="false">
+        <q-tab no-caps name="user"  class="text-weight-bold" :ripple="false">
           {{ tc('byUserId') }}
         </q-tab>
       </q-tabs>

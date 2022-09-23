@@ -70,6 +70,7 @@ const query: Ref = ref({
 })
 emitter.on('user', async (value) => {
   query.value = value
+  paginationTable.value.page = 1
   await getUserAggregationData()
 })
 const getUserAggregationData = async () => {
@@ -85,8 +86,8 @@ const changePageSize = () => {
   paginationTable.value.page = 1
   getUserAggregationData()
 }
-const changePagination = (val: number) => {
-  query.value.page = val
+const changePagination = () => {
+  query.value.page = paginationTable.value.page
   getUserAggregationData()
 }
 const goToDetail = (userid: string, username: string, count: string) => {
@@ -157,7 +158,7 @@ onBeforeUnmount(() => {
           direction-links
           outline
           :ripple="false"
-          @update:model-value="changePagination"
+          @click="changePagination"
         />
       </div>
     </div>
