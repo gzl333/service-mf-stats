@@ -13,7 +13,7 @@ export default function () {
         textColor: 'primary',
         icon: 'mdi-checkbox-multiple-marked',
         // html: true,
-        message: isSecret ? `${i18n.global.tc('hooks.useCopyToClipboard.content_copied_to_clipboard')}` : `${text} ${i18n.global.tc('hooks.useCopyToClipboard.copied_to_clipboard')}`,
+        message: isSecret ? `${i18n.global.tc('contentCopiedToClipboard')}` : `${text} ${i18n.global.tc('copiedToClipboard')}`,
         position: 'bottom',
         closeBtn: true,
         // timeout: 2000,

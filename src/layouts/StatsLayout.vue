@@ -36,58 +36,45 @@ console.log(store.tables)
 
             <q-item>
               <q-item-section class="column items-center q-py-sm text-center text-weight-bold text-grey-8">
-<!--                {{ tc('用量账单') }}-->
-                {{ tc('layout.StatsLayout.usage_billing') }}
+                {{ tc('usageBilling') }}
               </q-item-section>
             </q-item>
 
-<!--            <q-item-->
-<!--              clickable-->
-<!--              :active="activeItem === 'recharge'"-->
-<!--              @click="activeItem = 'recharge'; navigateToUrl('/my/stats/recharge')"-->
-<!--              active-class="active-item"-->
-<!--            >-->
-<!--              <q-item-section class="column items-center">-->
-<!--                <q-icon name="las la-check-circle" size="lg"/>-->
-<!--                <div class="active-text text-center">{{ tc('账户与充值') }}</div>-->
-<!--              </q-item-section>-->
-<!--            </q-item>-->
+            <!--            <q-item-->
+            <!--              clickable-->
+            <!--              :active="activeItem === 'recharge'"-->
+            <!--              @click="activeItem = 'recharge'; navigateToUrl('/my/stats/recharge')"-->
+            <!--              active-class="active-item"-->
+            <!--            >-->
+            <!--              <q-item-section class="column items-center">-->
+            <!--                <q-icon name="las la-check-circle" size="lg"/>-->
+            <!--                <div class="active-text text-center">{{ tc('账户与充值') }}</div>-->
+            <!--              </q-item-section>-->
+            <!--            </q-item>-->
 
             <q-item
               clickable
-              :active="activeItem === 'personal'"
-              @click="activeItem = 'personal'; navigateToUrl('/my/stats/personal')"
+              :active="activeItem === 'consumption'"
+              @click="activeItem = 'consumption'; navigateToUrl('/my/stats/consumption')"
               active-class="active-item"
             >
               <q-item-section class="column items-center">
-                <q-icon name="las la-user" size="lg"/>
-                <div class="active-text text-center">{{ tc('layout.StatsLayout.personal_server') }}</div>
+                <q-icon name="las la-columns" size="lg"/>
+                <div class="active-text text-center">{{ tc('consumption') }}</div>
               </q-item-section>
             </q-item>
 
             <q-item
               clickable
-              :active="activeItem === 'group'"
-              @click="activeItem = 'group'; navigateToUrl('/my/stats/group')"
+              :active="activeItem === 'settlement'"
+              @click="activeItem = 'settlement'; navigateToUrl('/my/stats/settlement')"
               active-class="active-item"
             >
               <q-item-section class="column items-center">
-                <q-icon name="las la-user-friends" size="lg"/>
-                <div class="active-text text-center">{{ tc('layout.StatsLayout.group_server') }}</div>
+                <q-icon name="las la-tasks" size="lg"/>
+                <div class="active-text text-center">{{ tc('dailySettlement') }}</div>
               </q-item-section>
             </q-item>
-
-<!--            <q-item-->
-<!--              clickable-->
-<!--              :active="activeItem === 'storage'"-->
-<!--              @click="activeItem = 'storage'; navigateToUrl('/my/stats/storage')"-->
-<!--              active-class="active-item"-->
-<!--            >-->
-<!--              <q-item-section class="column items-center">-->
-<!--                <q-icon name="las la-object-ungroup" size="lg"/>-->
-<!--                <div class="active-text text-center">{{ tc('pages.statistic.cloud.StatisticsIndex.storage') }}</div>-->
-<!--              </q-item-section>-->
-<!--            </q-item>-->
 
             <q-item
               clickable
@@ -98,31 +85,16 @@ console.log(store.tables)
             >
               <q-item-section class="column items-center">
                 <q-icon name="las la-server" size="lg"/>
-                <div class="active-text text-center">{{ tc('layout.StatsLayout.usage_management_statistics') }}</div>
+                <div class="active-text text-center">{{ tc('usageManagementStatistics') }}</div>
               </q-item-section>
             </q-item>
 
-<!--            <q-item-->
-<!--              clickable-->
-<!--              v-if="store.items.fedRole === 'federal-admin' || store.items.vmsAdmin.length > 0"-->
-<!--              :active="activeItem === 'account'"-->
-<!--              @click="activeItem = 'account'; navigateToUrl('/my/stats/account')"-->
-<!--              active-class="active-item"-->
-<!--            >-->
-<!--              <q-item-section class="column items-center">-->
-<!--                <q-icon name="las la-tasks" size="lg"/>-->
-<!--                <div class="active-text text-center">{{ tc('账户管理') }}</div>-->
-<!--              </q-item-section>-->
-<!--            </q-item>-->
-
           </q-list>
 
-<!--          <div class="text-grey text-body2 text-center q-pt-xl">v0.0.1</div>-->
-<!--          <div class="text-grey text-body2 text-center">{{ new Date(releaseTime).toLocaleString() }}</div>-->
           <div class="row justify-center q-pt-lg">
             <q-icon class="text-center" name="info" color="grey-5" size="xs">
               <q-tooltip class="bg-grey-3">
-                <div class="text-grey text-caption text-center">{{ tc('layout.StatsLayout.release_time') }}</div>
+                <div class="text-grey text-caption text-center">{{ tc('releaseTime') }}</div>
                 <div class="text-grey text-caption text-center">
                   {{ new Date(releaseTime).toLocaleString(i18n.global.locale) }}
                 </div>
@@ -135,9 +107,9 @@ console.log(store.tables)
 
     <q-page-container>
       <q-page>
-      <q-scroll-area style="height: calc(100vh - 60px)">
-        <router-view/>
-      </q-scroll-area>
+        <q-scroll-area style="height: calc(100vh - 60px)">
+          <router-view/>
+        </q-scroll-area>
       </q-page>
     </q-page-container>
 

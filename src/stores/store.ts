@@ -25,7 +25,7 @@ export interface DataCenterInterface {
   endpoint_object: never // null 待细化
   endpoint_compute: never // null 待细化
   endpoint_monitor: never // null 待细化
-  creation_time: string
+  creationTime: string
   status: {
     code: number
     message: string
@@ -60,7 +60,7 @@ export interface GroupInterface {
   name: string
   company: string
   description: string
-  creation_time: string
+  creationTime: string
   owner: {
     id: string
     username: string
@@ -81,7 +81,7 @@ export interface GroupInterface {
 export interface PersonalBalanceInterface {
   id: string
   balance: number
-  creation_time: string
+  creationTime: string
   user: {
     id: string
   }
@@ -90,7 +90,7 @@ export interface PersonalBalanceInterface {
 export interface GroupBalanceInterface {
   id: string
   balance: number
-  creation_time: string
+  creationTime: string
   vo: {
     id: string
   }
@@ -99,7 +99,7 @@ export interface GroupBalanceInterface {
 export interface CouponInterface {
   id: string
   face_value: string
-  creation_time: string
+  creationTime: string
   effective_time: string
   expiration_time: string
   balance: string
@@ -158,7 +158,7 @@ export interface DateInterface {
 
 export interface MeteringDetailInterface {
   cpu_hours: number
-  creation_time: string
+  creationTime: string
   daily_statement_id: string
   date: string
   disk_hours: number
@@ -203,9 +203,9 @@ export interface ServerInterface {
   vcpus: number
   ram: number
   ipv4: string
-  public_ip: boolean
+  publicIp: boolean
   image: string
-  creation_time: string
+  creationTime: string
   expiration_time: string
   remarks: string
   classification: string
@@ -254,7 +254,7 @@ export interface OrderInterface {
     vm_cpu: number
     vm_ram: number
     vm_systemdisk_size: number
-    vm_public_ip: boolean
+    vm_publicIp: boolean
     vm_image_id: string
     vm_network_id: number
     vm_azone_id: string
@@ -263,7 +263,7 @@ export interface OrderInterface {
   period: number
   payment_time: string
   pay_type: 'prepaid' | 'postpaid'
-  creation_time: string
+  creationTime: string
   user_id: string
   username: string
   vo_id: string
@@ -304,7 +304,7 @@ export const useStore = defineStore('stats', {
   state: () => ({
     items: {
       // 实时记录用户所在app局部路径位置
-      // 例如'/my/server/personal/list' -> ['personal', 'list'], 供二级三级导航栏在刷新时保持选择使用
+      // 例如'/my/server/consumption/list' -> ['consumption', 'list'], 供二级三级导航栏在刷新时保持选择使用
       currentPath: [] as string[],
       fedRole: 'ordinary' as string,
       vmsAdmin: [] as string[],
@@ -360,7 +360,7 @@ export const useStore = defineStore('stats', {
   }),
   getters: {
     getGroupOrdersByGroupId: (state) => (groupId: string): OrderInterface[] => {
-      const sortFn = (a: OrderInterface, b: OrderInterface) => new Date(b.creation_time).getTime() - new Date(a.creation_time).getTime()
+      const sortFn = (a: OrderInterface, b: OrderInterface) => new Date(b.creationTime).getTime() - new Date(a.creationTime).getTime()
       if (groupId === '0') {
         return Object.values(state.tables.groupOrderTable.byId).sort(sortFn)
       } else {
@@ -374,7 +374,7 @@ export const useStore = defineStore('stats', {
       }
     },
     getGroupServersByGroupId: (state) => (groupId: string): ServerInterface[] => {
-      const sortFn = (a: ServerInterface, b: ServerInterface) => new Date(b.creation_time).getTime() - new Date(a.creation_time).getTime()
+      const sortFn = (a: ServerInterface, b: ServerInterface) => new Date(b.creationTime).getTime() - new Date(a.creationTime).getTime()
       if (groupId === '0') {
         return Object.values(state.tables.groupServerTable.byId).sort(sortFn)
       } else {
@@ -389,7 +389,7 @@ export const useStore = defineStore('stats', {
     },
     getGroupsByFilter: (state) => (filter: string): GroupInterface[] => {
       // 排序函数，按照组创建时间降序排列
-      const sortFn = (a: GroupInterface, b: GroupInterface) => new Date(b.creation_time).getTime() - new Date(a.creation_time).getTime()
+      const sortFn = (a: GroupInterface, b: GroupInterface) => new Date(b.creationTime).getTime() - new Date(a.creationTime).getTime()
       if (filter === 'all') {
         return Object.values(state.tables.groupTable.byId).sort(sortFn)
       } else {
@@ -436,24 +436,6 @@ export const useStore = defineStore('stats', {
       })
       return serviceOptions
     },
-    // getServices (state): { value: string; label: string; }[] {
-    //   const serviceOptions = []
-    //   for (const service of Object.values(state.tables.serviceTable.byId)) {
-    //     serviceOptions.push(
-    //       {
-    //         value: service.id,
-    //         label: service.name,
-    //         labelEn: service.name_en
-    //       }
-    //     )
-    //   }
-    //   serviceOptions.unshift({
-    //     value: '',
-    //     label: '全部服务',
-    //     labelEn: 'All Services'
-    //   })
-    //   return serviceOptions
-    // },
     getGroupOptions (state): { value: string; label: string; }[] {
       let groupOptions = []
       for (const group of Object.values(state.tables.groupTable.byId)) {
@@ -634,15 +616,9 @@ export const useStore = defineStore('stats', {
                 this.loadGroupTable().then(() => {
                   this.loadGroupMemberTable().then(() => {
                     this.loadPersonalBalance()
-                    if (!this.tables.groupBalanceTable.isLoaded) {
-                      this.loadGroupBalanceTable()
-                    }
-                    if (!this.tables.personalCouponTable.isLoaded) {
-                      this.loadPersonalCouponTable()
-                    }
-                    if (!this.tables.groupCouponTable.isLoaded) {
-                      this.loadGroupCouponTable()
-                    }
+                    this.loadPersonalCouponTable()
+                    this.loadGroupBalanceTable()
+                    this.loadGroupCouponTable()
                     this.loadGroupServerTable()
                   })
                 })

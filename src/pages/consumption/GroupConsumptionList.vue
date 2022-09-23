@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { onBeforeMount, ref, computed } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { useStore, GroupServerMeteringInterface } from 'stores/store'
 import { useRoute, useRouter } from 'vue-router'
 import { i18n } from 'boot/i18n'
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
 import { exportNotify } from 'src/hooks/ExportNotify'
-import GroupUsageTable from 'components/group/GroupUsageTable.vue'
+import GroupUsageTable from 'components/consumption/GroupUsageTable.vue'
 import { getHistoryStartFormatDate, getNowFormatDate } from 'src/hooks/processTime'
 // const props = defineProps({
 //   foo: {
@@ -21,6 +21,7 @@ const route = useRoute()
 const router = useRouter()
 const { tc } = i18n.global
 const serviceOptions = computed(() => store.getServices('enable'))
+const childRef = ref()
 const tableRow = ref<GroupServerMeteringInterface[]>([])
 const paginationTable = ref({
   page: 1,
@@ -55,6 +56,7 @@ const query = ref<Record<string, string | number>>({
 const exportQuery: Record<string, string | boolean> = {
   date_start: startDate,
   date_end: currentDate,
+  vo_id: route.params.voId as string,
   download: true
 }
 const selectService = (val: Record<string, string>) => {
@@ -70,18 +72,18 @@ const selectDate = () => {
   dateFrom.value = query.value.date_start as string
   dateTo.value = query.value.date_end as string
 }
-const search = async () => {
-  await getSingleGroupMonthData1()
+const search = () => {
+  getGroupConsumptionData()
 }
-const changePagination = async (val: number) => {
+const changePagination = (val: number) => {
   query.value.page = val
-  await getSingleGroupMonthData1()
+  getGroupConsumptionData()
 }
-const changePageSize = async () => {
+const changePageSize = () => {
   query.value.page_size = paginationTable.value.rowsPerPage
   query.value.page = 1
   paginationTable.value.page = 1
-  await getSingleGroupMonthData1()
+  getGroupConsumptionData()
 }
 const exportFile = () => {
   if (tableRow.value.length === 0) {
@@ -97,12 +99,12 @@ const exportAll = async () => {
   } else {
     const date = new Date()
     const fileData = await store.getServerMetering(exportQuery)
-    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '项目组云主机本月用量统计-' + date.toLocaleTimeString() : 'Group Servers Statistics In Current Month-' + date.toLocaleTimeString())
+    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '项目组云主机用量统计-' + date.toLocaleTimeString() : 'Group Servers Statistics-' + date.toLocaleTimeString())
   }
 }
-const getSingleGroupMonthData1 = async () => {
+const getGroupConsumptionData = async () => {
+  childRef.value.startLoading()
   tableRow.value = []
-  // paginationTable.value.count = 0
   let obj: GroupServerMeteringInterface = {
     ipv4: '',
     vo_id: '',
@@ -148,18 +150,19 @@ const getSingleGroupMonthData1 = async () => {
     tableRow.value.push(obj)
   }
   paginationTable.value.count = data.data.count
+  childRef.value.endLoading()
 }
-onBeforeMount(() => {
-  getSingleGroupMonthData1()
+onMounted(() => {
+  getGroupConsumptionData()
 })
 </script>
 
 <template>
-  <div class="MonthList">
+  <div class="GroupConsumptionList">
     <div class="row items-center title-area q-mt-xl">
       <q-btn icon="arrow_back_ios" color="primary" flat unelevated dense
              @click="router.back()"/>
-      <span class="text-primary text-h6 text-weight-bold">{{ tc('pages.group.GroupMeteringList.go_back_to_group_list') }}</span>
+      <span class="text-primary text-h6 text-weight-bold">{{ tc('goBackToGroupList') }}</span>
     </div>
     <div class="row items-center justify-between q-mt-lg">
       <div class="col-8 row">
@@ -172,7 +175,7 @@ onBeforeMount(() => {
                     <q-date minimal v-model="query.date_start" @update:model-value="selectDate"
                             mask="YYYY-MM-DD" :locale="i18n.global.locale === 'en' ? myLocale : ''">
                       <div class="row items-center justify-end">
-                        <q-btn v-close-popup no-caps :label="tc('pages.personal.HistoryList.confirm')" color="primary" flat/>
+                        <q-btn v-close-popup no-caps :label="tc('confirm')" color="primary" flat/>
                       </div>
                     </q-date>
                   </q-popup-proxy>
@@ -180,7 +183,7 @@ onBeforeMount(() => {
               </template>
             </q-input>
           </div>
-          <div class="text-center q-ml-md">{{ tc('pages.personal.HistoryList.to') }}</div>
+          <div class="text-center q-ml-md">{{ tc('to') }}</div>
           <div class="col-5 q-ml-md">
             <q-input filled dense v-model="dateTo" mask="date">
               <template v-slot:append>
@@ -189,7 +192,7 @@ onBeforeMount(() => {
                     <q-date minimal v-model="query.date_end" @update:model-value="selectDate"
                             mask="YYYY-MM-DD" :locale="i18n.global.locale === 'en' ? myLocale : ''">
                       <div class="row items-center justify-end">
-                        <q-btn v-close-popup no-caps :label="tc('pages.personal.HistoryList.confirm')" color="primary" flat/>
+                        <q-btn v-close-popup no-caps :label="tc('confirm')" color="primary" flat/>
                       </div>
                     </q-date>
                   </q-popup-proxy>
@@ -198,16 +201,16 @@ onBeforeMount(() => {
             </q-input>
           </div>
         </div>
-        <q-select class="col-4" outlined dense v-model="serviceId" :options="serviceOptions" @update:model-value="selectService" :label="tc('pages.personal.CurrentMonthList.filter_service')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
-        <q-btn class="q-ml-md" outline no-caps :label="tc('pages.personal.HistoryList.search')" @click="search"/>
+        <q-select class="col-4" outlined dense v-model="serviceId" :options="serviceOptions" @update:model-value="selectService" :label="tc('filterService')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
+        <q-btn class="q-px-lg q-ml-md" color="primary" no-caps :label="tc('search')" @click="search"/>
       </div>
       <div>
-        <q-btn outline no-caps :label="tc('pages.personal.CurrentMonthList.export_current_page_data')" @click="exportFile"/>
-        <q-btn outline no-caps :label="tc('pages.personal.CurrentMonthList.export_all_data')" class="q-ml-sm" @click="exportAll"/>
+        <q-btn class="q-py-sm" color="primary" no-caps :label="tc('exportCurrentPageData')" @click="exportFile"/>
+        <q-btn class="q-py-sm q-ml-sm" color="primary" no-caps :label="tc('exportAllData')" @click="exportAll"/>
       </div>
     </div>
     <div class="q-mt-md">
-    <group-usage-table :tableRow="tableRow"/>
+    <group-usage-table :tableRow="tableRow" ref="childRef"/>
     </div>
     <div class="row q-py-md text-grey justify-between items-center">
       <div class="row items-center">
@@ -216,7 +219,7 @@ onBeforeMount(() => {
         <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense
                   borderless @update:model-value="changePageSize">
         </q-select>
-        <span>/{{ tc('pages.personal.CurrentMonthList.page') }}</span>
+        <span>/{{ tc('page') }}</span>
       </div>
       <q-pagination
         v-model="paginationTable.page"
@@ -232,6 +235,6 @@ onBeforeMount(() => {
 </template>
 
 <style lang="scss" scoped>
-.MonthList {
+.GroupConsumptionList {
 }
 </style>

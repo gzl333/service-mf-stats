@@ -22,10 +22,10 @@ const { tc } = i18n.global
 
 const serviceColumns = computed(() => [
   // { name: 'service_id', label: 'ID', align: 'center' },
-  { name: 'name', align: 'center', label: (() => tc('components.public.ServerUsageTable.service_unit'))() },
-  { name: 'total_original_amount', label: (() => tc('components.public.ServerStatisticsDetailTable.total_billing_amount'))(), align: 'center' },
-  { name: 'total_trade_amount', label: (() => tc('components.public.ServerStatisticsDetailTable.total_amount_of_actual_deduction'))(), align: 'center' },
-  { name: 'total_server', label: (() => tc('pages.statistic.cloud.GroupAggregationList.total_number_of_servers'))(), align: 'center' }
+  { name: 'name', align: 'center', label: (() => tc('serviceUnit'))() },
+  { name: 'total_original_amount', label: (() => tc('totalBillingAmount'))(), align: 'center' },
+  { name: 'total_trade_amount', label: (() => tc('totalAmountOfActualDeduction'))(), align: 'center' },
+  { name: 'total_server', label: (() => tc('totalNumberOfServers'))(), align: 'center' }
 ])
 const isLoading = ref(false)
 const paginationTable = ref({
@@ -52,28 +52,24 @@ const getServiceAggregationData = async () => {
   isLoading.value = true
   const data = await store.getServiceMetering(query.value)
   serviceTableRow.value = data.data.results
-  paginationTable.value.page = 1
   paginationTable.value.count = data.data.count
   isLoading.value = false
 }
-const changePageSize = async () => {
+const changePageSize = () => {
   query.value.page_size = paginationTable.value.rowsPerPage
   query.value.page = 1
   paginationTable.value.page = 1
-  await getServiceAggregationData()
+  getServiceAggregationData()
 }
-const changePagination = async (val: number) => {
-  isLoading.value = true
+const changePagination = (val: number) => {
   query.value.page = val
-  const data = await store.getServiceMetering(query.value)
-  serviceTableRow.value = data.data.results
-  isLoading.value = false
+  getServiceAggregationData()
 }
 const goToDetail = (serviceId: string, serviceName: string, serviceCount: string) => {
   navigateToUrl(`/my/stats/statistic/list/service/${serviceId}?name=${serviceName}&count=${serviceCount}`)
 }
-onBeforeMount(async () => {
-  await getServiceAggregationData()
+onBeforeMount(() => {
+  getServiceAggregationData()
 })
 onBeforeUnmount(() => {
   emitter.off('service')
@@ -93,8 +89,8 @@ onBeforeUnmount(() => {
         :columns="serviceColumns"
         row-key="name"
         color="primary"
-        :loading-label="tc('components.group.GroupTable.notify_loading')"
-        :no-data-label="tc('pages.personal.CurrentMonthList.no_data')"
+        :loading-label="tc('notifyLoading')"
+        :no-data-label="tc('noData')"
         hide-pagination
         :pagination="{ rowsPerPage: 0 }"
       >
@@ -121,7 +117,7 @@ onBeforeUnmount(() => {
           <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense
                     borderless @update:model-value="changePageSize">
           </q-select>
-          <span>/{{ tc('pages.personal.CurrentMonthList.page') }}</span>
+          <span>/{{ tc('page') }}</span>
         </div>
         <q-pagination
           v-model="paginationTable.page"

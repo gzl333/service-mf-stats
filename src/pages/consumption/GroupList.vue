@@ -5,7 +5,7 @@ import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
 import { i18n } from 'boot/i18n'
 
-import GroupTable from 'components/group/GroupTable.vue'
+import GroupTable from 'components/consumption/GroupTable.vue'
 
 // const props = defineProps({
 //   foo: {
@@ -47,7 +47,7 @@ const roleOptions = [
   }
 ]
 
-// group data
+// consumption data
 const groups = computed(() => store.getGroupsByFilter(roleSelection.value))
 // 搜索框
 const search = ref('')
@@ -77,7 +77,7 @@ const search = ref('')
       <div class="col-2">
         <div class="row justify-end">
           <div class="col">
-            <q-select outlined dense stack-label :label="tc('pages.group.GroupList.my_role_filter')" v-model="roleSelection"
+            <q-select outlined dense stack-label :label="tc('myRoleFilter')" v-model="roleSelection"
                       :options="roleOptions" emit-value map-options option-value="value"
                       :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'">
               <!--当前选项的内容插槽-->

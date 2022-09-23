@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useStore, DateInterface, PersonalServerMeteringInterface } from 'stores/store'
 import { useRoute, useRouter } from 'vue-router'
 import { i18n } from 'boot/i18n'
@@ -19,6 +19,7 @@ const store = useStore()
 const route = useRoute()
 const router = useRouter()
 const { tc } = i18n.global
+const childRef = ref()
 const totalAmount = ref(0)
 const actualAmount = ref(0)
 const dateStart = ref()
@@ -164,6 +165,7 @@ const initQuery = () => {
   exportQuery.value.date_end = dateEnd
 }
 const getDetailData = async () => {
+  childRef.value.startLoading()
   tableRow.value = []
   totalAmount.value = 0
   actualAmount.value = 0
@@ -184,20 +186,21 @@ const getDetailData = async () => {
   paginationTable.value.count = data.data.count
   dateStart.value = query.value.date_start
   dateEnd.value = query.value.date_end
+  childRef.value.endLoading()
 }
-const changePagination = async (val: number) => {
+const changePagination = (val: number) => {
   query.value.page = val
-  await getDetailData()
+  getDetailData()
 }
-const changePageSize = async () => {
+const changePageSize = () => {
   query.value.page_size = paginationTable.value.rowsPerPage
   query.value.page = 1
   paginationTable.value.page = 1
-  await getDetailData()
+  getDetailData()
 }
-const search = async () => {
+const search = () => {
   initQuery()
-  await getDetailData()
+  getDetailData()
 }
 const exportFile = () => {
   if (tableRow.value.length === 0) {
@@ -216,9 +219,9 @@ const exportAll = async () => {
     exportAllData(fileData.data, i18n.global.locale === 'zh' ? '云主机用量统计' + date.toLocaleTimeString() : 'Servers Usage Statistics' + date.toLocaleTimeString())
   }
 }
-onBeforeMount(async () => {
+onMounted(() => {
   initSelectYear()
-  await getDetailData()
+  getDetailData()
 })
 </script>
 
@@ -227,36 +230,36 @@ onBeforeMount(async () => {
     <div class="row items-center title-area q-mt-xl">
       <q-btn icon="arrow_back_ios" color="primary" flat unelevated dense
              @click="router.back()"/>
-      <span class="text-primary text-h6 text-weight-bold">{{ tc('pages.public.ServerUsageDetailList.servers_usage_details') }}</span>
+      <span class="text-primary text-h6 text-weight-bold">{{ tc('serversUsageDetails') }}</span>
     </div>
     <div class="row q-mt-lg justify-between">
       <div class="row col-5 items-center">
         <div class="col-3">
-          <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" :label="tc('pages.public.ServerUsageDetailList.please_select')" @update:model-value="changeYear"/>
+          <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" :label="tc('pleaseSelect')" @update:model-value="changeYear"/>
         </div>
         <div class="col-3 q-ml-sm">
-          <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" :label="tc('pages.public.ServerUsageDetailList.please_select')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
+          <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" :label="tc('pleaseSelect')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
         </div>
         <div class="q-ml-sm">
-          <q-btn outline no-caps :label="tc('pages.personal.HistoryList.search')" @click="search" class="q-px-lg"/>
+          <q-btn class="q-px-lg q-py-sm" color="primary" no-caps :label="tc('search')" @click="search"/>
         </div>
       </div>
       <div>
-        <q-btn outline no-caps :label="tc('pages.personal.CurrentMonthList.export_current_page_data')" @click="exportFile"/>
-        <q-btn outline no-caps :label="tc('pages.personal.CurrentMonthList.export_all_data')" class="q-ml-sm" @click="exportAll"/>
+        <q-btn class="q-py-sm" color="primary" no-caps :label="tc('exportCurrentPageData')" @click="exportFile"/>
+        <q-btn class="q-ml-sm q-py-sm" color="primary" no-caps :label="tc('exportAllData')" @click="exportAll"/>
       </div>
     </div>
     <div class="row q-mt-md text-subtitle1 text-bold">
       <div>
-        {{ route.meta.type === 'user' ? tc('pages.statistic.cloud.ServerUsageDetailList.user') + '：' : route.meta.type === 'group' ? tc('pages.statistic.cloud.ServerUsageDetailList.group') + '：' : tc('pages.statistic.cloud.ServerUsageDetailList.service') + '：' }}{{ route.query.name }}
+        {{ route.meta.type === 'user' ? tc('user') + '：' : route.meta.type === 'group' ? tc('group') + '：' : tc('service') + '：' }}{{ route.query.name }}
       </div>
-      <div class="q-ml-xl">{{ tc('pages.statistic.cloud.GroupAggregationList.total_number_of_servers') }}：{{ route.query.count }}</div>
-      <div class="q-ml-xl">{{ tc('pages.statistic.cloud.ServerUsageDetailList.billing_cycle') }}：{{ dateStart }}-{{ dateEnd }}</div>
-<!--      <div class="col-3">{{ tc('components.public.ServerStatisticsDetailTable.total_billing_amount') }}：{{ totalAmount.toFixed(2) }} {{ tc('components.public.ServerStatisticsDetailTable.points') }}</div>-->
-<!--      <div class="col-3">{{ tc('components.public.ServerStatisticsDetailTable.total_amount_of_actual_deduction') }}：{{ actualAmount.toFixed(2) }} {{ tc('components.public.ServerStatisticsDetailTable.points') }}</div>-->
+      <div class="q-ml-xl">{{ tc('totalNumberOfServers') }}：{{ route.query.count }}</div>
+      <div class="q-ml-xl">{{ tc('billingCycle') }}：{{ dateStart }}-{{ dateEnd }}</div>
+<!--      <div class="col-3">{{ tc('totalBillingAmount') }}：{{ totalAmount.toFixed(2) }} {{ tc('points') }}</div>-->
+<!--      <div class="col-3">{{ tc('totalAmountOfActualDeduction') }}：{{ actualAmount.toFixed(2) }} {{ tc('points') }}</div>-->
     </div>
     <div class="q-mt-md">
-    <server-usage-table :table-row="tableRow"/>
+    <server-usage-table :table-row="tableRow" ref="childRef"/>
     </div>
     <div class="row q-mt-lg text-grey justify-between items-center">
       <div class="row items-center">
@@ -265,7 +268,7 @@ onBeforeMount(async () => {
         <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense
                   borderless @update:model-value="changePageSize">
         </q-select>
-        <span>/{{ tc('pages.personal.CurrentMonthList.page') }}</span>
+        <span>/{{ tc('page') }}</span>
       </div>
       <q-pagination
         v-model="paginationTable.page"

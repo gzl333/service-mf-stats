@@ -257,22 +257,22 @@ onBeforeMount(async () => {
     <div class="row q-mt-xl justify-between items-center">
       <div class="row col-7 items-center">
         <div class="col-2">
-          <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" :label="tc('pages.public.ServerUsageDetailList.please_select')" @update:model-value="changeYear" />
+          <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" :label="tc('pleaseSelect')" @update:model-value="changeYear" />
         </div>
         <div class="col-2 q-ml-md">
-          <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" :label="tc('pages.public.ServerUsageDetailList.please_select')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
+          <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" :label="tc('pleaseSelect')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
         </div>
         <div class="col-4 q-ml-md">
           <q-select outlined dense v-model="serviceId" :options="serviceOptions" @update:model-value="selectService" :disable="isDisable"
-                    :label="tc('pages.personal.CurrentMonthList.filter_service')" class="col-8" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
+                    :label="tc('filterService')" class="col-8" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
         </div>
         <div class="col-2 q-ml-md">
-          <q-btn outline no-caps :label="tc('pages.personal.HistoryList.search')" class="q-px-lg" @click="search"/>
+          <q-btn class="q-px-lg q-py-sm" color="primary" no-caps :label="tc('search')" @click="search"/>
         </div>
       </div>
       <div class="col-4 row justify-end">
-        <q-btn outline no-caps :label="tc('pages.personal.CurrentMonthList.export_current_page_data')" @click="exportFile()"/>
-        <q-btn class="q-ml-sm" outline no-caps :label="tc('pages.personal.CurrentMonthList.export_all_data')" @click="exportAll"/>
+        <q-btn class="q-py-sm" color="primary" no-caps :label="tc('exportCurrentPageData')" @click="exportFile()"/>
+        <q-btn color="primary" class="q-ml-sm"  no-caps :label="tc('exportAllData')" @click="exportAll"/>
       </div>
     </div>
     <div class="row q-mt-md">
@@ -285,16 +285,16 @@ onBeforeMount(async () => {
         style="width: 10%"
       >
         <q-tab no-caps name="server" class="text-weight-bold" @click="changeTab('server')" :ripple="false">
-          {{ tc('pages.statistic.cloud.AggregationIndex.by_servers_uuid') }}
+          {{ tc('byServersUuid') }}
         </q-tab>
         <q-tab no-caps name="service"  class="text-weight-bold" @click="changeTab('service')" :ripple="false">
-          {{ tc('pages.statistic.cloud.AggregationIndex.by_service_unit') }}
+          {{ tc('byServiceUnit') }}
         </q-tab>
         <q-tab no-caps name="group"  class="text-weight-bold" @click="changeTab('group')" :ripple="false">
-          {{ tc('pages.statistic.cloud.AggregationIndex.by_group_id') }}
+          {{ tc('byGroupId') }}
         </q-tab>
         <q-tab no-caps name="user"  class="text-weight-bold" @click="changeTab('user')" :ripple="false">
-          {{ tc('pages.statistic.cloud.AggregationIndex.by_user_id') }}
+          {{ tc('byUserId') }}
         </q-tab>
       </q-tabs>
       <div style="width: 90%">

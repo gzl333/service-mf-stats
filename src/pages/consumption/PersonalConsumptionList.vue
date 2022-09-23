@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, ref, computed } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { useStore, PersonalServerMeteringInterface } from 'stores/store'
 // import { useRoute } from 'vue-router'
 import { i18n } from 'boot/i18n'
@@ -21,6 +21,7 @@ const store = useStore()
 // const router = useRouter()
 const { tc } = i18n.global
 const serviceOptions = computed(() => store.getServices('enable'))
+const childRef = ref()
 const tableRow = ref<PersonalServerMeteringInterface[]>([])
 const startDate = getHistoryStartFormatDate()
 const currentDate = getNowFormatDate(1)
@@ -56,13 +57,15 @@ const myLocale = {
   format24h: true,
   pluralDay: 'dias'
 }
-const getHistoryData = async () => {
+const getPersonalConsumptionData = async () => {
+  childRef.value.startLoading()
   tableRow.value = []
   const data = await store.getServerMetering(query.value)
   for (const elem of data.data.results) {
     tableRow.value.push(elem)
   }
   paginationTable.value.count = data.data.count
+  childRef.value.endLoading()
 }
 const selectDate = () => {
   dateFrom.value = query.value.date_start as string
@@ -77,18 +80,18 @@ const selectService = (val: Record<string, string>) => {
     delete exportQuery.value.service_id
   }
 }
-const changePagination = async (val: number) => {
+const changePagination = (val: number) => {
   query.value.page = val
-  await getHistoryData()
+  getPersonalConsumptionData()
 }
-const changePageSize = async () => {
+const changePageSize = () => {
   query.value.page_size = paginationTable.value.rowsPerPage
   query.value.page = 1
   paginationTable.value.page = 1
-  await getHistoryData()
+  getPersonalConsumptionData()
 }
-const search = async () => {
-  await getHistoryData()
+const search = () => {
+  getPersonalConsumptionData()
 }
 // 导出当页数据
 const exportFile = () => {
@@ -108,16 +111,16 @@ const exportAll = async () => {
     exportQuery.value.date_end = query.value.date_end as string
     const date = new Date()
     const fileData = await store.getServerMetering(exportQuery.value)
-    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '个人云主机历史用量统计-' + date.toLocaleTimeString() : 'Historical Usage Statistics Of Personal Servers-' + date.toLocaleTimeString())
+    exportAllData(fileData.data, i18n.global.locale === 'zh' ? '个人云主机用量统计-' + date.toLocaleTimeString() : 'Personal Servers Statistics-' + date.toLocaleTimeString())
   }
 }
-onBeforeMount(async () => {
-  await getHistoryData()
+onMounted(() => {
+  getPersonalConsumptionData()
 })
 </script>
 
 <template>
-  <div class="HistoryList">
+  <div class="PersonalConsumptionList">
     <div class="row items-center justify-between q-mt-xl">
       <div class="col-8 row items-center q-gutter-x-sm">
         <div class="col-3">
@@ -127,7 +130,7 @@ onBeforeMount(async () => {
                 <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
                   <q-date minimal v-model="query.date_start" @update:model-value="selectDate" :locale="i18n.global.locale === 'en' ? myLocale : ''" mask="YYYY-MM-DD">
                     <div class="row items-center justify-end">
-                      <q-btn no-caps v-close-popup :label="tc('pages.personal.HistoryList.confirm')" color="primary" flat/>
+                      <q-btn no-caps v-close-popup :label="tc('confirm')" color="primary" flat/>
                     </div>
                   </q-date>
                 </q-popup-proxy>
@@ -135,7 +138,7 @@ onBeforeMount(async () => {
             </template>
           </q-input>
         </div>
-        <div class="text-center">{{ tc('pages.personal.HistoryList.to') }}</div>
+        <div class="text-center">{{ tc('to') }}</div>
         <div class="col-3">
           <q-input filled dense v-model="dateTo" mask="date">
             <template v-slot:append>
@@ -143,7 +146,7 @@ onBeforeMount(async () => {
                 <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
                   <q-date minimal v-model="query.date_end" @update:model-value="selectDate" :locale="i18n.global.locale === 'en' ? myLocale : ''" mask="YYYY-MM-DD">
                     <div class="row items-center justify-end">
-                      <q-btn no-caps v-close-popup :label="tc('pages.personal.HistoryList.confirm')" color="primary" flat/>
+                      <q-btn no-caps v-close-popup :label="tc('confirm')" color="primary" flat/>
                     </div>
                   </q-date>
                 </q-popup-proxy>
@@ -151,17 +154,17 @@ onBeforeMount(async () => {
             </template>
           </q-input>
         </div>
-        <q-select outlined dense v-model="serviceId" :options="serviceOptions" @update:model-value="selectService"
-                  :label="tc('pages.personal.CurrentMonthList.filter_service')" class="col-3" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
-        <q-btn outline no-caps :label="tc('pages.personal.HistoryList.search')" class="q-px-lg" @click="search"/>
+        <q-select class="col-4" outlined dense v-model="serviceId" :options="serviceOptions" @update:model-value="selectService"
+                  :label="tc('filterService')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
+        <q-btn class="q-py-sm" color="primary" no-caps :label="tc('search')" @click="search"/>
       </div>
       <div class="col-4 row justify-end">
-        <q-btn outline no-caps :label="tc('pages.personal.CurrentMonthList.export_current_page_data')" @click="exportFile"/>
-        <q-btn outline no-caps :label="tc('pages.personal.CurrentMonthList.export_all_data')" class="q-ml-sm" @click="exportAll"/>
+        <q-btn class="q-py-sm" color="primary" no-caps :label="tc('exportCurrentPageData')" @click="exportFile"/>
+        <q-btn class="q-ml-sm q-py-sm" color="primary" no-caps :label="tc('exportAllData')" @click="exportAll"/>
       </div>
     </div>
     <div class="q-mt-md">
-      <server-usage-table :tableRow="tableRow"/>
+      <server-usage-table :tableRow="tableRow" ref="childRef"/>
     </div>
     <div class="row q-py-md text-grey justify-between items-center">
       <div class="row items-center">
@@ -170,7 +173,7 @@ onBeforeMount(async () => {
         <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense
                   borderless @update:model-value="changePageSize">
         </q-select>
-        <span>/{{ tc('pages.personal.CurrentMonthList.page') }}</span>
+        <span>/{{ tc('page') }}</span>
       </div>
       <q-pagination
         v-model="paginationTable.page"
@@ -186,6 +189,6 @@ onBeforeMount(async () => {
 </template>
 
 <style lang="scss" scoped>
-.HistoryList {
+.PersonalConsumptionList {
 }
 </style>

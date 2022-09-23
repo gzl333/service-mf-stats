@@ -8,7 +8,7 @@ export const exportNotify = () => {
     classes: 'notification-negative shadow-15',
     icon: 'mdi-alert',
     textColor: 'negative',
-    message: tc('pages.personal.CurrentMonthList.no_data'),
+    message: tc('noData'),
     position: 'bottom',
     closeBtn: true,
     timeout: 5000,

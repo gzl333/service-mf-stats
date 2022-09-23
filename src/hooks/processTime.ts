@@ -53,21 +53,17 @@ export const getHistoryStartFormatDate = () => {
   strDate = myDate.getDate()
   let currentYear
   const seperator1 = '-'
-  if (month > 5) {
-    month = month - 5
+  if (month > 3) {
+    month = month - 3
     currentYear = year
   } else {
     currentYear = historyYear
-    if (month - 5 === 0) {
+    if (month - 3 === 0) {
       month = 12
-    } else if (month - 5 === -1) {
+    } else if (month - 3 === -1) {
       month = 11
-    } else if (month - 5 === -2) {
-      month = 10
-    } else if (month - 5 === -3) {
-      month = 9
     } else {
-      month = 8
+      month = 10
     }
   }
   if (strDate >= 0 && strDate <= 9) {

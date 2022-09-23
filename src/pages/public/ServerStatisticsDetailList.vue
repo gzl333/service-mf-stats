@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref, onBeforeMount } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useStore, MeteringDetailInterface, DateInterface } from 'stores/store'
 import { useRoute, useRouter } from 'vue-router'
 import ServerStatisticsDetailTable from 'components/public/ServerStatisticsDetailTable.vue'
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
 import { exportNotify } from 'src/hooks/ExportNotify'
 import { i18n } from 'boot/i18n'
-
+import ServerCard from '../../components/public/ServerCard'
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -20,6 +20,7 @@ const store = useStore()
 const route = useRoute()
 const router = useRouter()
 const { tc } = i18n.global
+const childRef = ref()
 const monthOptions = ref<DateInterface[]>([])
 const yearOptions = ref<DateInterface[]>([])
 const tableRow = ref<MeteringDetailInterface[]>([])
@@ -28,6 +29,15 @@ const year = myDate.getFullYear()
 const month = myDate.getMonth() + 1
 let currentMonth: number | string = myDate.getMonth() + 1
 let strDate: number | string = myDate.getDate()
+const cardObj = ref({
+  ipv4: '',
+  name: '',
+  serverId: '',
+  service: '',
+  ram: '',
+  vcpus: ''
+})
+const title = ref('')
 const monthArray = ['January', 'february', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const getFormatDate = () => {
   const seperator1 = '-'
@@ -121,7 +131,8 @@ const initSelectYear = () => {
     })
   }
 }
-const getDetailData = async () => {
+const getConsumptionDetailData = async () => {
+  childRef.value.startLoading()
   tableRow.value = []
   query.value.server_id = route.params.serverId as string
   exportQuery.value.server_id = route.params.serverId as string
@@ -130,6 +141,7 @@ const getDetailData = async () => {
     tableRow.value.push(elem)
   }
   paginationTable.value.count = data.data.count
+  childRef.value.endLoading()
 }
 const initQuery = () => {
   query.value.page = 1
@@ -172,19 +184,19 @@ const initQuery = () => {
   exportQuery.value.date_start = dateStart
   exportQuery.value.date_end = dateEnd
 }
-const changePageSize = async () => {
+const changePageSize = () => {
   query.value.page_size = paginationTable.value.rowsPerPage
   query.value.page = 1
   paginationTable.value.page = 1
-  await getDetailData()
+  getConsumptionDetailData()
 }
-const changePagination = async (val: number) => {
+const changePagination = (val: number) => {
   query.value.page = val
-  await getDetailData()
+  getConsumptionDetailData()
 }
-const search = async () => {
+const search = () => {
   initQuery()
-  await getDetailData()
+  getConsumptionDetailData()
 }
 const exportFile = () => {
   if (tableRow.value.length === 0) {
@@ -203,9 +215,21 @@ const exportAll = async () => {
     exportAllData(fileData.data, i18n.global.locale === 'zh' ? '云主机用量统计-' + date.toLocaleTimeString() : 'Servers Usage Statistics-' + date.toLocaleTimeString())
   }
 }
-onBeforeMount(() => {
+onMounted(async () => {
   initSelectYear()
-  getDetailData()
+  await getConsumptionDetailData()
+  cardObj.value.serverId = route.params.serverId as string
+  cardObj.value.service = tableRow.value[0].service_id
+  cardObj.value.vcpus = route.query.vcpus as string
+  cardObj.value.ram = route.query.ram as string
+  cardObj.value.ipv4 = route.query.ipv4 as string
+  if (tableRow.value[0].username === '') {
+    cardObj.value.name = tableRow.value[0].vo_name
+    title.value = 'group'
+  } else {
+    cardObj.value.name = tableRow.value[0].username
+    title.value = 'user'
+  }
 })
 </script>
 
@@ -214,59 +238,32 @@ onBeforeMount(() => {
     <div class="row items-center title-area q-mt-xl">
       <q-btn icon="arrow_back_ios" color="primary" flat unelevated dense
              @click="router.back()"/>
-      <span class="text-primary text-h6 text-weight-bold">{{ tc('pages.public.ServerUsageDetailList.servers_usage_details') }}</span>
+      <span class="text-primary text-h6 text-weight-bold">{{ tc('serversUsageDetails') }}</span>
     </div>
     <div class="row q-mt-lg justify-between">
       <div class="row col-5 items-center">
         <div class="col-3">
-          <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" :label="tc('pages.public.ServerUsageDetailList.please_select')"
+          <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" :label="tc('pleaseSelect')"
                     @update:model-value="changeYear"/>
         </div>
         <div class="col-3 q-ml-sm">
-          <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" :label="tc('pages.public.ServerUsageDetailList.please_select')"
+          <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" :label="tc('pleaseSelect')"
                     :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
         </div>
         <div class="q-ml-sm">
-          <q-btn outline no-caps :label="tc('pages.personal.HistoryList.search')" @click="search" class="q-px-lg"/>
+          <q-btn class="q-py-sm q-px-lg" color="primary" no-caps :label="tc('search')" @click="search"/>
         </div>
       </div>
       <div>
-        <q-btn outline no-caps :label="tc('pages.personal.CurrentMonthList.export_current_page_data')" @click="exportFile"/>
-        <q-btn outline no-caps :label="tc('pages.personal.CurrentMonthList.export_all_data')" class="q-ml-sm" @click="exportAll"/>
+        <q-btn class="q-py-sm" color="primary" no-caps :label="tc('exportCurrentPageData')" @click="exportFile"/>
+        <q-btn class="q-py-sm q-ml-sm" color="primary" no-caps :label="tc('exportAllData')" @click="exportAll"/>
       </div>
     </div>
     <div class="q-mt-md">
-      <q-card class="my-card" flat bordered>
-        <q-card-section>
-          <div class="row">
-            <div class="col-3 text-center">
-              <div>UUID</div>
-              <div class="text-subtitle1 q-mt-lg">{{ route.params.serverId }}</div>
-            </div>
-            <div class="col-3 text-center">
-              <div>{{ tc('components.public.ServerUsageTable.service_unit') }}</div>
-              <div class="text-subtitle1 q-mt-lg">{{ store.tables.serviceTable.byId[tableRow[0]?.service_id]?.name }}</div>
-            </div>
-            <div class="col-2 text-center">
-              <div>{{ route.meta.isGroup ? tc('components.public.ServerStatisticsDetailTable.group') : tc('pages.statistic.cloud.UserAggregationList.user') }}</div>
-              <div class="text-subtitle1 q-mt-lg">{{ route.meta.isGroup ? tableRow[0]?.vo_name : tableRow[0]?.username }}</div>
-            </div>
-            <div class="col-2 text-center">
-              <div>{{ tc('components.public.ServerUsageTable.initial_configuration') }}</div>
-              <div class="text-subtitle1 q-mt-lg">
-                {{ route.query.vcpus + ' ' + tc('components.public.ServerUsageTable.core') + ' ' + route.query.ram / 1024 + ' GB' }}
-              </div>
-            </div>
-            <div class="col-2 text-center">
-              <div>{{ tc('pages.public.ServerUsageDetailList.public_ip') }}</div>
-              <div class="text-subtitle1 q-mt-lg">{{ route.query.ipv4 }}</div>
-            </div>
-          </div>
-        </q-card-section>
-      </q-card>
+      <server-card :cardObj="cardObj" :title="title"/>
     </div>
     <div class="q-mt-md">
-      <server-statistics-detail-table :tableRow="tableRow"/>
+      <server-statistics-detail-table :tableRow="tableRow" ref="childRef"/>
     </div>
     <div class="row text-grey justify-between items-center q-mt-md">
       <div class="row items-center">
@@ -275,7 +272,7 @@ onBeforeMount(() => {
         <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense
                   borderless @update:model-value="changePageSize">
         </q-select>
-        <span>/{{ tc('pages.personal.CurrentMonthList.page') }}</span>
+        <span>/{{ tc('page') }}</span>
       </div>
       <q-pagination
         v-model="paginationTable.page"

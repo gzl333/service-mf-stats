@@ -28,26 +28,26 @@ const userColumns = computed(() => [
   {
     name: 'username',
     align: 'center',
-    label: (() => tc('pages.statistic.cloud.UserAggregationList.user'))()
+    label: (() => tc('user'))()
   },
   {
     name: 'company',
-    label: (() => tc('pages.statistic.cloud.GroupAggregationList.company'))(),
+    label: (() => tc('company'))(),
     align: 'center'
   },
   {
     name: 'total_original_amount',
-    label: (() => tc('components.public.ServerStatisticsDetailTable.total_billing_amount'))(),
+    label: (() => tc('totalBillingAmount'))(),
     align: 'center'
   },
   {
     name: 'total_trade_amount',
-    label: (() => tc('components.public.ServerStatisticsDetailTable.total_amount_of_actual_deduction'))(),
+    label: (() => tc('totalAmountOfActualDeduction'))(),
     align: 'center'
   },
   {
     name: 'total_server',
-    label: (() => tc('pages.statistic.cloud.GroupAggregationList.total_number_of_servers'))(),
+    label: (() => tc('totalNumberOfServers'))(),
     align: 'center'
   }
 ])
@@ -76,28 +76,24 @@ const getUserAggregationData = async () => {
   isLoading.value = true
   const data = await store.getUserMetering(query.value)
   userTableRow.value = data.data.results
-  paginationTable.value.page = 1
   paginationTable.value.count = data.data.count
   isLoading.value = false
 }
-const changePageSize = async () => {
+const changePageSize = () => {
   query.value.page_size = paginationTable.value.rowsPerPage
   query.value.page = 1
   paginationTable.value.page = 1
-  await getUserAggregationData()
+  getUserAggregationData()
 }
-const changePagination = async (val: number) => {
-  isLoading.value = true
+const changePagination = (val: number) => {
   query.value.page = val
-  const data = await store.getUserMetering(query.value)
-  userTableRow.value = data.data.results
-  isLoading.value = false
+  getUserAggregationData()
 }
 const goToDetail = (userid: string, username: string, count: string) => {
   navigateToUrl(`/my/stats/statistic/list/user/${userid}?name=${username}&count=${count}`)
 }
-onBeforeMount(async () => {
-  await getUserAggregationData()
+onBeforeMount(() => {
+  getUserAggregationData()
 })
 onBeforeUnmount(() => {
   emitter.off('user')
@@ -117,8 +113,8 @@ onBeforeUnmount(() => {
         :columns="userColumns"
         row-key="name"
         color="primary"
-        :loading-label="tc('components.group.GroupTable.notify_loading')"
-        :no-data-label="tc('pages.personal.CurrentMonthList.no_data')"
+        :loading-label="tc('notifyLoading')"
+        :no-data-label="tc('noData')"
         hide-pagination
         :pagination="{ rowsPerPage: 0 }"
       >
@@ -135,7 +131,7 @@ onBeforeUnmount(() => {
               </q-btn>
             </q-td>
             <q-td key="company" :props="props">{{
-                props.row.user.company === '' ? tc('pages.statistic.cloud.ServerAggregationList.no_yet') : props.row.user.company
+                props.row.user.company === '' ? tc('no_yet') : props.row.user.company
               }}
             </q-td>
             <q-td key="total_original_amount" :props="props">{{ props.row.total_original_amount }}</q-td>
@@ -152,7 +148,7 @@ onBeforeUnmount(() => {
           <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense
                     borderless @update:model-value="changePageSize">
           </q-select>
-          <span>/{{ tc('pages.personal.CurrentMonthList.page') }}</span>
+          <span>/{{ tc('page') }}</span>
         </div>
         <q-pagination
           v-model="paginationTable.page"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { navigateToUrl } from 'single-spa'
 // import { useStore } from 'stores/store'
 import { useRoute } from 'vue-router'
@@ -16,25 +16,26 @@ const props = defineProps({
 const route = useRoute()
 // const router = useRouter()
 const { tc } = i18n.global
+const isLoading = ref(false)
 const columns = computed(() => [
   {
     name: 'ipv4',
     align: 'center',
-    label: (() => tc('components.public.ServerUsageTable.ip'))()
+    label: (() => tc('ip'))()
   },
   {
     name: 'service_name',
-    label: (() => tc('components.public.ServerUsageTable.service_unit'))(),
+    label: (() => tc('serviceUnit'))(),
     align: 'center'
   },
   {
     name: 'configuration',
-    label: (() => tc('components.public.ServerUsageTable.initial_configuration'))(),
+    label: (() => tc('initialConfiguration'))(),
     align: 'center'
   },
   {
     name: 'total_public_ip_hours',
-    label: (() => tc('pages.public.ServerUsageDetailList.public_ip'))(),
+    label: (() => tc('publicIp'))(),
     align: 'center'
   },
   {
@@ -44,28 +45,28 @@ const columns = computed(() => [
   },
   {
     name: 'total_ram_hours',
-    label: (() => tc('components.public.ServerUsageTable.memory'))(),
+    label: (() => tc('memory'))(),
     align: 'center'
   },
   {
     name: 'total_disk_hours',
-    label: (() => tc('components.public.ServerUsageTable.local_disk'))(),
+    label: (() => tc('localDisk'))(),
     align: 'center'
   },
   {
     name: 'total_original_amount',
-    label: (() => tc('components.public.ServerUsageTable.billing_amount'))(),
+    label: (() => tc('billingAmount'))(),
     align: 'center'
   },
   {
     name: 'total_trade_amount',
-    label: (() => tc('components.public.ServerUsageTable.actual_deduction_amount'))(),
+    label: (() => tc('actualDeductionAmount'))(),
     align: 'center'
   }
 ])
 const goToDetail = (serverId: string, ipv4: string, vcpus: string, ram: string) => {
   if (route.meta.isPersonal) {
-    navigateToUrl(`/my/stats/personal/detail/${serverId}?ipv4=${ipv4}&vcpus=${vcpus}&ram=${ram}`)
+    navigateToUrl(`/my/stats/consumption/personal/server/${serverId}?ipv4=${ipv4}&vcpus=${vcpus}&ram=${ram}`)
   } else {
     if (route.meta.type === 'group') {
       navigateToUrl(`/my/stats/statistic/list/detail/${serverId}?ipv4=${ipv4}&vcpus=${vcpus}&ram=${ram}`)
@@ -74,6 +75,13 @@ const goToDetail = (serverId: string, ipv4: string, vcpus: string, ram: string) 
     }
   }
 }
+const startLoading = () => {
+  isLoading.value = true
+}
+const endLoading = () => {
+  isLoading.value = false
+}
+defineExpose({ startLoading, endLoading })
 </script>
 
 <template>
@@ -84,10 +92,11 @@ const goToDetail = (serverId: string, ipv4: string, vcpus: string, ram: string) 
       table-header-class="bg-grey-1 text-grey"
       :rows="props.tableRow"
       :columns="columns"
+      :loading="isLoading"
       row-key="name"
       color="primary"
-      :loading-label="tc('components.group.GroupTable.notify_loading')"
-      :no-data-label="tc('pages.personal.CurrentMonthList.no_data')"
+      :loading-label="tc('notifyLoading')"
+      :no-data-label="tc('noData')"
       hide-pagination
       :pagination="{ rowsPerPage: 0 }"
     >
@@ -100,11 +109,11 @@ const goToDetail = (serverId: string, ipv4: string, vcpus: string, ram: string) 
                    flat dense unelevated></q-btn>
           </q-td>
           <q-td key="service_name" :props="props">{{ props.row.service_name }}</q-td>
-          <q-td class="no-padding" key="configuration" :props="props">{{props.row.server.vcpus + ' ' + tc('components.public.ServerUsageTable.core') + ' ' + Math.round(props.row.server.ram / 1024) + ' GB' }}</q-td>
-          <q-td key="total_public_ip_hours" :props="props">{{ Math.round(props.row.total_public_ip_hours / 24) + ' ' + tc('components.public.ServerUsageTable.piece_days') }}</q-td>
-          <q-td key="total_cpu_hours" :props="props">{{ Math.round(props.row.total_cpu_hours / 24) + ' ' + tc('components.public.ServerUsageTable.core_day') }}</q-td>
-          <q-td key="total_ram_hours" :props="props">{{ Math.round(props.row.total_ram_hours / 24) + ' ' + tc('components.public.ServerUsageTable.gb_days') }}</q-td>
-          <q-td key="total_disk_hours" :props="props">{{ Math.round(props.row.total_disk_hours / 24) + ' ' + tc('components.public.ServerUsageTable.gb_days') }}</q-td>
+          <q-td class="no-padding" key="configuration" :props="props">{{props.row.server.vcpus + ' ' + tc('core') + ' ' + Math.round(props.row.server.ram / 1024) + ' GB' }}</q-td>
+          <q-td key="total_public_ip_hours" :props="props">{{ Math.round(props.row.total_public_ip_hours / 24) + ' ' + tc('pieceDays') }}</q-td>
+          <q-td key="total_cpu_hours" :props="props">{{ Math.round(props.row.total_cpu_hours / 24) + ' ' + tc('coreDay') }}</q-td>
+          <q-td key="total_ram_hours" :props="props">{{ Math.round(props.row.total_ram_hours / 24) + ' ' + tc('gbDays') }}</q-td>
+          <q-td key="total_disk_hours" :props="props">{{ Math.round(props.row.total_disk_hours / 24) + ' ' + tc('gbDays') }}</q-td>
           <q-td class="no-padding" key="total_original_amount" :props="props">{{ props.row.total_original_amount }}</q-td>
           <q-td class="no-padding" key="total_trade_amount" :props="props">{{ props.row.total_trade_amount }}</q-td>
         </q-tr>

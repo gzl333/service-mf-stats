@@ -29,7 +29,7 @@ const { tc } = i18n.global
       </div>
 
       <div class="text-h2" style="opacity:.4">
-        {{ tc('出错了') }}
+        {{ tc('error') }}
       </div>
 
       <q-btn
@@ -40,7 +40,7 @@ const { tc } = i18n.global
         no-caps
         @click="$router.back"
       >
-        {{ tc('返回') }}
+        {{ tc('goBack') }}
       </q-btn>
 
       <div class="absolute-bottom">
