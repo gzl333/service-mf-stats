@@ -56,9 +56,7 @@ const search = ref('')
 
 <template>
   <div class="GroupList">
-
-    <div class="row items-center justify-between q-py-md">
-
+    <div class="row items-center justify-between q-mt-xl">
       <div class="col-3">
         <div class="row justify-start">
           <div class="col">
@@ -73,7 +71,6 @@ const search = ref('')
           </div>
         </div>
       </div>
-
       <div class="col-2">
         <div class="row justify-end">
           <div class="col">
@@ -90,11 +87,10 @@ const search = ref('')
           </div>
         </div>
       </div>
-
     </div>
-
-    <GroupTable :groups="groups" :search="search.trim().toLowerCase()"/>
-
+    <div class="q-mt-md">
+      <GroupTable :groups="groups" :search="search.trim().toLowerCase()"/>
+    </div>
   </div>
 </template>
 

@@ -67,14 +67,14 @@ const getGroupConsumptionData = async () => {
     vo_id: '',
     server_id: '',
     service_name: '',
-    ram: undefined,
-    vcpus: undefined,
-    total_cpu_hours: undefined,
-    total_disk_hours: undefined,
-    total_original_amount: undefined,
-    total_public_ip_hours: undefined,
-    total_ram_hours: undefined,
-    total_trade_amount: undefined
+    ram: 0,
+    vcpus: 0,
+    total_cpu_hours: 0,
+    total_disk_hours: 0,
+    total_original_amount: 0,
+    total_public_ip_hours: 0,
+    total_ram_hours: 0,
+    total_trade_amount: 0
   }
   const data = await store.getServerMetering(query.value)
   for (const elem of data.data.results) {
@@ -83,21 +83,21 @@ const getGroupConsumptionData = async () => {
       vo_id: '',
       server_id: '',
       service_name: '',
-      ram: undefined,
-      vcpus: undefined,
-      total_cpu_hours: undefined,
-      total_disk_hours: undefined,
-      total_original_amount: undefined,
-      total_public_ip_hours: undefined,
-      total_ram_hours: undefined,
-      total_trade_amount: undefined
+      ram: 0,
+      vcpus: 0,
+      total_cpu_hours: 0,
+      total_disk_hours: 0,
+      total_original_amount: 0,
+      total_public_ip_hours: 0,
+      total_ram_hours: 0,
+      total_trade_amount: 0
     }
+    obj.vo_id = route.params.voId as string
     obj.server_id = elem.server_id
     obj.ipv4 = elem.server.ipv4
     obj.service_name = elem.service_name
     obj.vcpus = elem.server.vcpus
     obj.ram = elem.server.ram
-    obj.vo_id = route.params.voId as string
     obj.total_public_ip_hours = elem.total_public_ip_hours
     obj.total_cpu_hours = elem.total_cpu_hours
     obj.total_ram_hours = elem.total_ram_hours
@@ -162,8 +162,7 @@ onMounted(() => {
 <template>
   <div class="GroupConsumptionList">
     <div class="row items-center title-area q-mt-xl">
-      <q-btn icon="arrow_back_ios" color="primary" flat unelevated dense
-             @click="router.back()"/>
+      <q-btn icon="arrow_back_ios" color="primary" flat unelevated dense @click="router.back()"/>
       <span class="text-primary text-h6 text-weight-bold">{{ tc('goBackToGroupList') }}</span>
     </div>
     <div class="row items-center justify-between q-mt-lg">

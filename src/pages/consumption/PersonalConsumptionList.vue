@@ -61,9 +61,10 @@ const getPersonalConsumptionData = async () => {
   childRef.value.startLoading()
   tableRow.value = []
   const data = await store.getServerMetering(query.value)
-  for (const elem of data.data.results) {
-    tableRow.value.push(elem)
-  }
+  // for (const elem of data.data.results) {
+  //   tableRow.value.push(elem)
+  // }
+  tableRow.value = data.data.results
   paginationTable.value.count = data.data.count
   childRef.value.endLoading()
 }
