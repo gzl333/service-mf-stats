@@ -44,8 +44,8 @@ export default {
   personalServers: 'Personal Servers',
   groupServers: 'Group Servers',
   storage: 'Storage',
-  exportCurrentPageData: 'Export Current Page Data',
-  exportAllData: 'Export all data',
+  exportCurrentPageData: 'Export Current Page',
+  exportAllData: 'Export All',
   filterService: 'Filter Service',
   page: 'Page',
   noData: 'No Data',
@@ -71,5 +71,8 @@ export default {
   service: 'Service',
   billingCycle: 'Billing Cycle',
   contentCopiedToClipboard: 'Content copied to clipboard',
-  copiedToClipboard: 'Copied to clipboard'
+  copiedToClipboard: 'Copied to clipboard',
+  storageBucketId: 'Storage Bucket Id',
+  bucketName: 'Bucket Name',
+  storageDuration: 'Storage Duration (GB/Hour)'
 }

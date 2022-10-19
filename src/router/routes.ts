@@ -105,7 +105,7 @@ const routes: RouteRecordRaw[] = [
               },
               {
                 path: 'storage',
-                component: () => import('pages/statistic/storage/StorageList.vue')
+                component: () => import('pages/statistic/storage/StorageIndex.vue')
               },
               {
                 path: 'server/:serverId',

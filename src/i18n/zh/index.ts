@@ -71,5 +71,8 @@ export default {
   service: '服务名称',
   billingCycle: '计费周期',
   contentCopiedToClipboard: '内容已经复制到剪切板',
-  copiedToClipboard: '已经复制到剪切板'
+  copiedToClipboard: '已经复制到剪切板',
+  storageBucketId: '存储桶Id',
+  bucketName: '存储桶名称',
+  storageDuration: '存储时长 (GB/小时)'
 }

@@ -123,6 +123,24 @@ export default {
         params: payload.query
       }
       return axiosStats.get('/metering/server/aggregation/vo', config)
+    },
+    getMeteringStorage (payload: {
+      query?: {
+        page?: number;
+        page_size?: number;
+        service_id?: string;
+        bucket_id?: string;
+        date_start?: string;
+        date_end?: string;
+        user_id?: string;
+        'as-admin'?: boolean;
+        download?: boolean;
+      }
+    }) {
+      const config = {
+        params: payload?.query
+      }
+      return axiosStats.get('/metering/storage', config)
     }
   },
   vo: {
