@@ -74,5 +74,7 @@ export default {
   copiedToClipboard: '已经复制到剪切板',
   storageBucketId: '存储桶Id',
   bucketName: '存储桶名称',
-  storageDuration: '存储时长 (GB/小时)'
+  storageDuration: '存储时长 (GB/小时)',
+  bucketId: '存储桶Id',
+  userId: '用户 Id'
 }

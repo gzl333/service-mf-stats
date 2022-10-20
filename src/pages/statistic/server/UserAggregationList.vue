@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref, onBeforeMount, onBeforeUnmount, Ref, computed } from 'vue'
+// import { useStore } from 'stores/store'
 import { navigateToUrl } from 'single-spa'
-import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
-import { i18n } from 'boot/i18n'
-import emitter from 'boot/mitt'
 import { getNowFormatDate } from 'src/hooks/processTime'
+import { i18n } from 'boot/i18n'
+import stats from 'src/api'
+import emitter from 'boot/mitt'
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -15,27 +16,46 @@ import { getNowFormatDate } from 'src/hooks/processTime'
 // })
 // const emits = defineEmits(['change', 'delete'])
 
-const store = useStore()
+// const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
 const { tc } = i18n.global
-const groupColumns = computed(() => [
-  // { name: 'vo_id', label: 'ID', align: 'center' },
-  { name: 'name', align: 'center', label: (() => tc('groupName'))() },
-  { name: 'company', label: (() => tc('company'))(), align: 'center' },
-  { name: 'total_original_amount', label: (() => tc('totalBillingAmount'))(), align: 'center' },
-  { name: 'total_trade_amount', label: (() => tc('totalAmountOfActualDeduction'))(), align: 'center' },
-  { name: 'total_server', label: (() => tc('totalNumberOfServers'))(), align: 'center' }
+const userColumns = computed(() => [
+  // {
+  //   name: 'user_id',
+  //   label: 'ID',
+  //   align: 'center'
+  // },
+  {
+    name: 'username',
+    align: 'center',
+    label: (() => tc('user'))()
+  },
+  {
+    name: 'company',
+    label: (() => tc('company'))(),
+    align: 'center'
+  },
+  {
+    name: 'total_original_amount',
+    label: (() => tc('totalBillingAmount'))(),
+    align: 'center'
+  },
+  {
+    name: 'total_trade_amount',
+    label: (() => tc('totalAmountOfActualDeduction'))(),
+    align: 'center'
+  },
+  {
+    name: 'total_server',
+    label: (() => tc('totalNumberOfServers'))(),
+    align: 'center'
+  }
 ])
 const isLoading = ref(false)
-const paginationTable = ref({
-  page: 1,
-  count: 0,
-  rowsPerPage: 10
-})
 const myDate = new Date()
 const year = myDate.getFullYear()
-const groupTableRow = ref([])
+const userTableRow = ref([])
 const currentDate = getNowFormatDate(1)
 const query: Ref = ref({
   page: 1,
@@ -44,51 +64,54 @@ const query: Ref = ref({
   date_end: currentDate,
   'as-admin': true
 })
-emitter.on('group', async (value) => {
+const paginationTable = ref({
+  page: 1,
+  count: 0,
+  rowsPerPage: 10
+})
+emitter.on('user', async (value) => {
   query.value = value
   paginationTable.value.page = 1
-  await getGroupAggregationData()
+  await getUserAggregationData()
 })
-const getGroupAggregationData = async () => {
+const getUserAggregationData = async () => {
   isLoading.value = true
-  const data = await store.getGroupMetering(query.value)
-  groupTableRow.value = data.data.results
-  paginationTable.value.count = data.data.count
+  const respUserMetering = await stats.stats.metering.getAggregationUser({ query: query.value })
+  userTableRow.value = respUserMetering.data.results
+  paginationTable.value.count = respUserMetering.data.count
   isLoading.value = false
 }
 const changePageSize = () => {
   query.value.page_size = paginationTable.value.rowsPerPage
   query.value.page = 1
   paginationTable.value.page = 1
-  getGroupAggregationData()
+  getUserAggregationData()
 }
 const changePagination = () => {
   query.value.page = paginationTable.value.page
-  getGroupAggregationData()
+  getUserAggregationData()
 }
-const goToDetail = (userid: string, voName: string, count: string) => {
-  navigateToUrl(`/my/stats/statistic/list/group/${userid}?name=${voName}&count=${count}`)
+const goToDetail = (userid: string, username: string, count: string) => {
+  navigateToUrl(`/my/stats/statistic/list/user/${userid}?name=${username}&count=${count}`)
 }
 onBeforeMount(() => {
-  getGroupAggregationData()
+  getUserAggregationData()
 })
 onBeforeUnmount(() => {
-  emitter.off('group')
+  emitter.off('user')
 })
 
 </script>
-
 <template>
-  <div class="GroupAggregationList">
+  <div class="UserAggregationList">
     <div class="q-ml-md">
-      <q-separator/>
       <q-table
         flat
-        id="groupTable"
+        id="userTable"
         :loading="isLoading"
         table-header-class="bg-grey-1 text-grey"
-        :rows="groupTableRow"
-        :columns="groupColumns"
+        :rows="userTableRow"
+        :columns="userColumns"
         row-key="name"
         color="primary"
         :loading-label="tc('notifyLoading')"
@@ -98,14 +121,20 @@ onBeforeUnmount(() => {
       >
         <template v-slot:body="props">
           <q-tr :props="props">
-<!--            <q-td key="vo_id" :props="props">{{ props.row.vo_id }}</q-td>-->
-            <q-td key="name" :props="props">
+<!--            <q-td key="user_id" :props="props">-->
+<!--              <div class="text">{{ props.row.user_id }}</div>-->
+<!--            </q-td>-->
+            <q-td key="username" :props="props">
               <q-btn
-                @click="goToDetail(props.row.vo_id, props.row.vo.name, props.row.total_server)"
-                class="q-ma-none" :label="props.row.vo.name" color="primary" padding="xs" flat dense unelevated>
+                @click="goToDetail(props.row.user_id, props.row.user.username, props.row.total_server)"
+                class="q-ma-none" :label="props.row.user.username" color="primary" padding="xs" flat dense
+                unelevated no-caps>
               </q-btn>
             </q-td>
-            <q-td key="company" :props="props">{{ props.row.vo.company }}</q-td>
+            <q-td key="company" :props="props">{{
+                props.row.user.company === '' ? tc('no_yet') : props.row.user.company
+              }}
+            </q-td>
             <q-td key="total_original_amount" :props="props">{{ props.row.total_original_amount }}</q-td>
             <q-td key="total_trade_amount" :props="props">{{ props.row.total_trade_amount }}</q-td>
             <q-td key="total_server" :props="props">{{ props.row.total_server }}</q-td>
@@ -137,6 +166,6 @@ onBeforeUnmount(() => {
 </template>
 
 <style lang="scss" scoped>
-.GroupAggregationList {
+.UserAggregationList {
 }
 </style>

@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue'
+import { onBeforeMount, ref, computed } from 'vue'
 import { useStore, PersonalServerMeteringInterface } from 'stores/store'
 // import { useRoute } from 'vue-router'
-import { i18n } from 'boot/i18n'
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
 import { getHistoryStartFormatDate, getNowFormatDate } from 'src/hooks/processTime'
 import { exportNotify } from 'src/hooks/ExportNotify'
+import { i18n } from 'boot/i18n'
+import stats from 'src/api'
 import ServerUsageTable from 'components/public/ServerUsageTable.vue'
 // const props = defineProps({
 //   foo: {
@@ -21,12 +22,14 @@ const store = useStore()
 // const router = useRouter()
 const { tc } = i18n.global
 const serviceOptions = computed(() => store.getServices('enable'))
-const childRef = ref()
-const tableRow = ref<PersonalServerMeteringInterface[]>([])
 const startDate = getHistoryStartFormatDate()
 const currentDate = getNowFormatDate(1)
+const consumptionTableRow = ref<PersonalServerMeteringInterface[]>([])
+// 默认开始时间
 const dateFrom = ref(startDate)
+// 默认结束时间
 const dateTo = ref(currentDate)
+const isLoading = ref(false)
 const paginationTable = ref({
   page: 1,
   count: 0,
@@ -37,7 +40,7 @@ const serviceId = ref({
   labelEn: 'All Services',
   value: ''
 })
-const query = ref<Record<string, string | number>>({
+const searchQuery = ref<Record<string, string | number>>({
   page: 1,
   page_size: 10,
   date_start: startDate,
@@ -58,47 +61,44 @@ const myLocale = {
   pluralDay: 'dias'
 }
 const getPersonalConsumptionData = async () => {
-  childRef.value.startLoading()
-  tableRow.value = []
-  const data = await store.getServerMetering(query.value)
-  // for (const elem of data.data.results) {
-  //   tableRow.value.push(elem)
-  // }
-  tableRow.value = data.data.results
-  paginationTable.value.count = data.data.count
-  childRef.value.endLoading()
+  isLoading.value = true
+  consumptionTableRow.value = []
+  const respServerMetering = await stats.stats.metering.getAggregationServer({ query: searchQuery.value })
+  consumptionTableRow.value = respServerMetering.data.results
+  paginationTable.value.count = respServerMetering.data.count
+  isLoading.value = false
 }
 const selectDate = () => {
-  dateFrom.value = query.value.date_start as string
-  dateTo.value = query.value.date_end as string
+  dateFrom.value = searchQuery.value.date_start as string
+  dateTo.value = searchQuery.value.date_end as string
 }
 const selectService = (val: Record<string, string>) => {
   if (val.value !== '') {
-    query.value.service_id = val.value
+    searchQuery.value.service_id = val.value
     exportQuery.value.service_id = val.value
   } else {
-    delete query.value.service_id
+    delete searchQuery.value.service_id
     delete exportQuery.value.service_id
   }
 }
 const changePagination = () => {
-  query.value.page = paginationTable.value.page
+  searchQuery.value.page = paginationTable.value.page
   getPersonalConsumptionData()
 }
 const changePageSize = () => {
-  query.value.page_size = paginationTable.value.rowsPerPage
-  query.value.page = 1
+  searchQuery.value.page_size = paginationTable.value.rowsPerPage
+  searchQuery.value.page = 1
   paginationTable.value.page = 1
   getPersonalConsumptionData()
 }
 const search = () => {
-  query.value.page = 1
+  searchQuery.value.page = 1
   paginationTable.value.page = 1
   getPersonalConsumptionData()
 }
 // 导出当页数据
 const exportFile = () => {
-  if (tableRow.value.length === 0) {
+  if (consumptionTableRow.value.length === 0) {
     exportNotify()
   } else {
     const date = new Date()
@@ -107,17 +107,17 @@ const exportFile = () => {
 }
 // 导出全部数据
 const exportAll = async () => {
-  if (tableRow.value.length === 0) {
+  if (consumptionTableRow.value.length === 0) {
     exportNotify()
   } else {
-    exportQuery.value.date_start = query.value.date_start as string
-    exportQuery.value.date_end = query.value.date_end as string
+    exportQuery.value.date_start = searchQuery.value.date_start as string
+    exportQuery.value.date_end = searchQuery.value.date_end as string
     const date = new Date()
-    const fileData = await store.getServerMetering(exportQuery.value)
+    const fileData = await stats.stats.metering.getAggregationServer({ query: exportQuery.value })
     exportAllData(fileData.data, i18n.global.locale === 'zh' ? '个人云主机用量统计-' + date.toLocaleTimeString() : 'Personal Servers Statistics-' + date.toLocaleTimeString())
   }
 }
-onMounted(() => {
+onBeforeMount(() => {
   getPersonalConsumptionData()
 })
 </script>
@@ -131,7 +131,8 @@ onMounted(() => {
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
-                  <q-date minimal v-model="query.date_start" @update:model-value="selectDate" :locale="i18n.global.locale === 'en' ? myLocale : ''" mask="YYYY-MM-DD">
+                  <q-date minimal v-model="searchQuery.date_start" @update:model-value="selectDate"
+                          :locale="i18n.global.locale === 'en' ? myLocale : ''" mask="YYYY-MM-DD">
                     <div class="row items-center justify-end">
                       <q-btn no-caps v-close-popup :label="tc('confirm')" color="primary" flat/>
                     </div>
@@ -147,7 +148,8 @@ onMounted(() => {
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
-                  <q-date minimal v-model="query.date_end" @update:model-value="selectDate" :locale="i18n.global.locale === 'en' ? myLocale : ''" mask="YYYY-MM-DD">
+                  <q-date minimal v-model="searchQuery.date_end" @update:model-value="selectDate"
+                          :locale="i18n.global.locale === 'en' ? myLocale : ''" mask="YYYY-MM-DD">
                     <div class="row items-center justify-end">
                       <q-btn no-caps v-close-popup :label="tc('confirm')" color="primary" flat/>
                     </div>
@@ -157,7 +159,8 @@ onMounted(() => {
             </template>
           </q-input>
         </div>
-        <q-select class="col-4" outlined dense v-model="serviceId" :options="serviceOptions" @update:model-value="selectService"
+        <q-select class="col-4" outlined dense v-model="serviceId" :options="serviceOptions"
+                  @update:model-value="selectService"
                   :label="tc('filterService')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
         <q-btn class="q-py-sm" color="primary" no-caps :label="tc('search')" @click="search"/>
       </div>
@@ -167,7 +170,7 @@ onMounted(() => {
       </div>
     </div>
     <div class="q-mt-md">
-      <server-usage-table :tableRow="tableRow" ref="childRef"/>
+      <server-usage-table :tableRow="consumptionTableRow" :isLoading="isLoading"/>
     </div>
     <div class="row q-py-md text-grey justify-between items-center">
       <div class="row items-center">

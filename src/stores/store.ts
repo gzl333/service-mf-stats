@@ -706,27 +706,6 @@ export const useStore = defineStore('stats', {
       // load table的最后再改status
       this.tables.groupMemberTable.status = 'total'
     },
-    async getMeteringDetail (payload: { page?: number, page_size?: number, date_start?: string, date_end?: string, vo_id?: string, user_id?: string, server_id?: string, service_id?: string, 'as-admin'?: boolean, download?: boolean }) {
-      const respMeteringDetail = await stats.stats.metering.getMeteringServer({ query: payload })
-      return respMeteringDetail
-    },
-    async getUserMetering (payload: { page?: number, page_size?: number, date_start?: string, date_end?: string, service_id?: string, 'as-admin'?: boolean, download?: boolean }) {
-      const respUserMetering = await stats.stats.metering.getAggregationUser({ query: payload })
-      return respUserMetering
-    },
-    async getGroupMetering (payload: { page?: number, page_size?: number, date_start?: string, date_end?: string, service_id?: string, 'as-admin'?: boolean, download?: boolean }) {
-      const respGroupMetering = await stats.stats.metering.getAggregationVo({ query: payload })
-      return respGroupMetering
-    },
-    async getServerMetering (payload: { page?: number, page_size?: number, date_start?: string, date_end?: string, vo_id?: string, user_id?: string, service_id?: string, 'as-admin'?: boolean, download?: boolean }) {
-      const respServerMetering = await stats.stats.metering.getAggregationServer({ query: payload })
-      return respServerMetering
-    },
-    async getServiceMetering (payload: { page?: number, page_size?: number, date_start?: string, date_end?: string, 'as-admin'?: boolean, download?: boolean }) {
-      const respServiceMetering = await stats.stats.metering.getAggregationService({ query: payload })
-      return respServiceMetering
-    },
-
     async loadPersonalBalance () {
       const respPersonalBalance = await stats.stats.account.getBalanceUser()
       if (respPersonalBalance.status === 200) {

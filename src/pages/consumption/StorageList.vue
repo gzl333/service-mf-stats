@@ -2,12 +2,13 @@
 import { onBeforeMount, ref, computed } from 'vue'
 import { useStore, PersonalServerMeteringInterface } from 'stores/store'
 // import { useRoute } from 'vue-router'
-import { i18n } from 'boot/i18n'
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
 import { getHistoryStartFormatDate, getNowFormatDate } from 'src/hooks/processTime'
 import { exportNotify } from 'src/hooks/ExportNotify'
-import StorageTable from 'components/statistic/StorageTable.vue'
+import { i18n } from 'boot/i18n'
 import stats from 'src/api'
+import StorageTable from 'components/statistic/StorageTable.vue'
+
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -67,13 +68,12 @@ const myLocale = {
   format24h: true,
   pluralDay: 'dias'
 }
-const getStorageMetering = () => {
+const getStorageMetering = async () => {
   isLoading.value = true
-  stats.stats.metering.getMeteringStorage({ query: searchQuery.value }).then((res) => {
-    storageTableRow.value = res.data.results
-    paginationTable.value.count = res.data.count
-    isLoading.value = false
-  })
+  const resMeteringStorage = await stats.stats.metering.getMeteringStorage({ query: searchQuery.value })
+  storageTableRow.value = resMeteringStorage.data.results
+  paginationTable.value.count = resMeteringStorage.data.count
+  isLoading.value = false
 }
 
 const selectDate = () => {
@@ -137,7 +137,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div class="PersonalConsumptionList">
+  <div class="StorageList">
     <div class="q-mt-xl row justify-between items-center">
       <q-input class="" filled dense v-model="dateFrom" mask="date">
         <template v-slot:append>
@@ -171,7 +171,7 @@ onBeforeMount(() => {
       <q-select class="col-2" outlined dense v-model="serviceId" :options="serviceOptions"
                 @update:model-value="selectService"
                 :label="tc('filterService')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
-      <q-input class="col-2" outlined dense clearable v-model="bucketId" label="输入桶Id"/>
+      <q-input class="col-2" outlined dense clearable v-model="bucketId" :label="tc('bucketId')"/>
       <q-btn color="primary" no-caps :label="tc('search')" @click="search"/>
       <q-btn color="primary" no-caps :label="tc('exportCurrentPageData')" @click="exportFile"/>
       <q-btn color="primary" no-caps :label="tc('exportAllData')" @click="exportAll"/>

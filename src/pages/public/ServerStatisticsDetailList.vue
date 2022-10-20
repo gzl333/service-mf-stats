@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useStore, MeteringDetailInterface, DateInterface } from 'stores/store'
+import { MeteringDetailInterface, DateInterface } from 'stores/store'
 import { useRoute, useRouter } from 'vue-router'
-import ServerStatisticsDetailTable from 'components/public/ServerStatisticsDetailTable.vue'
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
 import { exportNotify } from 'src/hooks/ExportNotify'
 import { i18n } from 'boot/i18n'
-import ServerCard from '../../components/public/ServerCard'
+import stats from 'src/api'
+import ServerCard from 'components/public/ServerCard.vue'
+import ServerStatisticsDetailTable from 'components/public/ServerStatisticsDetailTable.vue'
+
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -16,14 +18,15 @@ import ServerCard from '../../components/public/ServerCard'
 // })
 // const emits = defineEmits(['change', 'delete'])
 
-const store = useStore()
+// const store = useStore()
 const route = useRoute()
 const router = useRouter()
 const { tc } = i18n.global
-const childRef = ref()
 const monthOptions = ref<DateInterface[]>([])
 const yearOptions = ref<DateInterface[]>([])
-const tableRow = ref<MeteringDetailInterface[]>([])
+const statisticsTableRow = ref<MeteringDetailInterface[]>([])
+const title = ref('')
+const isLoading = ref(false)
 const myDate = new Date()
 const year = myDate.getFullYear()
 const month = myDate.getMonth() + 1
@@ -37,8 +40,6 @@ const cardObj = ref({
   ram: '',
   vcpus: ''
 })
-const title = ref('')
-const monthArray = ['January', 'february', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const getFormatDate = () => {
   const seperator1 = '-'
   if (currentMonth >= 1 && currentMonth <= 9) {
@@ -50,13 +51,24 @@ const getFormatDate = () => {
   return year + seperator1 + currentMonth + seperator1 + strDate
 }
 const currentDate = getFormatDate()
-const query = ref<Record<string, string | number | boolean>>({
+const searchQuery = ref<Record<string, string | number | boolean>>({
   page: 1,
   page_size: 10,
   date_start: year + '-' + '01-01',
   date_end: currentDate,
   server_id: '',
   'as-admin': true
+})
+const dateQuery = ref({
+  year: {
+    label: year,
+    value: year
+  },
+  month: {
+    label: '全年',
+    labelEn: 'Annual',
+    value: 0
+  }
 })
 const exportQuery = ref<Record<string, string | boolean>>({
   date_start: year + '-' + '01-01',
@@ -70,20 +82,10 @@ const paginationTable = ref({
   count: 0,
   rowsPerPage: 10
 })
-const searchQuery = ref({
-  year: {
-    label: year,
-    value: year
-  },
-  month: {
-    label: '全年',
-    labelEn: 'Annual',
-    value: 0
-  }
-})
+const monthArray = ['January', 'february', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const changeYear = (val: Record<string, number>) => {
   monthOptions.value = []
-  searchQuery.value.month = {
+  dateQuery.value.month = {
     label: '全年',
     labelEn: 'Annual',
     value: 0
@@ -132,66 +134,66 @@ const initSelectYear = () => {
   }
 }
 const getConsumptionDetailData = async () => {
-  childRef.value.startLoading()
-  tableRow.value = []
-  query.value.server_id = route.params.serverId as string
+  isLoading.value = true
+  statisticsTableRow.value = []
+  searchQuery.value.server_id = route.params.serverId as string
   exportQuery.value.server_id = route.params.serverId as string
-  const data = await store.getMeteringDetail(query.value)
-  for (const elem of data.data.results) {
-    tableRow.value.push(elem)
+  const respMeteringDetail = await stats.stats.metering.getMeteringServer({ query: searchQuery.value })
+  for (const elem of respMeteringDetail.data.results) {
+    statisticsTableRow.value.push(elem)
   }
-  paginationTable.value.count = data.data.count
-  childRef.value.endLoading()
+  paginationTable.value.count = respMeteringDetail.data.count
+  isLoading.value = false
 }
 const initQuery = () => {
-  query.value.page = 1
+  searchQuery.value.page = 1
   let dateStart = ''
   let dateEnd = ''
-  if (searchQuery.value.year.value === year) {
-    if (searchQuery.value.month.value === 0) {
+  if (dateQuery.value.year.value === year) {
+    if (dateQuery.value.month.value === 0) {
       dateStart = year + '-' + '01-01'
       dateEnd = currentDate
-    } else if (searchQuery.value.month.value === month) {
+    } else if (dateQuery.value.month.value === month) {
       dateStart = year + '-' + currentMonth + '-' + '01'
       dateEnd = currentDate
     } else {
-      const day = new Date(searchQuery.value.year.value, searchQuery.value.month.value, 0).getDate()
-      if (searchQuery.value.month.value < 10) {
-        dateStart = year + '-' + '0' + searchQuery.value.month.value + '-' + '01'
-        dateEnd = year + '-' + '0' + searchQuery.value.month.value + '-' + day
+      const day = new Date(dateQuery.value.year.value, dateQuery.value.month.value, 0).getDate()
+      if (dateQuery.value.month.value < 10) {
+        dateStart = year + '-' + '0' + dateQuery.value.month.value + '-' + '01'
+        dateEnd = year + '-' + '0' + dateQuery.value.month.value + '-' + day
       } else {
-        dateStart = year + '-' + searchQuery.value.month.value + '-' + '01'
-        dateEnd = year + '-' + searchQuery.value.month.value + '-' + day
+        dateStart = year + '-' + dateQuery.value.month.value + '-' + '01'
+        dateEnd = year + '-' + dateQuery.value.month.value + '-' + day
       }
     }
   } else {
-    if (searchQuery.value.month.value === 0) {
-      dateStart = searchQuery.value.year.value + '-' + '01-01'
-      dateEnd = searchQuery.value.year.value + '-' + '12-31'
+    if (dateQuery.value.month.value === 0) {
+      dateStart = dateQuery.value.year.value + '-' + '01-01'
+      dateEnd = dateQuery.value.year.value + '-' + '12-31'
     } else {
-      const day = new Date(searchQuery.value.year.value, searchQuery.value.month.value, 0).getDate()
-      if (searchQuery.value.month.value < 10) {
-        dateStart = searchQuery.value.year.value + '-' + '0' + searchQuery.value.month.value + '-' + '01'
-        dateEnd = searchQuery.value.year.value + '-' + '0' + searchQuery.value.month.value + '-' + day
+      const day = new Date(dateQuery.value.year.value, dateQuery.value.month.value, 0).getDate()
+      if (dateQuery.value.month.value < 10) {
+        dateStart = dateQuery.value.year.value + '-' + '0' + dateQuery.value.month.value + '-' + '01'
+        dateEnd = dateQuery.value.year.value + '-' + '0' + dateQuery.value.month.value + '-' + day
       } else {
-        dateStart = searchQuery.value.year.value + '-' + searchQuery.value.month.value + '-' + '01'
-        dateEnd = searchQuery.value.year.value + '-' + searchQuery.value.month.value + '-' + day
+        dateStart = dateQuery.value.year.value + '-' + dateQuery.value.month.value + '-' + '01'
+        dateEnd = dateQuery.value.year.value + '-' + dateQuery.value.month.value + '-' + day
       }
     }
   }
-  query.value.date_start = dateStart
-  query.value.date_end = dateEnd
+  searchQuery.value.date_start = dateStart
+  searchQuery.value.date_end = dateEnd
   exportQuery.value.date_start = dateStart
   exportQuery.value.date_end = dateEnd
 }
 const changePageSize = () => {
-  query.value.page_size = paginationTable.value.rowsPerPage
-  query.value.page = 1
+  searchQuery.value.page_size = paginationTable.value.rowsPerPage
+  searchQuery.value.page = 1
   paginationTable.value.page = 1
   getConsumptionDetailData()
 }
 const changePagination = () => {
-  query.value.page = paginationTable.value.page
+  searchQuery.value.page = paginationTable.value.page
   getConsumptionDetailData()
 }
 const search = () => {
@@ -200,7 +202,7 @@ const search = () => {
   getConsumptionDetailData()
 }
 const exportFile = () => {
-  if (tableRow.value.length === 0) {
+  if (statisticsTableRow.value.length === 0) {
     exportNotify()
   } else {
     const date = new Date()
@@ -208,11 +210,11 @@ const exportFile = () => {
   }
 }
 const exportAll = async () => {
-  if (tableRow.value.length === 0) {
+  if (statisticsTableRow.value.length === 0) {
     exportNotify()
   } else {
     const date = new Date()
-    const fileData = await store.getMeteringDetail(exportQuery.value)
+    const fileData = await stats.stats.metering.getMeteringServer({ query: exportQuery.value })
     exportAllData(fileData.data, i18n.global.locale === 'zh' ? '云主机用量统计-' + date.toLocaleTimeString() : 'Servers Usage Statistics-' + date.toLocaleTimeString())
   }
 }
@@ -220,15 +222,15 @@ onMounted(async () => {
   initSelectYear()
   await getConsumptionDetailData()
   cardObj.value.serverId = route.params.serverId as string
-  cardObj.value.service = tableRow.value[0].service_id
+  cardObj.value.service = statisticsTableRow.value[0].service_id
   cardObj.value.vcpus = route.query.vcpus as string
   cardObj.value.ram = route.query.ram as string
   cardObj.value.ipv4 = route.query.ipv4 as string
-  if (tableRow.value[0].username === '') {
-    cardObj.value.name = tableRow.value[0].vo_name
+  if (statisticsTableRow.value[0].username === '') {
+    cardObj.value.name = statisticsTableRow.value[0].vo_name
     title.value = 'group'
   } else {
-    cardObj.value.name = tableRow.value[0].username
+    cardObj.value.name = statisticsTableRow.value[0].username
     title.value = 'user'
   }
 })
@@ -244,11 +246,11 @@ onMounted(async () => {
     <div class="row q-mt-lg justify-between">
       <div class="row col-5 items-center">
         <div class="col-3">
-          <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" :label="tc('pleaseSelect')"
+          <q-select outlined dense v-model="dateQuery.year" :options="yearOptions" :label="tc('pleaseSelect')"
                     @update:model-value="changeYear"/>
         </div>
         <div class="col-3 q-ml-sm">
-          <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" :label="tc('pleaseSelect')"
+          <q-select outlined dense v-model="dateQuery.month" :options="monthOptions" :label="tc('pleaseSelect')"
                     :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
         </div>
         <div class="q-ml-sm">
@@ -264,7 +266,7 @@ onMounted(async () => {
       <server-card :cardObj="cardObj" :title="title"/>
     </div>
     <div class="q-mt-md">
-      <server-statistics-detail-table :tableRow="tableRow" ref="childRef"/>
+      <server-statistics-detail-table :tableRow="statisticsTableRow" :isLoading="isLoading"/>
     </div>
     <div class="row text-grey justify-between items-center q-mt-md">
       <div class="row items-center">

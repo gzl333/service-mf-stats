@@ -83,29 +83,29 @@ const routes: RouteRecordRaw[] = [
               {
                 path: 'cloud',
                 redirect: '/my/stats/statistic/list/cloud/server',
-                component: () => import('pages/statistic/cloud/AggregationIndex.vue'),
+                component: () => import('pages/statistic/server/AggregationIndex.vue'),
                 children: [
                   {
                     path: 'group',
-                    component: () => import('pages/statistic/cloud/GroupAggregationList.vue')
+                    component: () => import('pages/statistic/server/GroupAggregationList.vue')
                   },
                   {
                     path: 'user',
-                    component: () => import('pages/statistic/cloud/UserAggregationList.vue')
+                    component: () => import('pages/statistic/server/UserAggregationList.vue')
                   },
                   {
                     path: 'server',
-                    component: () => import('pages/statistic/cloud/ServerAggregationList.vue')
+                    component: () => import('pages/statistic/server/ServerAggregationList.vue')
                   },
                   {
                     path: 'service',
-                    component: () => import('pages/statistic/cloud/ServiceAggregationList.vue')
+                    component: () => import('pages/statistic/server/ServiceAggregationList.vue')
                   }
                 ]
               },
               {
                 path: 'storage',
-                component: () => import('pages/statistic/storage/StorageIndex.vue')
+                component: () => import('pages/statistic/storage/StorageList.vue')
               },
               {
                 path: 'server/:serverId',
@@ -120,7 +120,7 @@ const routes: RouteRecordRaw[] = [
                   type: 'service',
                   isPersonal: false
                 },
-                component: () => import('pages/statistic/cloud/ServerUsageDetailList.vue')
+                component: () => import('pages/statistic/server/ServerUsageDetailList.vue')
               },
               {
                 path: 'group/:groupId',
@@ -128,7 +128,7 @@ const routes: RouteRecordRaw[] = [
                   type: 'group',
                   isPersonal: false
                 },
-                component: () => import('pages/statistic/cloud/ServerUsageDetailList.vue')
+                component: () => import('pages/statistic/server/ServerUsageDetailList.vue')
               },
               {
                 path: 'user/:userid',
@@ -136,7 +136,7 @@ const routes: RouteRecordRaw[] = [
                   type: 'user',
                   isPersonal: false
                 },
-                component: () => import('pages/statistic/cloud/ServerUsageDetailList.vue')
+                component: () => import('pages/statistic/server/ServerUsageDetailList.vue')
               },
               {
                 path: 'details/:serverId',

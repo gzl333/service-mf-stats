@@ -74,5 +74,7 @@ export default {
   copiedToClipboard: 'Copied to clipboard',
   storageBucketId: 'Storage Bucket Id',
   bucketName: 'Bucket Name',
-  storageDuration: 'Storage Duration (GB/Hour)'
+  storageDuration: 'Storage Duration (GB/Hour)',
+  bucketId: 'Bucket Id',
+  userId: 'User Id'
 }

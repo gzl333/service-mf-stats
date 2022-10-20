@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { ref, onBeforeMount, onBeforeUnmount, computed, Ref } from 'vue'
-import { navigateToUrl } from 'single-spa'
-import { useStore } from 'stores/store'
-import emitter from 'boot/mitt'
-import useCopyToClipboard from 'src/hooks/useCopyToClipboard'
+// import { useStore } from 'stores/store'
 import { getNowFormatDate } from 'src/hooks/processTime'
+import { navigateToUrl } from 'single-spa'
+import useCopyToClipboard from 'src/hooks/useCopyToClipboard'
 // import { useRoute, useRouter } from 'vue-router'
 import { i18n } from 'boot/i18n'
+import stats from 'src/api'
+import emitter from 'boot/mitt'
 
 // const props = defineProps({
 //   foo: {
@@ -17,10 +18,11 @@ import { i18n } from 'boot/i18n'
 // })
 // const emits = defineEmits(['change', 'delete'])
 
-const store = useStore()
+// const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
 const { tc } = i18n.global
+const clickToCopy = useCopyToClipboard()
 const serverColumns = computed(() => [
   { name: 'server_id', label: (() => tc('uuid'))(), align: 'center' },
   { name: 'ipv4', align: 'center', label: (() => tc('ip'))() },
@@ -33,11 +35,6 @@ const serverColumns = computed(() => [
   { name: 'total_original_amount', label: (() => tc('billingAmount'))(), align: 'center' },
   { name: 'total_trade_amount', label: (() => tc('actualBillingAmount'))(), align: 'center' }
 ])
-const paginationTable = ref({
-  page: 1,
-  count: 0,
-  rowsPerPage: 10
-})
 const isLoading = ref(false)
 const myDate = new Date()
 const year = myDate.getFullYear()
@@ -50,7 +47,11 @@ const query: Ref = ref({
   date_end: currentDate,
   'as-admin': true
 })
-const clickToCopy = useCopyToClipboard()
+const paginationTable = ref({
+  page: 1,
+  count: 0,
+  rowsPerPage: 10
+})
 emitter.on('server', async (value) => {
   query.value = value
   paginationTable.value.page = 1
@@ -58,9 +59,9 @@ emitter.on('server', async (value) => {
 })
 const getServerAggregationData = async () => {
   isLoading.value = true
-  const data = await store.getServerMetering(query.value)
-  serverTableRow.value = data.data.results
-  paginationTable.value.count = data.data.count
+  const respServerMetering = await stats.stats.metering.getAggregationServer({ query: query.value })
+  serverTableRow.value = respServerMetering.data.results
+  paginationTable.value.count = respServerMetering.data.count
   isLoading.value = false
 }
 const changePageSize = () => {
@@ -87,7 +88,6 @@ onBeforeUnmount(() => {
 <template>
   <div class="ServerAggregationList">
     <div class="q-ml-md">
-      <q-separator/>
       <q-table
         flat
         id="serverTable"

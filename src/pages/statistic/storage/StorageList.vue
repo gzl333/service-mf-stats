@@ -3,13 +3,12 @@ import { computed, ref, onBeforeMount, Ref } from 'vue'
 import { DateInterface, useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
 // import { navigateToUrl } from 'single-spa'
-import { i18n } from 'boot/i18n'
-import stats from 'src/api/index'
-import StorageTable from 'components/statistic/StorageTable'
 import { getNowFormatDate } from 'src/hooks/processTime'
 import { exportNotify } from 'src/hooks/ExportNotify'
 import { exportAllData, exportExcel } from 'src/hooks/exportExcel'
-// import { exportAllData, exportExcel } from 'src/hooks/exportExcel'
+import { i18n } from 'boot/i18n'
+import stats from 'src/api/index'
+import StorageTable from 'components/statistic/StorageTable'
 
 // const props = defineProps({
 // })
@@ -243,8 +242,8 @@ onBeforeMount(async () => {
           <q-select style="width: 100px" outlined dense v-model="dateQuery.year" :options="yearOptions" :label="tc('pleaseSelect')" @update:model-value="changeYear" />
           <q-select style="width: 100px" class="q-ml-sm" outlined dense v-model="dateQuery.month" :options="monthOptions" :label="tc('pleaseSelect')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
           <q-select style="width: 200px" class="q-ml-sm" outlined dense v-model="serviceId" :options="serviceOptions" :label="tc('filterService')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
-          <q-input style="width: 200px" class="q-ml-sm" outlined dense clearable v-model="bucketId" label="输入桶Id" />
-          <q-input style="width: 200px" class="q-ml-sm" outlined dense clearable v-model="userId" label="输入用户Id" />
+          <q-input style="width: 200px" class="q-ml-sm" outlined dense clearable v-model="bucketId" :label="tc('bucketId')" />
+          <q-input style="width: 200px" class="q-ml-sm" outlined dense clearable v-model="userId" :label="tc('userId')" />
           <q-btn color="primary" class="q-ml-sm q-py-sm" no-caps :label="tc('search')" @click="search"/>
       </div>
       <div class="row justify-end">

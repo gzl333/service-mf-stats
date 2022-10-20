@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useStore, DateInterface, PersonalServerMeteringInterface } from 'stores/store'
+import { DateInterface, PersonalServerMeteringInterface } from 'stores/store'
 import { useRoute, useRouter } from 'vue-router'
-import { i18n } from 'boot/i18n'
-import ServerUsageTable from 'components/public/ServerUsageTable.vue'
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
 import { exportNotify } from 'src/hooks/ExportNotify'
+import { i18n } from 'boot/i18n'
+import ServerUsageTable from 'components/public/ServerUsageTable.vue'
+import stats from 'src/api'
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -15,35 +16,23 @@ import { exportNotify } from 'src/hooks/ExportNotify'
 // })
 // const emits = defineEmits(['change', 'delete'])
 
-const store = useStore()
+// const store = useStore()
 const route = useRoute()
 const router = useRouter()
 const { tc } = i18n.global
-const childRef = ref()
 const totalAmount = ref(0)
 const actualAmount = ref(0)
 const dateStart = ref()
 const dateEnd = ref()
+const isLoading = ref(false)
 const monthOptions = ref<DateInterface[]>([])
 const yearOptions = ref<DateInterface[]>([])
-const tableRow = ref<PersonalServerMeteringInterface[]>([])
+const usageTableRow = ref<PersonalServerMeteringInterface[]>([])
 const myDate = new Date()
 const year = myDate.getFullYear()
 const month = myDate.getMonth() + 1
 let currentMonth: number | string = myDate.getMonth() + 1
 let strDate: number | string = myDate.getDate()
-const monthArray = ['January', 'february', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-const searchQuery = ref({
-  year: {
-    label: year,
-    value: year
-  },
-  month: {
-    label: '全年',
-    labelEn: 'Annual',
-    value: 0
-  }
-})
 const getFormatDate = () => {
   const seperator1 = '-'
   if (currentMonth >= 1 && currentMonth <= 9) {
@@ -55,7 +44,18 @@ const getFormatDate = () => {
   return year + seperator1 + currentMonth + seperator1 + strDate
 }
 const currentDate = getFormatDate()
-const query = ref<Record<string, string | number | boolean>>({
+const dateQuery = ref({
+  year: {
+    label: year,
+    value: year
+  },
+  month: {
+    label: '全年',
+    labelEn: 'Annual',
+    value: 0
+  }
+})
+const searchQuery = ref<Record<string, string | number | boolean>>({
   page: 1,
   page_size: 10,
   date_start: year + '-' + '01-01',
@@ -73,9 +73,10 @@ const paginationTable = ref({
   count: 0,
   rowsPerPage: 10
 })
+const monthArray = ['January', 'february', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const changeYear = (val: Record<string, number>) => {
   monthOptions.value = []
-  searchQuery.value.month = {
+  dateQuery.value.month = {
     label: '全年',
     labelEn: 'Annual',
     value: 0
@@ -124,77 +125,77 @@ const initSelectYear = () => {
   }
 }
 const initQuery = () => {
-  query.value.page = 1
+  searchQuery.value.page = 1
   let dateStart = ''
   let dateEnd = ''
-  if (searchQuery.value.year.value === year) {
-    if (searchQuery.value.month.value === 0) {
+  if (dateQuery.value.year.value === year) {
+    if (dateQuery.value.month.value === 0) {
       dateStart = year + '-' + '01-01'
       dateEnd = currentDate
-    } else if (searchQuery.value.month.value === month) {
+    } else if (dateQuery.value.month.value === month) {
       dateStart = year + '-' + currentMonth + '-' + '01'
       dateEnd = currentDate
     } else {
-      const day = new Date(searchQuery.value.year.value, searchQuery.value.month.value, 0).getDate()
-      if (searchQuery.value.month.value < 10) {
-        dateStart = year + '-' + '0' + searchQuery.value.month.value + '-' + '01'
-        dateEnd = year + '-' + '0' + searchQuery.value.month.value + '-' + day
+      const day = new Date(dateQuery.value.year.value, dateQuery.value.month.value, 0).getDate()
+      if (dateQuery.value.month.value < 10) {
+        dateStart = year + '-' + '0' + dateQuery.value.month.value + '-' + '01'
+        dateEnd = year + '-' + '0' + dateQuery.value.month.value + '-' + day
       } else {
-        dateStart = year + '-' + searchQuery.value.month.value + '-' + '01'
-        dateEnd = year + '-' + searchQuery.value.month.value + '-' + day
+        dateStart = year + '-' + dateQuery.value.month.value + '-' + '01'
+        dateEnd = year + '-' + dateQuery.value.month.value + '-' + day
       }
     }
   } else {
-    if (searchQuery.value.month.value === 0) {
-      dateStart = searchQuery.value.year.value + '-' + '01-01'
-      dateEnd = searchQuery.value.year.value + '-' + '12-31'
+    if (dateQuery.value.month.value === 0) {
+      dateStart = dateQuery.value.year.value + '-' + '01-01'
+      dateEnd = dateQuery.value.year.value + '-' + '12-31'
     } else {
-      const day = new Date(searchQuery.value.year.value, searchQuery.value.month.value, 0).getDate()
-      if (searchQuery.value.month.value < 10) {
-        dateStart = searchQuery.value.year.value + '-' + '0' + searchQuery.value.month.value + '-' + '01'
-        dateEnd = searchQuery.value.year.value + '-' + '0' + searchQuery.value.month.value + '-' + day
+      const day = new Date(dateQuery.value.year.value, dateQuery.value.month.value, 0).getDate()
+      if (dateQuery.value.month.value < 10) {
+        dateStart = dateQuery.value.year.value + '-' + '0' + dateQuery.value.month.value + '-' + '01'
+        dateEnd = dateQuery.value.year.value + '-' + '0' + dateQuery.value.month.value + '-' + day
       } else {
-        dateStart = searchQuery.value.year.value + '-' + searchQuery.value.month.value + '-' + '01'
-        dateEnd = searchQuery.value.year.value + '-' + searchQuery.value.month.value + '-' + day
+        dateStart = dateQuery.value.year.value + '-' + dateQuery.value.month.value + '-' + '01'
+        dateEnd = dateQuery.value.year.value + '-' + dateQuery.value.month.value + '-' + day
       }
     }
   }
-  query.value.date_start = dateStart
-  query.value.date_end = dateEnd
+  searchQuery.value.date_start = dateStart
+  searchQuery.value.date_end = dateEnd
   exportQuery.value.date_start = dateStart
   exportQuery.value.date_end = dateEnd
 }
 const getDetailData = async () => {
-  childRef.value.startLoading()
-  tableRow.value = []
+  isLoading.value = true
+  usageTableRow.value = []
   totalAmount.value = 0
   actualAmount.value = 0
   if (route.meta.type === 'user') {
-    query.value.user_id = route.params.userid as string
+    searchQuery.value.user_id = route.params.userid as string
     exportQuery.value.user_id = route.params.userid as string
   } else if (route.meta.type === 'group') {
-    query.value.vo_id = route.params.groupId as string
+    searchQuery.value.vo_id = route.params.groupId as string
     exportQuery.value.vo_id = route.params.groupId as string
   } else if (route.meta.type === 'service') {
-    query.value.service_id = route.params.serviceId as string
+    searchQuery.value.service_id = route.params.serviceId as string
     exportQuery.value.service_id = route.params.serviceId as string
   }
-  const data = await store.getServerMetering(query.value)
-  for (const elem of data.data.results) {
-    tableRow.value.push(elem)
+  const respServerMetering = await stats.stats.metering.getAggregationServer({ query: searchQuery.value })
+  for (const elem of respServerMetering.data.results) {
+    usageTableRow.value.push(elem)
   }
-  paginationTable.value.count = data.data.count
-  dateStart.value = query.value.date_start
-  dateEnd.value = query.value.date_end
-  childRef.value.endLoading()
+  paginationTable.value.count = respServerMetering.data.count
+  dateStart.value = searchQuery.value.date_start
+  dateEnd.value = searchQuery.value.date_end
+  isLoading.value = false
 }
 const changePagination = (val: number) => {
-  query.value.page = val
+  searchQuery.value.page = val
   getDetailData()
 }
 const changePageSize = () => {
-  query.value.page_size = paginationTable.value.rowsPerPage
-  query.value.page = 1
+  searchQuery.value.page_size = paginationTable.value.rowsPerPage
+  searchQuery.value.page = 1
   paginationTable.value.page = 1
   getDetailData()
 }
@@ -203,7 +204,7 @@ const search = () => {
   getDetailData()
 }
 const exportFile = () => {
-  if (tableRow.value.length === 0) {
+  if (usageTableRow.value.length === 0) {
     exportNotify()
   } else {
     const date = new Date()
@@ -211,11 +212,11 @@ const exportFile = () => {
   }
 }
 const exportAll = async () => {
-  if (tableRow.value.length === 0) {
+  if (usageTableRow.value.length === 0) {
     exportNotify()
   } else {
     const date = new Date()
-    const fileData = await store.getServerMetering(exportQuery.value)
+    const fileData = await stats.stats.metering.getAggregationServer({ query: exportQuery.value })
     exportAllData(fileData.data, i18n.global.locale === 'zh' ? '云主机用量统计' + date.toLocaleTimeString() : 'Servers Usage Statistics' + date.toLocaleTimeString())
   }
 }
@@ -235,10 +236,10 @@ onMounted(() => {
     <div class="row q-mt-lg justify-between">
       <div class="row col-5 items-center">
         <div class="col-3">
-          <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" :label="tc('pleaseSelect')" @update:model-value="changeYear"/>
+          <q-select outlined dense v-model="dateQuery.year" :options="yearOptions" :label="tc('pleaseSelect')" @update:model-value="changeYear"/>
         </div>
         <div class="col-3 q-ml-sm">
-          <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" :label="tc('pleaseSelect')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
+          <q-select outlined dense v-model="dateQuery.month" :options="monthOptions" :label="tc('pleaseSelect')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
         </div>
         <div class="q-ml-sm">
           <q-btn class="q-px-lg q-py-sm" color="primary" no-caps :label="tc('search')" @click="search"/>
@@ -259,7 +260,7 @@ onMounted(() => {
 <!--      <div class="col-3">{{ tc('totalAmountOfActualDeduction') }}：{{ actualAmount.toFixed(2) }} {{ tc('points') }}</div>-->
     </div>
     <div class="q-mt-md">
-    <server-usage-table :table-row="tableRow" ref="childRef"/>
+    <server-usage-table :tableRow="usageTableRow" :isLoading="isLoading"/>
     </div>
     <div class="row q-mt-lg text-grey justify-between items-center">
       <div class="row items-center">

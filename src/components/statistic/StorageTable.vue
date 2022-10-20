@@ -38,8 +38,7 @@ const serverColumns = computed(() => [
 </script>
 
 <template>
-  <div class="StorageList">
-    <q-separator/>
+  <div class="StorageTable">
     <q-table
       flat
       id="StorageMeteringTable"

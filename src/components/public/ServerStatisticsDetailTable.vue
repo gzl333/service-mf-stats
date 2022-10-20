@@ -1,15 +1,17 @@
 <script setup lang="ts">
-// import { ref } from 'vue'
-// import { navigateToUrl } from 'single-spa'
-// import { navigateToUrl } from 'single-spa'
+import { computed } from 'vue'
 // import { useStore } from 'stores/store'
 // import { useRoute } from 'vue-router'
 import { i18n } from 'boot/i18n'
 // import PayStatusChip from '../statistic/PayStatusChip.vue'
-import { computed, ref } from 'vue'
+
 const props = defineProps({
   tableRow: {
     type: Array,
+    required: true
+  },
+  isLoading: {
+    type: Boolean,
     required: false
   }
 })
@@ -18,7 +20,6 @@ const props = defineProps({
 // const route = useRoute()
 // const router = useRouter()
 const { tc } = i18n.global
-const isLoading = ref(false)
 const columns = computed(() => [
   { name: 'date', align: 'center', label: (() => tc('billingDate'))() },
   // { name: 'payment_status', label: (() => tc('deduction_ststus'))(), align: 'center' },
@@ -32,13 +33,6 @@ const columns = computed(() => [
   { name: 'original_amount', label: (() => tc('totalBillingAmount'))(), align: 'center' },
   { name: 'trade_amount', label: (() => tc('totalAmountOfActualDeduction'))(), align: 'center' }
 ])
-const startLoading = () => {
-  isLoading.value = true
-}
-const endLoading = () => {
-  isLoading.value = false
-}
-defineExpose({ startLoading, endLoading })
 </script>
 
 <template>
@@ -49,7 +43,7 @@ defineExpose({ startLoading, endLoading })
         table-header-class="bg-grey-1 text-grey"
         :rows="props.tableRow"
         :columns="columns"
-        :loading="isLoading"
+        :loading="props.isLoading"
         row-key="name"
         color="primary"
         :loading-label="tc('notifyLoading')"

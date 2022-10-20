@@ -1,16 +1,18 @@
 <script setup lang="ts">
-// import { ref } from 'vue'
-// import { navigateToUrl } from 'single-spa'
+import { computed } from 'vue'
 import { useStore } from 'stores/store'
 import { navigateToUrl } from 'single-spa'
 // import { useRoute, useRouter } from 'vue-router'
 import { i18n } from 'boot/i18n'
-import { computed, ref } from 'vue'
 
 const props = defineProps({
   tableRow: {
     type: Array,
     required: true
+  },
+  isLoading: {
+    type: Boolean,
+    required: false
   }
 })
 // const emits = defineEmits(['change', 'delete'])
@@ -18,7 +20,6 @@ const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
 const { tc } = i18n.global
-const isLoading = ref(false)
 const columns = computed(() => [
   { name: 'ipv4', align: 'center', label: (() => tc('ip'))() },
   { name: 'service_name', label: (() => tc('serviceUnit'))(), align: 'center' },
@@ -35,13 +36,6 @@ const columns = computed(() => [
 const goToDetail = (serverId: string, ipv4: string, vcpus: string, ram: string) => {
   navigateToUrl(`/my/stats/consumption/group/metering/server/${serverId}?ipv4=${ipv4}&vcpus=${vcpus}&ram=${ram}`)
 }
-const startLoading = () => {
-  isLoading.value = true
-}
-const endLoading = () => {
-  isLoading.value = false
-}
-defineExpose({ startLoading, endLoading })
 </script>
 
 <template>
@@ -52,7 +46,7 @@ defineExpose({ startLoading, endLoading })
         table-header-class="bg-grey-1 text-grey"
         :rows="props.tableRow"
         :columns="columns"
-        :loading="isLoading"
+        :loading="props.isLoading"
         row-key="name"
         color="primary"
         :loading-label="tc('notifyLoading')"

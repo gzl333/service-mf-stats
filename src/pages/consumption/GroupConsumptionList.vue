@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue'
+import { onBeforeMount, ref, computed } from 'vue'
 import { useStore, GroupServerMeteringInterface } from 'stores/store'
 import { useRoute, useRouter } from 'vue-router'
-import { i18n } from 'boot/i18n'
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
 import { exportNotify } from 'src/hooks/ExportNotify'
-import GroupUsageTable from 'components/consumption/GroupUsageTable.vue'
 import { getHistoryStartFormatDate, getNowFormatDate } from 'src/hooks/processTime'
+import { i18n } from 'boot/i18n'
+import stats from 'src/api'
+import GroupUsageTable from 'components/consumption/GroupUsageTable.vue'
+
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -21,8 +23,12 @@ const route = useRoute()
 const router = useRouter()
 const { tc } = i18n.global
 const serviceOptions = computed(() => store.getServices('enable'))
-const childRef = ref()
-const tableRow = ref<GroupServerMeteringInterface[]>([])
+const startDate = getHistoryStartFormatDate()
+const currentDate = getNowFormatDate(1)
+const consumptionTableRow = ref<GroupServerMeteringInterface[]>([])
+const dateFrom = ref(startDate)
+const dateTo = ref(currentDate)
+const isLoading = ref(false)
 const paginationTable = ref({
   page: 1,
   count: 0,
@@ -33,20 +39,7 @@ const serviceId = ref({
   labelEn: 'All Services',
   value: ''
 })
-const startDate = getHistoryStartFormatDate()
-const currentDate = getNowFormatDate(1)
-const dateFrom = ref(startDate)
-const dateTo = ref(currentDate)
-const myLocale = {
-  days: 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_'),
-  daysShort: 'Sun_Mon_Tue_Wed_Thu_Fri_Sat'.split('_'),
-  months: 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_'),
-  monthsShort: 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_'),
-  firstDayOfWeek: 1,
-  format24h: true,
-  pluralDay: 'dias'
-}
-const query = ref<Record<string, string | number>>({
+const searchQuery = ref<Record<string, string | number>>({
   page: 1,
   page_size: 10,
   date_start: startDate,
@@ -59,9 +52,18 @@ const exportQuery: Record<string, string | boolean> = {
   vo_id: route.params.voId as string,
   download: true
 }
+const myLocale = {
+  days: 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_'),
+  daysShort: 'Sun_Mon_Tue_Wed_Thu_Fri_Sat'.split('_'),
+  months: 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_'),
+  monthsShort: 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_'),
+  firstDayOfWeek: 1,
+  format24h: true,
+  pluralDay: 'dias'
+}
 const getGroupConsumptionData = async () => {
-  childRef.value.startLoading()
-  tableRow.value = []
+  isLoading.value = true
+  consumptionTableRow.value = []
   let obj: GroupServerMeteringInterface = {
     ipv4: '',
     vo_id: '',
@@ -76,8 +78,8 @@ const getGroupConsumptionData = async () => {
     total_ram_hours: 0,
     total_trade_amount: 0
   }
-  const data = await store.getServerMetering(query.value)
-  for (const elem of data.data.results) {
+  const respServerMetering = await stats.stats.metering.getAggregationServer({ query: searchQuery.value })
+  for (const elem of respServerMetering.data.results) {
     obj = {
       ipv4: '',
       vo_id: '',
@@ -104,41 +106,41 @@ const getGroupConsumptionData = async () => {
     obj.total_disk_hours = elem.total_disk_hours
     obj.total_original_amount = elem.total_original_amount
     obj.total_trade_amount = elem.total_trade_amount
-    tableRow.value.push(obj)
+    consumptionTableRow.value.push(obj)
   }
-  paginationTable.value.count = data.data.count
-  childRef.value.endLoading()
+  paginationTable.value.count = respServerMetering.data.count
+  isLoading.value = false
 }
 const selectService = (val: Record<string, string>) => {
   if (val.value !== '') {
-    query.value.service_id = val.value
+    searchQuery.value.service_id = val.value
     exportQuery.service_id = val.value
   } else {
-    delete query.value.service_id
+    delete searchQuery.value.service_id
     delete exportQuery.service_id
   }
 }
 const selectDate = () => {
-  dateFrom.value = query.value.date_start as string
-  dateTo.value = query.value.date_end as string
+  dateFrom.value = searchQuery.value.date_start as string
+  dateTo.value = searchQuery.value.date_end as string
 }
 const search = () => {
-  query.value.page = 1
+  searchQuery.value.page = 1
   paginationTable.value.page = 1
   getGroupConsumptionData()
 }
 const changePagination = () => {
-  query.value.page = paginationTable.value.page
+  searchQuery.value.page = paginationTable.value.page
   getGroupConsumptionData()
 }
 const changePageSize = () => {
-  query.value.page_size = paginationTable.value.rowsPerPage
-  query.value.page = 1
+  searchQuery.value.page_size = paginationTable.value.rowsPerPage
+  searchQuery.value.page = 1
   paginationTable.value.page = 1
   getGroupConsumptionData()
 }
 const exportFile = () => {
-  if (tableRow.value.length === 0) {
+  if (consumptionTableRow.value.length === 0) {
     exportNotify()
   } else {
     const date = new Date()
@@ -146,15 +148,15 @@ const exportFile = () => {
   }
 }
 const exportAll = async () => {
-  if (tableRow.value.length === 0) {
+  if (consumptionTableRow.value.length === 0) {
     exportNotify()
   } else {
     const date = new Date()
-    const fileData = await store.getServerMetering(exportQuery)
+    const fileData = await stats.stats.metering.getAggregationServer({ query: exportQuery })
     exportAllData(fileData.data, i18n.global.locale === 'zh' ? '项目组云主机用量统计-' + date.toLocaleTimeString() : 'Group Servers Statistics-' + date.toLocaleTimeString())
   }
 }
-onMounted(() => {
+onBeforeMount(() => {
   getGroupConsumptionData()
 })
 </script>
@@ -173,7 +175,7 @@ onMounted(() => {
               <template v-slot:append>
                 <q-icon name="event" class="cursor-pointer">
                   <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
-                    <q-date minimal v-model="query.date_start" @update:model-value="selectDate"
+                    <q-date minimal v-model="searchQuery.date_start" @update:model-value="selectDate"
                             mask="YYYY-MM-DD" :locale="i18n.global.locale === 'en' ? myLocale : ''">
                       <div class="row items-center justify-end">
                         <q-btn v-close-popup no-caps :label="tc('confirm')" color="primary" flat/>
@@ -190,7 +192,7 @@ onMounted(() => {
               <template v-slot:append>
                 <q-icon name="event" class="cursor-pointer">
                   <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
-                    <q-date minimal v-model="query.date_end" @update:model-value="selectDate"
+                    <q-date minimal v-model="searchQuery.date_end" @update:model-value="selectDate"
                             mask="YYYY-MM-DD" :locale="i18n.global.locale === 'en' ? myLocale : ''">
                       <div class="row items-center justify-end">
                         <q-btn v-close-popup no-caps :label="tc('confirm')" color="primary" flat/>
@@ -211,7 +213,7 @@ onMounted(() => {
       </div>
     </div>
     <div class="q-mt-md">
-    <group-usage-table :tableRow="tableRow" ref="childRef"/>
+    <group-usage-table :tableRow="consumptionTableRow" :isLoading="isLoading"/>
     </div>
     <div class="row q-py-md text-grey justify-between items-center">
       <div class="row items-center">

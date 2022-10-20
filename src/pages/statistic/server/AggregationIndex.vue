@@ -2,10 +2,11 @@
 import { onBeforeMount, ref, computed } from 'vue'
 import { useStore, DateInterface } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
-import { i18n } from 'boot/i18n'
 import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
-import emitter from 'boot/mitt'
 import { navigateToUrl } from 'single-spa'
+import { i18n } from 'boot/i18n'
+import stats from 'src/api'
+import emitter from 'boot/mitt'
 // const props = defineProps({
 //   foo: {
 //     type: String,
@@ -22,30 +23,13 @@ const { tc } = i18n.global
 const serviceOptions = computed(() => store.getServices('all'))
 const activeItem = ref(store.items.currentPath[3])
 const isDisable = ref(false)
+const searchName = ref('')
 const myDate = new Date()
 const year = myDate.getFullYear()
 // 该变量用于作比较判断
 const month = myDate.getMonth() + 1
 let currentMonth: number | string = myDate.getMonth() + 1
 let strDate: number | string = myDate.getDate()
-const monthArray = ['January', 'february', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-const serviceId = ref({
-  label: '全部服务',
-  labelEn: 'All Services',
-  value: ''
-})
-const searchName = ref('')
-const searchQuery = ref({
-  year: {
-    label: year,
-    value: year
-  },
-  month: {
-    label: '全年',
-    labelEn: 'Annual',
-    value: 0
-  }
-})
 const monthOptions = ref<DateInterface[]>([])
 const yearOptions = ref<DateInterface[]>([])
 const getNowFormatDate = () => {
@@ -59,7 +43,23 @@ const getNowFormatDate = () => {
   return year + seperator1 + currentMonth + seperator1 + strDate
 }
 const currentDate = getNowFormatDate()
-const query = ref<Record<string, string | number | boolean>>({
+const serviceId = ref({
+  label: '全部服务',
+  labelEn: 'All Services',
+  value: ''
+})
+const dateQuery = ref({
+  year: {
+    label: year,
+    value: year
+  },
+  month: {
+    label: '全年',
+    labelEn: 'Annual',
+    value: 0
+  }
+})
+const searchQuery = ref<Record<string, string | number | boolean>>({
   page: 1,
   page_size: 10,
   date_start: year + '-' + '01-01',
@@ -72,6 +72,7 @@ const exportQuery = ref<Record<string, string | boolean>>({
   'as-admin': true,
   download: true
 })
+const monthArray = ['January', 'february', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const initSelectYear = () => {
   monthOptions.value.push({
     value: 0,
@@ -94,7 +95,7 @@ const initSelectYear = () => {
 }
 const changeYear = (val: Record<string, number>) => {
   monthOptions.value = []
-  searchQuery.value.month = {
+  dateQuery.value.month = {
     label: '全年',
     labelEn: 'Annual',
     value: 0
@@ -123,76 +124,79 @@ const changeYear = (val: Record<string, number>) => {
   }
 }
 const initQuery = () => {
-  query.value.page = 1
+  searchQuery.value.page = 1
   let dateStart = ''
   let dateEnd = ''
-  if (searchQuery.value.year.value === year) {
-    if (searchQuery.value.month.value === 0) {
+  if (dateQuery.value.year.value === year) {
+    if (dateQuery.value.month.value === 0) {
       dateStart = year + '-' + '01-01'
       dateEnd = currentDate
-    } else if (searchQuery.value.month.value === month) {
+    } else if (dateQuery.value.month.value === month) {
       dateStart = year + '-' + currentMonth + '-' + '01'
       dateEnd = currentDate
     } else {
-      const day = new Date(searchQuery.value.year.value, searchQuery.value.month.value, 0).getDate()
-      if (searchQuery.value.month.value < 10) {
-        dateStart = year + '-' + '0' + searchQuery.value.month.value + '-' + '01'
-        dateEnd = year + '-' + '0' + searchQuery.value.month.value + '-' + day
+      const day = new Date(dateQuery.value.year.value, dateQuery.value.month.value, 0).getDate()
+      if (dateQuery.value.month.value < 10) {
+        dateStart = year + '-' + '0' + dateQuery.value.month.value + '-' + '01'
+        dateEnd = year + '-' + '0' + dateQuery.value.month.value + '-' + day
       } else {
-        dateStart = year + '-' + searchQuery.value.month.value + '-' + '01'
-        dateEnd = year + '-' + searchQuery.value.month.value + '-' + day
+        dateStart = year + '-' + dateQuery.value.month.value + '-' + '01'
+        dateEnd = year + '-' + dateQuery.value.month.value + '-' + day
       }
     }
   } else {
-    if (searchQuery.value.month.value === 0) {
-      dateStart = searchQuery.value.year.value + '-' + '01-01'
-      dateEnd = searchQuery.value.year.value + '-' + '12-31'
+    if (dateQuery.value.month.value === 0) {
+      dateStart = dateQuery.value.year.value + '-' + '01-01'
+      dateEnd = dateQuery.value.year.value + '-' + '12-31'
     } else {
-      const day = new Date(searchQuery.value.year.value, searchQuery.value.month.value, 0).getDate()
-      if (searchQuery.value.month.value < 10) {
-        dateStart = searchQuery.value.year.value + '-' + '0' + searchQuery.value.month.value + '-' + '01'
-        dateEnd = searchQuery.value.year.value + '-' + '0' + searchQuery.value.month.value + '-' + day
+      const day = new Date(dateQuery.value.year.value, dateQuery.value.month.value, 0).getDate()
+      if (dateQuery.value.month.value < 10) {
+        dateStart = dateQuery.value.year.value + '-' + '0' + dateQuery.value.month.value + '-' + '01'
+        dateEnd = dateQuery.value.year.value + '-' + '0' + dateQuery.value.month.value + '-' + day
       } else {
-        dateStart = searchQuery.value.year.value + '-' + searchQuery.value.month.value + '-' + '01'
-        dateEnd = searchQuery.value.year.value + '-' + searchQuery.value.month.value + '-' + day
+        dateStart = dateQuery.value.year.value + '-' + dateQuery.value.month.value + '-' + '01'
+        dateEnd = dateQuery.value.year.value + '-' + dateQuery.value.month.value + '-' + day
       }
     }
   }
-  query.value.date_start = dateStart
-  query.value.date_end = dateEnd
+  searchQuery.value.date_start = dateStart
+  searchQuery.value.date_end = dateEnd
   exportQuery.value.date_start = dateStart
   exportQuery.value.date_end = dateEnd
 }
 const selectService = (val: Record<string, string>) => {
   if (val.value !== '') {
-    query.value.service_id = val.value
+    searchQuery.value.service_id = val.value
     exportQuery.value.service_id = val.value
   } else {
-    delete query.value.service_id
+    delete searchQuery.value.service_id
     delete exportQuery.value.service_id
   }
 }
 const search = async () => {
   if (activeItem.value === 'user') {
     initQuery()
-    emitter.emit('user', query.value)
+    emitter.emit('user', searchQuery.value)
   }
   if (activeItem.value === 'group') {
     initQuery()
-    emitter.emit('group', query.value)
+    emitter.emit('group', searchQuery.value)
   }
   if (activeItem.value === 'server') {
     initQuery()
-    emitter.emit('server', query.value)
+    emitter.emit('server', searchQuery.value)
   }
   if (activeItem.value === 'service') {
     initQuery()
-    emitter.emit('service', query.value)
+    emitter.emit('service', searchQuery.value)
   }
 }
 const changeTab = async (name: string) => {
+  if (searchQuery.value.service_id) {
+    delete searchQuery.value.service_id
+  }
   activeItem.value = name
-  searchQuery.value = {
+  dateQuery.value = {
     year: {
       label: year,
       value: year
@@ -209,23 +213,13 @@ const changeTab = async (name: string) => {
     value: ''
   }
   searchName.value = ''
-  query.value.date_start = searchQuery.value.year.value + '-01-01'
-  query.value.date_end = currentDate
-  exportQuery.value.date_start = searchQuery.value.year.value + '-01-01'
+  searchQuery.value.date_start = dateQuery.value.year.value + '-01-01'
+  searchQuery.value.date_end = currentDate
+  exportQuery.value.date_start = dateQuery.value.year.value + '-01-01'
   exportQuery.value.date_end = currentDate
-  changeYear(searchQuery.value.year)
-  if (name === 'service') {
-    isDisable.value = true
-  } else {
-    isDisable.value = false
-  }
+  changeYear(dateQuery.value.year)
+  name === 'service' ? isDisable.value = true : isDisable.value = false
   navigateToUrl(`/my/stats/statistic/list/cloud/${name}`)
-}
-const changeModel = (val: string) => {
-  if (query.value.service_id) {
-    delete query.value.service_id
-  }
-  changeTab(val)
 }
 // 导出当页数据
 const exportFile = () => {
@@ -245,21 +239,22 @@ const exportFile = () => {
 const exportAll = async () => {
   const date = new Date()
   if (activeItem.value === 'user') {
-    const fileData = await store.getUserMetering(exportQuery.value)
+    const fileData = await stats.stats.metering.getAggregationUser({ query: exportQuery.value })
     exportAllData(fileData.data, i18n.global.locale === 'zh' ? '按用户计量计费聚合统计' + date.toLocaleTimeString() : 'Aggregate Statistics Of Metering By User-' + date.toLocaleTimeString())
   } else if (activeItem.value === 'group') {
-    const fileData = await store.getGroupMetering(exportQuery.value)
+    const fileData = await stats.stats.metering.getAggregationVo({ query: exportQuery.value })
     exportAllData(fileData.data, i18n.global.locale === 'zh' ? '按项目组计量计费聚合统计' + date.toLocaleTimeString() : 'Aggregate Statistics Of Metering By Group-' + date.toLocaleTimeString())
   } else if (activeItem.value === 'server') {
-    const fileData = await store.getServerMetering(exportQuery.value)
+    const fileData = await stats.stats.metering.getAggregationServer({ query: exportQuery.value })
     exportAllData(fileData.data, i18n.global.locale === 'zh' ? '按云主机计量计费聚合统计' + date.toLocaleTimeString() : 'Aggregate Statistics Of Metering By Server-' + date.toLocaleTimeString())
   } else if (activeItem.value === 'service') {
-    const fileData = await store.getServiceMetering(exportQuery.value)
+    const fileData = await stats.stats.metering.getAggregationService({ query: exportQuery.value })
     exportAllData(fileData.data, i18n.global.locale === 'zh' ? '按服务计量计费聚合统计' + date.toLocaleTimeString() : 'Aggregate Statistics Of Metering By Service-' + date.toLocaleTimeString())
   }
 }
 onBeforeMount(async () => {
   initSelectYear()
+  activeItem.value === 'service' ? isDisable.value = true : isDisable.value = false
 })
 </script>
 
@@ -268,10 +263,10 @@ onBeforeMount(async () => {
     <div class="row q-mt-xl justify-between items-center">
       <div class="row col-7 items-center">
         <div class="col-2">
-          <q-select outlined dense v-model="searchQuery.year" :options="yearOptions" :label="tc('pleaseSelect')" @update:model-value="changeYear" />
+          <q-select outlined dense v-model="dateQuery.year" :options="yearOptions" :label="tc('pleaseSelect')" @update:model-value="changeYear" />
         </div>
         <div class="col-2 q-ml-md">
-          <q-select outlined dense v-model="searchQuery.month" :options="monthOptions" :label="tc('pleaseSelect')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
+          <q-select outlined dense v-model="dateQuery.month" :options="monthOptions" :label="tc('pleaseSelect')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
         </div>
         <div class="col-4 q-ml-md">
           <q-select outlined dense v-model="serviceId" :options="serviceOptions" @update:model-value="selectService" :disable="isDisable"
@@ -294,7 +289,7 @@ onBeforeMount(async () => {
         active-color="primary"
         active-bg-color="grey-3"
         style="width: 10%"
-        @update:model-value="changeModel"
+        @update:model-value="changeTab"
       >
         <q-tab no-caps name="server" class="text-weight-bold" :ripple="false">
           {{ tc('byServersUuid') }}
