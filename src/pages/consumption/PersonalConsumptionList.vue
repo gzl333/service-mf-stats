@@ -2,8 +2,8 @@
 import { onBeforeMount, ref, computed } from 'vue'
 import { useStore, PersonalServerMeteringInterface } from 'stores/store'
 // import { useRoute } from 'vue-router'
-import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
 import { getHistoryStartFormatDate, getNowFormatDate } from 'src/hooks/processTime'
+import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
 import { exportNotify } from 'src/hooks/ExportNotify'
 import { i18n } from 'boot/i18n'
 import stats from 'src/api'
@@ -22,9 +22,9 @@ const store = useStore()
 // const router = useRouter()
 const { tc } = i18n.global
 const serviceOptions = computed(() => store.getServices('enable'))
+const consumptionTableRow = ref<PersonalServerMeteringInterface[]>([])
 const startDate = getHistoryStartFormatDate()
 const currentDate = getNowFormatDate(1)
-const consumptionTableRow = ref<PersonalServerMeteringInterface[]>([])
 // 默认开始时间
 const dateFrom = ref(startDate)
 // 默认结束时间
@@ -51,6 +51,7 @@ const exportQuery = ref<Record<string, string | boolean>>({
   date_end: currentDate,
   download: true
 })
+// 日期选择器翻译所需变量
 const myLocale = {
   days: 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_'),
   daysShort: 'Sun_Mon_Tue_Wed_Thu_Fri_Sat'.split('_'),

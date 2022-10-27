@@ -23,9 +23,9 @@ const route = useRoute()
 const router = useRouter()
 const { tc } = i18n.global
 const serviceOptions = computed(() => store.getServices('enable'))
+const consumptionTableRow = ref<GroupServerMeteringInterface[]>([])
 const startDate = getHistoryStartFormatDate()
 const currentDate = getNowFormatDate(1)
-const consumptionTableRow = ref<GroupServerMeteringInterface[]>([])
 const dateFrom = ref(startDate)
 const dateTo = ref(currentDate)
 const isLoading = ref(false)
@@ -64,20 +64,7 @@ const myLocale = {
 const getGroupConsumptionData = async () => {
   isLoading.value = true
   consumptionTableRow.value = []
-  let obj: GroupServerMeteringInterface = {
-    ipv4: '',
-    vo_id: '',
-    server_id: '',
-    service_name: '',
-    ram: 0,
-    vcpus: 0,
-    total_cpu_hours: 0,
-    total_disk_hours: 0,
-    total_original_amount: 0,
-    total_public_ip_hours: 0,
-    total_ram_hours: 0,
-    total_trade_amount: 0
-  }
+  let obj: GroupServerMeteringInterface
   const respServerMetering = await stats.stats.metering.getAggregationServer({ query: searchQuery.value })
   for (const elem of respServerMetering.data.results) {
     obj = {
@@ -85,21 +72,32 @@ const getGroupConsumptionData = async () => {
       vo_id: '',
       server_id: '',
       service_name: '',
-      ram: 0,
-      vcpus: 0,
-      total_cpu_hours: 0,
-      total_disk_hours: 0,
-      total_original_amount: 0,
-      total_public_ip_hours: 0,
-      total_ram_hours: 0,
-      total_trade_amount: 0
+      ram: '',
+      vcpus: '',
+      total_cpu_hours: '',
+      total_disk_hours: '',
+      total_original_amount: '',
+      total_public_ip_hours: '',
+      total_ram_hours: '',
+      total_trade_amount: ''
     }
     obj.vo_id = route.params.voId as string
-    obj.server_id = elem.server_id
-    obj.ipv4 = elem.server.ipv4
-    obj.service_name = elem.service_name
-    obj.vcpus = elem.server.vcpus
-    obj.ram = elem.server.ram
+    if (elem.server !== null) {
+      obj.server_id = elem.server_id
+      obj.ipv4 = elem.server.ipv4
+      obj.vcpus = elem.server.vcpus
+      obj.ram = elem.server.ram
+    } else {
+      obj.server_id = ''
+      obj.ipv4 = ''
+      obj.vcpus = ''
+      obj.ram = ''
+    }
+    if (elem.service_name !== null) {
+      obj.service_name = elem.service_name
+    } else {
+      obj.service_name = ''
+    }
     obj.total_public_ip_hours = elem.total_public_ip_hours
     obj.total_cpu_hours = elem.total_cpu_hours
     obj.total_ram_hours = elem.total_ram_hours

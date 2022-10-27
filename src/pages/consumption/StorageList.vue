@@ -2,8 +2,8 @@
 import { onBeforeMount, ref, computed } from 'vue'
 import { useStore, PersonalServerMeteringInterface } from 'stores/store'
 // import { useRoute } from 'vue-router'
-import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
 import { getHistoryStartFormatDate, getNowFormatDate } from 'src/hooks/processTime'
+import { exportExcel, exportAllData } from 'src/hooks/exportExcel'
 import { exportNotify } from 'src/hooks/ExportNotify'
 import { i18n } from 'boot/i18n'
 import stats from 'src/api'
@@ -34,9 +34,9 @@ const serviceOptions = computed(() => store.getServices('enable'))
 const storageTableRow = ref<PersonalServerMeteringInterface[]>([])
 const startDate = getHistoryStartFormatDate()
 const currentDate = getNowFormatDate(1)
-const bucketId = ref('')
 const dateFrom = ref(startDate)
 const dateTo = ref(currentDate)
+const bucketId = ref('')
 const isLoading = ref(false)
 const paginationTable = ref({
   page: 1,
@@ -139,7 +139,7 @@ onBeforeMount(() => {
 <template>
   <div class="StorageList">
     <div class="q-mt-xl row justify-between items-center">
-      <q-input class="" filled dense v-model="dateFrom" mask="date">
+      <q-input filled dense v-model="dateFrom" mask="date">
         <template v-slot:append>
           <q-icon name="event" class="cursor-pointer">
             <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">

@@ -137,14 +137,14 @@ export interface GroupServerMeteringInterface {
   vo_id: string
   server_id: string
   service_name: string
-  ram: number | undefined
-  vcpus: number | undefined
-  total_cpu_hours: number | undefined
-  total_disk_hours: number | undefined
-  total_original_amount: number | undefined
-  total_public_ip_hours: number | undefined
-  total_ram_hours: number | undefined
-  total_trade_amount: number | undefined
+  ram: number | string
+  vcpus: number | string
+  total_cpu_hours: number | string
+  total_disk_hours: number | string
+  total_original_amount: number | string
+  total_public_ip_hours: number | string
+  total_ram_hours: number | string
+  total_trade_amount: number | string
 }
 
 export interface DateInterface {
