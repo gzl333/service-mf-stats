@@ -30,7 +30,7 @@ const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
 const { tc } = i18n.global
-const serviceOptions = computed(() => store.getServices('enable'))
+const serviceOptions = computed(() => store.getAllStorageServiceOptions)
 const storageTableRow = ref<PersonalServerMeteringInterface[]>([])
 const startDate = getHistoryStartFormatDate()
 const currentDate = getNowFormatDate(1)
@@ -44,8 +44,8 @@ const paginationTable = ref({
   rowsPerPage: 10
 })
 const serviceId = ref({
-  label: '全部服务',
-  labelEn: 'All Services',
+  label: '全部服务单元',
+  labelEn: 'All Service Units',
   value: ''
 })
 const searchQuery = ref<QueryInterface>({

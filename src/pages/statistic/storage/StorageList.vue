@@ -28,7 +28,7 @@ const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
 const { tc } = i18n.global
-const serviceOptions = computed(() => store.getServices('all'))
+const serviceOptions = computed(() => store.getAllStorageServiceOptions)
 const yearOptions = ref<DateInterface[]>([])
 const monthOptions = ref<DateInterface[]>([])
 const storageTableRow = ref([])
@@ -48,8 +48,8 @@ const searchQuery: Ref<QueryInterface> = ref({
   'as-admin': true
 })
 const serviceId = ref({
-  label: '全部服务',
-  labelEn: 'All Services',
+  label: '全部服务单元',
+  labelEn: 'All Services Units',
   value: ''
 })
 const paginationTable = ref({
@@ -192,7 +192,7 @@ const search = () => {
   } else {
     delete searchQuery.value.bucket_id
   }
-  if (userId.value !== '' && bucketId.value !== null) {
+  if (userId.value !== '' && userId.value !== null) {
     searchQuery.value.user_id = userId.value
   } else {
     delete searchQuery.value.user_id

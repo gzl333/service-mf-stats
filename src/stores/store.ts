@@ -51,7 +51,27 @@ export interface ServiceInterface {
   latitude: number
   pay_app_service_id: string
 }
-
+// service对象类象
+export interface StorageServiceInterface {
+  id: string
+  name: string
+  name_en: string
+  service_type: string
+  endpoint_url: string
+  add_time: string
+  status: 'enable' | 'disable' | 'deleted'
+  remarks: string
+  provide_ftp: boolean
+  ftp_domains: string[]
+  longitude: number
+  latitude: number
+  pay_app_service_id: string
+  data_center: {
+    id: string
+    name: string
+    name_en: string
+  }
+}
 export interface GroupInterface {
   id: string
   name: string
@@ -245,11 +265,16 @@ export interface CouponTableInterface extends totalTable, idTable<CouponInterfac
 
 export interface GroupTableInterface extends totalTable, idTable<GroupInterface> {
 }
+
 // 组配额table: groupId -> groupMember
 export interface GroupMemberTableInterface extends totalTable, idTable<GroupMemberInterface> {
 }
+
 // 项目组云主机
 export interface GroupServerTableInterface extends totalTable, idTable<ServerInterface> {
+}
+
+export interface StorageServiceTableInterface extends totalTable, idTable<StorageServiceInterface> {
 }
 export const useStore = defineStore('stats', {
   state: () => ({
@@ -272,6 +297,11 @@ export const useStore = defineStore('stats', {
         allIds: [],
         status: 'init'
       } as ServiceTableInterface,
+      storageServiceTable: {
+        status: 'init',
+        allIds: [],
+        byId: {}
+      } as StorageServiceTableInterface,
       groupTable: {
         byId: {},
         allIds: [],
@@ -334,6 +364,23 @@ export const useStore = defineStore('stats', {
         labelEn: 'All Services'
       })
       return serviceOptions
+    },
+    // 获取对象存储全部服务单元选项
+    getAllStorageServiceOptions: state => {
+      const services = (state.tables.storageServiceTable.allIds).map(serviceId => {
+        const currentService = state.tables.storageServiceTable.byId[serviceId]
+        return {
+          value: currentService?.id,
+          label: currentService?.name,
+          labelEn: currentService?.name_en
+        }
+      })
+      services.unshift({
+        value: '',
+        label: '全部服务单元',
+        labelEn: 'All Service Units'
+      })
+      return services
     },
     getGroupTabs (state): { voId: string; name: string; }[] {
       let groupTabs = []
@@ -527,12 +574,16 @@ export const useStore = defineStore('stats', {
         void this.loadDataCenterTable().then(() => { // 1. 基础依赖
           if (this.tables.serviceTable.status === 'init') {
             void this.loadServiceTable().then(() => {
-              if (this.tables.groupTable.status === 'init') {
-                this.loadGroupTable().then(() => {
-                  if (this.tables.groupMemberTable.status === 'init') {
-                    this.loadGroupMemberTable().then(() => {
-                      if (this.tables.groupServerTable.status === 'init') {
-                        this.loadGroupServerTable()
+              if (this.tables.storageServiceTable.status === 'init') {
+                void this.loadStorageServiceTable().then(() => {
+                  if (this.tables.groupTable.status === 'init') {
+                    this.loadGroupTable().then(() => {
+                      if (this.tables.groupMemberTable.status === 'init') {
+                        this.loadGroupMemberTable().then(() => {
+                          if (this.tables.groupServerTable.status === 'init') {
+                            this.loadGroupServerTable()
+                          }
+                        })
                       }
                     })
                   }
@@ -603,6 +654,20 @@ export const useStore = defineStore('stats', {
         this.tables.dataCenterTable.byId[Object.values(normalizedData.entities.service!)[0].data_center].services = [...new Set(this.tables.dataCenterTable.byId[Object.values(normalizedData.entities.service!)[0].data_center].services)]
       })
       this.tables.serviceTable.status = 'total'
+    },
+    async loadStorageServiceTable () {
+      this.tables.storageServiceTable.status = 'loading'
+      const respGetService = await stats.stats.storage.getStorageService({ query: { status: ['enable'] } })
+      respGetService.data.results.forEach((item: StorageServiceInterface) => {
+        // normalize
+        const service = new schema.Entity('service')
+        const normalizedData = normalize(item, service)
+        // 存入state
+        Object.assign(this.tables.storageServiceTable.byId, normalizedData.entities.service)
+        this.tables.storageServiceTable.allIds.push(Object.keys(normalizedData.entities.service as Record<string, unknown>)[0])
+        this.tables.storageServiceTable.allIds = [...new Set(this.tables.storageServiceTable.allIds)]
+      })
+      this.tables.storageServiceTable.status = 'total'
     },
     async loadGroupTable () {
       // 先清空table，避免多次更新时数据累加（凡是需要强制刷新的table，都要先清空再更新）

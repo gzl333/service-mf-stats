@@ -224,5 +224,18 @@ export default {
     }) {
       return axiosStats.get('/order/' + payload.path.id)
     }
+  },
+  storage: {
+    getStorageService (payload?: {
+      query?: {
+        page?: number
+        page_size?: number
+        center_id?: string
+        status?: ('enable' | 'disable' | 'deleted')[]
+      }
+    }) {
+      const config = { params: payload?.query }
+      return axiosStats.get('/storage/service', config)
+    }
   }
 }

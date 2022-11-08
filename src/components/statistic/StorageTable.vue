@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 // import { navigateToUrl } from 'single-spa'
-import { useStore } from 'stores/store'
+// import { useStore } from 'stores/store'
 // import { useRoute, useRouter } from 'vue-router'
 import { i18n } from 'boot/i18n'
 
@@ -15,10 +15,9 @@ const props = defineProps({
     required: true
   }
 })
-
 // const emits = defineEmits(['change', 'delete'])
 
-const store = useStore()
+// const store = useStore()
 // const route = useRoute()
 // const router = useRouter()
 const { tc } = i18n.global
@@ -60,8 +59,8 @@ const serverColumns = computed(() => [
           <q-td class="no-padding" key="username" :props="props">{{ props.row.username }}</q-td>
           <q-td class="no-padding" key="storage_bucket_id" :props="props">{{ props.row.storage_bucket_id }}</q-td>
           <q-td class="no-padding" key="bucket_name" :props="props">{{ props.row.bucket_name }}</q-td>
-          <q-td class="no-padding" key="service_id" :props="props">{{ store.tables.serviceTable.byId[props.row.service_id]?.name }}</q-td>
-          <q-td class="no-padding" key="storage" :props="props">{{ props.row.storage }}</q-td>
+          <q-td class="no-padding" key="service_id" :props="props">{{ props.row.service.name }}</q-td>
+          <q-td class="no-padding" key="storage" :props="props">{{ props.row.storage.toFixed(2) }}</q-td>
           <q-td class="no-padding" key="original_amount" :props="props">{{ props.row.original_amount }}</q-td>
           <q-td class="no-padding" key="trade_amount" :props="props">{{ props.row.trade_amount }}</q-td>
           <!--          <q-td class="no-padding" key="daily_statement_id" :props="props">{{ props.row.daily_statement_id }}</q-td>-->
