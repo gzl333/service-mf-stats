@@ -130,7 +130,6 @@ const getStorageMetering = () => {
   stats.stats.metering.getMeteringStorage({ query: searchQuery.value }).then((res) => {
     storageTableRow.value = res.data.results
     paginationTable.value.count = res.data.count
-    paginationTable.value.page = 1
     isLoading.value = false
   })
 }
@@ -254,7 +253,26 @@ onBeforeMount(async () => {
     <div class="q-mt-md">
       <storage-table :storageTableRow="storageTableRow" :isLoading="isLoading"/>
     </div>
-    <div class="row text-grey justify-between items-center q-mt-md">
+<!--    <div class="row text-grey justify-between items-center q-mt-md">-->
+<!--      <div class="row items-center">-->
+<!--        <span class="q-pr-md" v-if="i18n.global.locale === 'zh'">共{{ paginationTable.count }}条数据</span>-->
+<!--        <span class="q-pr-md" v-else>{{ paginationTable.count }} pieces of data in total</span>-->
+<!--        <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense-->
+<!--                  borderless @update:model-value="changePageSize">-->
+<!--        </q-select>-->
+<!--        <span>/{{ tc('page') }}</span>-->
+<!--      </div>-->
+<!--      <q-pagination-->
+<!--        v-model="paginationTable.page"-->
+<!--        :max="Math.ceil(paginationTable.count/paginationTable.rowsPerPage)"-->
+<!--        :max-pages="9"-->
+<!--        direction-links-->
+<!--        outline-->
+<!--        :ripple="false"-->
+<!--        @click="changePagination"-->
+<!--      />-->
+<!--    </div>-->
+    <div class="row q-py-md text-grey justify-between items-center">
       <div class="row items-center">
         <span class="q-pr-md" v-if="i18n.global.locale === 'zh'">共{{ paginationTable.count }}条数据</span>
         <span class="q-pr-md" v-else>{{ paginationTable.count }} pieces of data in total</span>
