@@ -149,6 +149,21 @@ const routes: RouteRecordRaw[] = [
             ]
           }
         ]
+      },
+      {
+        path: 'payment',
+        redirect: '/my/stats/payment/history',
+        component: () => import('pages/payment/PayRecordIndex.vue'),
+        children: [
+          {
+            path: 'history',
+            component: () => import('pages/payment/PayRecord.vue')
+          },
+          {
+            path: 'detail/:id',
+            component: () => import('pages/public/RecordDetail.vue')
+          }
+        ]
       }
     ]
   },
