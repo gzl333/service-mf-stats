@@ -153,7 +153,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'payment',
         redirect: '/my/stats/payment/history',
-        component: () => import('pages/payment/PayRecordIndex.vue'),
+        component: () => import('pages/payment/WalletIndex.vue'),
         children: [
           {
             path: 'history',
@@ -162,6 +162,14 @@ const routes: RouteRecordRaw[] = [
           {
             path: 'detail/:id',
             component: () => import('pages/public/RecordDetail.vue')
+          },
+          {
+            path: 'wallet',
+            component: () => import('pages/wallet/MyWallet.vue')
+          },
+          {
+            path: 'admin',
+            component: () => import('pages/admin/WalletAdmin.vue')
           }
         ]
       }

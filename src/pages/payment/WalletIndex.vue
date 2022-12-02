@@ -16,7 +16,7 @@ const changeTab = async (name: string) => {
     <div class="column">
       <div class="row justify-center">
         <div class="content-fixed-width">
-          <div class="text-h6 q-pt-lg q-px-none">支付记录</div>
+          <div class="text-h6 q-pt-lg q-px-none">钱包</div>
           <q-tabs
             v-model="activeItem"
             inline-label
@@ -24,8 +24,14 @@ const changeTab = async (name: string) => {
             indicator-color="primary"
             active-color="primary"
           >
-            <q-tab no-caps name="month" class="q-px-none q-py-md q-mr-md" :ripple="false" label="云主机"
-                   icon="las la-laptop" @click="changeTab('history')">
+            <q-tab no-caps name="wallet" class="q-px-none q-py-md q-mr-md" :ripple="false" label="我的钱包"
+                   icon="las la-wallet" @click="changeTab('wallet')">
+            </q-tab>
+            <q-tab no-caps name="history" class="q-px-none q-py-md q-mr-md" :ripple="false" label="支付记录"
+                   icon="las la-file-invoice-dollar" @click="changeTab('history')">
+            </q-tab>
+            <q-tab no-caps name="admin" class="q-px-none q-py-md q-mr-md" :ripple="false" label="管理员"
+                   icon="las la-user-cog" @click="changeTab('admin')">
             </q-tab>
           </q-tabs>
         </div>

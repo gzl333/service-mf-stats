@@ -76,8 +76,8 @@ console.log(store.tables)
               active-class="active-item"
             >
               <q-item-section class="column items-center">
-                <q-icon name="las la-file-invoice-dollar" size="lg"/>
-                <div class="active-text text-center">{{ tc('支付记录') }}</div>
+                <q-icon name="las la-wallet" size="lg"></q-icon>
+                <div class="active-text text-center">{{ tc('钱包') }}</div>
               </q-item-section>
             </q-item>
 
