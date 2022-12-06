@@ -238,6 +238,37 @@ export default {
       return axiosStats.get('/storage/service', config)
     }
   },
+  statement: {
+    getStatementStorage (payload?: {
+      query?: {
+        page?: number;
+        page_size?: number;
+        payment_status?: string;
+        date_start?: string;
+        date_end?: string;
+      }
+    }) {
+      const config = {
+        params: payload?.query
+      }
+      return axiosStats.get('/statement/storage', config)
+    },
+    getStatementServer (payload?: {
+      query?: {
+        page?: number;
+        page_size?: number;
+        payment_status?: string;
+        date_start?: string;
+        date_end?: string;
+        vo_id?: string;
+      }
+    }) {
+      const config = {
+        params: payload?.query
+      }
+      return axiosStats.get('/statement/storage', config)
+    }
+  },
   paymentHistory: {
     getPaymentHistory (payload?: {
       query?: {

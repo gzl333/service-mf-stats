@@ -68,7 +68,17 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: 'settlement',
-        component: () => import('pages/settlement/SettlementIndex.vue')
+        redirect: '/my/stats/settlement/history',
+        component: () => import('pages/settlement/SettlementIndex.vue'),
+        children: [
+          {
+            path: 'history',
+            component: () => import('pages/settlement/Settlement.vue')
+          },
+          {
+            path: 'detail/:id',
+            component: () => import('pages/settlement/settlementDetail.vue')
+          }]
       },
       {
         path: 'statistic',
@@ -147,29 +157,6 @@ const routes: RouteRecordRaw[] = [
                 component: () => import('pages/public/ServerStatisticsDetailList.vue')
               }
             ]
-          }
-        ]
-      },
-      {
-        path: 'payment',
-        redirect: '/my/stats/payment/history',
-        component: () => import('pages/payment/WalletIndex.vue'),
-        children: [
-          {
-            path: 'history',
-            component: () => import('pages/payment/PayRecord.vue')
-          },
-          {
-            path: 'detail/:id',
-            component: () => import('pages/public/RecordDetail.vue')
-          },
-          {
-            path: 'wallet',
-            component: () => import('pages/wallet/MyWallet.vue')
-          },
-          {
-            path: 'admin',
-            component: () => import('pages/admin/WalletAdmin.vue')
           }
         ]
       }

@@ -6,21 +6,25 @@ import { payRecordUtcToBeijing } from 'src/hooks/processTime'
 
 import api from 'src/api'
 interface TableDataProps {
-  id?: string,
-  amounts?: string,
-  type?: string,
-  remark?: string,
-  subject?: string,
-  payment_method?: string,
-  payment_time?: string,
-  order_id?: string,
-  resource_type?:string,
-  vm_cpu?: number,
-  vm_ram?: number,
-  vm_systemdisk_size?: number,
-  cancelled_time?: string,
-  owner_type?:string,
-  service_name?: string
+  id: string,
+  original_amount: string,
+  payable_amount: string,
+  trade_amount: string,
+  payment_status: string,
+  payment_history_id: string,
+  date: string,
+  creation_time: string,
+  user_id: string,
+  username: string,
+  vo_id: string,
+  vo_name: string,
+  owner_type: string,
+  service: {
+    id:string,
+    name: string,
+    name_en: string,
+    service_type: string
+  }
 }
 interface itemProps {
   id: string,
@@ -38,16 +42,17 @@ d.setHours(d.getHours(), d.getMinutes() - d.getTimezoneOffset())
 d.setMonth(d.getMonth())
 const currentDate1 = d.toISOString()
 const currentDate = payRecordUtcToBeijing(currentDate1) // 去掉小数点
+// const currentDate = currentDate1.toDateString()
 let dateTime = new Date()
 dateTime.setMonth(d.getMonth() - 1)
 dateTime = new Date(dateTime)
 const startDate1 = dateTime.toISOString()
 const startDate = payRecordUtcToBeijing(startDate1)
 function setDateFrom (setTime:string) {
-  return setTime.split('T')[0] + 'T' + '00:' + '00:' + '00' + 'Z'
+  return setTime.split('T')[0]
 }
 function setDateTO (setTime:string) {
-  return setTime.split('T')[0] + 'T' + '23:' + '59:' + '59' + 'Z'
+  return setTime.split('T')[0]
 }
 const paginationTable = ref({
   page: 1,
@@ -55,7 +60,7 @@ const paginationTable = ref({
   rowsPerPage: 10
 })
 const paymentSelect = ref({
-  label: '支付选择',
+  label: '资源选择',
   value: ''
 })
 const query3: Ref = ref({
@@ -68,36 +73,40 @@ const search = async () => {
   await getDetailData()
 }
 const getDetailData = async () => {
+  console.log('query3', query3)
   tablePaymentData.value = []
-  const data = await api.stats.paymentHistory.getPaymentHistory({
+  const data = await api.stats.statement.getStatementStorage({
     query: {
+      page: query3.value.page,
       page_size: query3.value.page_size,
-      time_start: query3.value.time_start,
-      time_end: query3.value.time_end
+      date_start: query3.value.time_start,
+      date_end: query3.value.time_end
     }
   })
-  const data2 = await api.stats.paymentOrder.getOrder({
-    query: {
-      page_size: query3.value.page_size,
-      time_start: query3.value.time_start,
-      time_end: query3.value.time_end,
-      page: query3.value.page
-    }
-  })
+  console.log('data', data)
+  console.log('tablePaymentData', tablePaymentData)
+  // const data2 = await api.stats.paymentOrder.getOrder({
+  //   query: {
+  //     page_size: query3.value.page_size,
+  //     time_start: query3.value.time_start,
+  //     time_end: query3.value.time_end,
+  //     page: query3.value.page
+  //   }
+  // })
   for (const elem of data.data.results) {
     tablePaymentData.value.push(elem)
   }
-  for (const elem of data2.data.orders) {
-    tableOrderData.value.push(elem)
-  }
+  // for (const elem of data2.data.orders) {
+  //   tableOrderData.value.push(elem)
+  // }
   paginationTable.value.count = data.data.page_size
-  tablePaymentData.value.forEach(function (item) {
-    tableOrderData.value.forEach(function (item2: itemProps) {
-      if (item.order_id === item2.id) {
-        item.resource_type = item2.resource_type
-      }
-    })
-  })
+  // tablePaymentData.value.forEach(function (item) {
+  //   tableOrderData.value.forEach(function (item2: itemProps) {
+  //     if (item.order_id === item2.id) {
+  //       item.resource_type = item2.resource_type
+  //     }
+  //   })
+  // })
 }
 const dateFrom = ref(startDate)
 const dateTo = ref(currentDate)
@@ -163,7 +172,7 @@ onMounted(async () => {
           </template>
         </q-input>
       </div>
-        <q-select outlined dense v-model="paymentSelect" :options="filterOptions1" @update:model-value="selectService" label="选择支付方式" class="col-2 q-mr-lg" />
+        <q-select outlined dense v-model="paymentSelect" :options="filterOptions1" @update:model-value="selectService" label="筛选资源类型" class="col-2 q-mr-lg" />
       <q-btn outline label="搜索" class="q-px-lg" @click="search"/>
       </div>
     <server-pay-record :tableRow="tablePaymentData"/>

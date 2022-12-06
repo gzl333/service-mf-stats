@@ -103,7 +103,7 @@ export function payRecordUtcToBeijing (utcDatetime: string) {
   const hh = (dateTime.getHours() < 10 ? '0' + dateTime.getHours() : dateTime.getHours()) + ':'
   const mm = (dateTime.getMinutes() < 10 ? '0' + dateTime.getMinutes() : dateTime.getMinutes()) + ':'
   const ss = (dateTime.getSeconds() < 10 ? '0' + dateTime.getSeconds() : dateTime.getSeconds())
-  return YY + MM + DD + 'T' + hh + mm + ss + 'Z'
+  return YY + MM + DD
 }
 
 export function serverPayRecordUtcToBeijing (utcDateTime: string) {
