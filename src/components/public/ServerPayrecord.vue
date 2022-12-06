@@ -10,13 +10,16 @@ const props = defineProps({
 })
 
 const columns = [
-  { name: 'id', align: 'center', label: '支付记录编号' },
-  { name: 'amounts', label: '支付金额', align: 'center' },
-  { name: 'remark', label: '支付类型', align: 'center' },
-  { name: 'subject', label: '支付资源类型', align: 'center' },
-  { name: 'payment_method', label: '支付方式', align: 'center' },
-  { name: 'payment_time', label: '支付时间', align: 'center' },
-  { name: 'order_id', label: '关联订单', align: 'center' }
+  { name: 'id', align: 'center', label: '日结算单编号' },
+  { name: 'username', label: '用户', align: 'center' },
+  { name: 'vo_name', label: '服务单元', align: 'center' },
+  { name: 'service_type', label: '资源类型', align: 'center' },
+  { name: 'payment_period', label: '结算周期', align: 'center' },
+  { name: 'creation_time', label: '下单时间', align: 'center' },
+  { name: 'payable_amount', label: '计费金额', align: 'center' },
+  { name: 'trade_amount', label: '日结单金额', align: 'center' },
+  { name: 'payment_status', label: '状态', align: 'center' },
+  { name: 'operate', label: '操作', align: 'center' }
 ]
 const goToDetail = (id: string, orderId: string) => {
   navigateToUrl(`/my/stats/payment/detail/${id}?order_id=${orderId}`)

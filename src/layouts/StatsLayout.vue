@@ -71,18 +71,6 @@ console.log(store.tables)
 
             <q-item
               clickable
-              :active="activeItem === 'payment'"
-              @click="activeItem = 'payment'; navigateToUrl('/my/stats/payment')"
-              active-class="active-item"
-            >
-              <q-item-section class="column items-center">
-                <q-icon name="las la-wallet" size="lg"></q-icon>
-                <div class="active-text text-center">{{ tc('钱包') }}</div>
-              </q-item-section>
-            </q-item>
-
-            <q-item
-              clickable
               v-if="store.items.fedRole === 'federal-admin' || store.items.vmsAdmin.length > 0"
               :active="activeItem === 'statistic'"
               @click="activeItem = 'statistic'; navigateToUrl('/my/stats/statistic')"
