@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, Ref, ref, computed } from 'vue'
 import { useStore } from 'stores/store'
-import ServerPayRecord from 'components/public/ServerPayrecord.vue'
+import ServerPayRecord from 'components/public/ServerStatement.vue'
 import { payRecordUtcToBeijing } from 'src/hooks/processTime'
 
 import api from 'src/api'
@@ -85,21 +85,22 @@ const getDetailData = async () => {
   })
   console.log('data', data)
   console.log('tablePaymentData', tablePaymentData)
-  // const data2 = await api.stats.paymentOrder.getOrder({
-  //   query: {
-  //     page_size: query3.value.page_size,
-  //     time_start: query3.value.time_start,
-  //     time_end: query3.value.time_end,
-  //     page: query3.value.page
-  //   }
-  // })
-  for (const elem of data.data.results) {
+  const data2 = await api.stats.statement.getStatementServer({
+    query: {
+      page: query3.value.page,
+      page_size: query3.value.page_size,
+      date_start: query3.value.time_start,
+      date_end: query3.value.time_end
+    }
+  })
+  for (const elem of data.data.statements) {
     tablePaymentData.value.push(elem)
   }
-  // for (const elem of data2.data.orders) {
-  //   tableOrderData.value.push(elem)
-  // }
+  for (const elem of data2.data.statements) {
+    tablePaymentData.value.push(elem)
+  }
   paginationTable.value.count = data.data.page_size
+  console.log('tablePaymentData', tablePaymentData)
   // tablePaymentData.value.forEach(function (item) {
   //   tableOrderData.value.forEach(function (item2: itemProps) {
   //     if (item.order_id === item2.id) {

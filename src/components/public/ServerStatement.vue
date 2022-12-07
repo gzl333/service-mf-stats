@@ -21,8 +21,8 @@ const columns = [
   { name: 'payment_status', label: '状态', align: 'center' },
   { name: 'operate', label: '操作', align: 'center' }
 ]
-const goToDetail = (id: string, orderId: string) => {
-  navigateToUrl(`/my/stats/payment/detail/${id}?order_id=${orderId}`)
+const goToDetail = (id: string) => {
+  navigateToUrl(`/my/stats/settlement/detail/${id}`)
 }
 </script>
 
@@ -46,15 +46,18 @@ const goToDetail = (id: string, orderId: string) => {
           <q-tr :props="props">
             <q-td key="id" :props="props">
               <q-btn class="q-ma-none" :label="props.row.id" color="primary" padding="xs"
-                     @click="goToDetail(props.row.id,props.row.order_id)"
+                     @click="goToDetail(props.row.id)"
                      flat dense unelevated></q-btn>
             </q-td>
-            <q-td key="amounts" :props="props">{{ props.row.coupon_amount+"点"}}</q-td>
-            <q-td key="remark" :props="props">{{props.row.remark}}</q-td>
-            <q-td key="subject" :props="props">{{ props.row.resource_type === 'vm' ? '云主机' : ''}}</q-td>
-            <q-td key="payment_method" :props="props">{{ props.row.payment_method === 'coupon' ? '代金卷支付' : '余额支付'}}</q-td>
-            <q-td key="payment_time" :props="props">{{ serverPayRecordUtcToBeijing(props.row.payment_time) }}</q-td>
-            <q-td key="order_id" :props="props">{{props.row.order_id}} </q-td>
+            <q-td key="username" :props="props">{{ props.row.username}}</q-td>
+            <q-td key="vo_name" :props="props"></q-td>
+            <q-td key="service_type" :props="props">{{ props.row.service.service_type}}</q-td>
+            <q-td key="payment_period" :props="props"></q-td>
+            <q-td key="creation_time" :props="props">{{new Date(props.row.creation_time).toLocaleString()}}</q-td>
+            <q-td key="payable_amount" :props="props">{{props.row.payable_amount}} </q-td>
+            <q-td key="trade_amount" :props="props">{{props.row.trade_amount}} </q-td>
+            <q-td key="payment_status" :props="props">{{props.row.payment_status}} </q-td>
+            <q-td key="operate" :props="props"> </q-td>
           </q-tr>
         </template>
       </q-table>
