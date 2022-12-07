@@ -253,6 +253,11 @@ export default {
       }
       return axiosStats.get('/statement/storage', config)
     },
+    getStatementStorageDetail (payload: {
+      path: { id: string }
+    }) {
+      return axiosStats.get('/statement/storage/' + payload.path.id)
+    },
     getStatementServer (payload?: {
       query?: {
         page?: number;
@@ -266,64 +271,14 @@ export default {
       const config = {
         params: payload?.query
       }
-      return axiosStats.get('/statement/storage', config)
-    }
-  },
-  paymentHistory: {
-    getPaymentHistory (payload?: {
-      query?: {
-        marker?: string;
-        page_size?: number;
-        vo_id?: string;
-        payment_type?: string;
-        time_start?: string;
-        time_end?: string;
-        app_service_id?: string;
-      }
-    }) {
-      const config = {
-        params: payload?.query
-      }
-      return axiosStats.get('/payment-history', config)
+      return axiosStats.get('/statement/server', config)
     },
-    getPaymentDetail (payload: {
-      query: {
-        id: string
+    getStatementServerDetail (payload: {
+      path: {
+        id: string;
       }
     }) {
-      const config = {
-        params: payload?.query
-      }
-      return axiosStats.get('/payment-history/' + payload.query.id, config)
-    }
-  },
-  paymentOrder: {
-    getOrder (payload?: {
-      query?: {
-        page?:string;
-        page_size?: number;
-        vo_id?: string;
-        resource_type?:string;
-        order_type?:string;
-        status?:string;
-        time_start?: string;
-        time_end?: string;
-      }
-    }) {
-      const config = {
-        params: payload?.query
-      }
-      return axiosStats.get('/order', config)
-    },
-    getOrderDetail (payload: {
-      query: {
-        id: string
-      }
-    }) {
-      const config = {
-        params: payload?.query
-      }
-      return axiosStats.get('/order/' + payload.query.id, config)
+      return axiosStats.get('/statement/server/' + payload.path.id)
     }
   }
 }
