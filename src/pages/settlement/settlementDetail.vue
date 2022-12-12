@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useStore } from 'stores/store'
 import { useRoute, useRouter } from 'vue-router'
-import { Ref, ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import api from 'src/api'
 interface statementServerProps {
   id?: string,
@@ -28,23 +28,15 @@ const store = useStore()
 const route = useRoute()
 const router = useRouter()
 
-const query2 : Ref = ref({ id: route.query.id })
+// const query2 : Ref = ref({ id: route.query.id })
 const statementServerDetail = ref<statementServerProps>({ id: route.params.id as string })
 const getDetailData = async () => {
-  // const serverData = await api.stats.statement.getStatementServerDetail({
-  //   path: {
-  //     id: route.params.id as string
-  //   }
-  // })
   const storageData = await api.stats.statement.getStatementStorageDetail({
     path: {
       id: route.params.id as string
     }
   })
-  // Object.assign(statementServerDetail, serverData.data)
-  // if (!statementServerDetail.value?.id) {
   Object.assign(statementServerDetail.value, storageData.data)
-  // }
   console.log('statementServerDetail', statementServerDetail)
 }
 console.log(1)
@@ -58,13 +50,13 @@ onMounted(async () => {
    <div class="row col-6 text-h6 text-primary text-weight-bold" >
      <q-btn icon="arrow_back_ios" flat unelevated dense
             @click="router.back()"/>
-     <span  >日结算单详情  </span> <span class="q-ml-lg text-primary"> {{route.params.id}} </span>
+     <span>日计量单详情 </span> <span class="q-ml-lg text-primary"> {{route.params.id}} </span>
    </div>
     <div class="column items-start content-fixed-width q-my-lg text-subtitle1">
       <div class="row justify-start content-fixed-width q-mb-md">
         <div class="col-6 row justify-start">
           <div class="col-3 text-grey">服务单元</div>
-          <div class="col-8"></div>
+          <div class="col-8">{{ statementServerDetail?.service?.name}}</div>
         </div>
         <div class="col-6 row justify-start">
           <div class="col-3 text-grey">用户</div>
@@ -74,7 +66,7 @@ onMounted(async () => {
       <div class="row justify-start content-fixed-width  q-mb-md">
         <div class="col-6 row justify-start">
           <div class="col-3 text-grey">结算周期</div>
-          <div class="col-8"></div>
+          <div class="col-8">{{statementServerDetail?.date + "  00:00 - 24:00"}}</div>
         </div>
         <div class="col-6 row justify-start">
           <div class="col-3 text-grey">下单时间</div>

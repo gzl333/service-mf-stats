@@ -16,7 +16,7 @@ const changeTab = async (name: string) => {
     <div class="column">
       <div class="row justify-center">
         <div class="content-fixed-width">
-          <div class="text-h6 q-pt-lg q-px-none">日结算单</div>
+          <div class="text-h6 q-pt-lg q-px-none">日计量单</div>
           <q-tabs
             v-model="activeItem"
             inline-label
@@ -24,7 +24,7 @@ const changeTab = async (name: string) => {
             indicator-color="primary"
             active-color="primary"
           >
-            <q-tab no-caps name="history" class="q-px-none q-py-md q-mr-md" :ripple="false" label="日结算单列表"
+            <q-tab no-caps name="history" class="q-px-none q-py-md q-mr-md" :ripple="false" label="日计量单列表"
                    icon="las la-file-invoice-dollar" @click="changeTab('history')">
             </q-tab>
           </q-tabs>
