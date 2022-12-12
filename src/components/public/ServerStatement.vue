@@ -10,7 +10,7 @@ const props = defineProps({
 })
 
 const columns = [
-  { name: 'id', align: 'center', label: '日结算单编号' },
+  { name: 'id', align: 'center', label: '日计量单编号' },
   { name: 'username', label: '用户', align: 'center' },
   { name: 'vo_name', label: '服务单元', align: 'center' },
   { name: 'service_type', label: '资源类型', align: 'center' },
@@ -44,20 +44,21 @@ const goToDetail = (id: string) => {
       >
         <template v-slot:body="props">
           <q-tr :props="props">
-            <q-td key="id" :props="props">
-              <q-btn class="q-ma-none" :label="props.row.id" color="primary" padding="xs"
+            <q-td key="id" :props="props" class="text-subtitle1 text-center wrapper"   style="width: 250px;">
+              <q-btn class="q-ma-none " :label="props.row.id" color="primary" padding="xs"
+                     style="width: 100%;white-space:normal;word-break:break-all;word-wrap:break-word;"
                      @click="goToDetail(props.row.id)"
                      flat dense unelevated></q-btn>
             </q-td>
             <q-td key="username" :props="props">{{ props.row.username}}</q-td>
-            <q-td key="vo_name" :props="props"></q-td>
+            <q-td key="vo_name" :props="props">{{ props.row.service.name}}</q-td>
             <q-td key="service_type" :props="props">{{ props.row.service.service_type}}</q-td>
-            <q-td key="payment_period" :props="props"></q-td>
+            <q-td key="payment_period" :props="props">{{props.row.date + "  00:00 - 24:00"}}</q-td>
             <q-td key="creation_time" :props="props">{{new Date(props.row.creation_time).toLocaleString()}}</q-td>
             <q-td key="payable_amount" :props="props">{{props.row.payable_amount}} </q-td>
             <q-td key="trade_amount" :props="props">{{props.row.trade_amount}} </q-td>
             <q-td key="payment_status" :props="props">{{props.row.payment_status}} </q-td>
-            <q-td key="operate" :props="props"> </q-td>
+            <q-td key="operate" :props="props" class="text-subtitle1 text-center wrapper" > <q-btn @click="goToDetail(props.row.id)" color="primary"> 详情 </q-btn></q-td>
           </q-tr>
         </template>
       </q-table>

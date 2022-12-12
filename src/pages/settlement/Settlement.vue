@@ -26,15 +26,51 @@ interface TableDataProps {
     service_type: string
   }
 }
-interface itemProps {
-  id: string,
-  status: string
-  resource_type: string
+interface queryProps {
+  page: number,
+  page_size: number,
+  time_start: string,
+  time_end: string,
+  payment_status?: string
 }
 
+const resourceTypeSelect = ref({
+  label: '选择资源类型',
+  value: ''
+})
+// 按支付方式筛选选项组
+const resourceOption = [{
+  label: '全部',
+  value: ''
+}, {
+  label: '云主机',
+  value: 'evcloud'
+}, {
+  label: '对象存储',
+  value: 'iharbor'
+}
+]
+
+const paymentSelect = ref({
+  label: '选择支付方式',
+  value: ''
+})
+// 按支付方式筛选选项组
+const PaymentOption = [{
+  label: '全部',
+  value: ''
+}, {
+  label: '待支付',
+  value: 'unpaid'
+}, {
+  label: '已支付',
+  value: 'paid'
+}, {
+  label: '作废',
+  value: 'cancelled'
+}
+]
 const store = useStore()
-// const filterOptions1 = computed(() => store.getpaymenthistory)
-const filterOptions1 = []
 const tablePaymentData = ref<TableDataProps[]>([])
 const tableOrderData :Ref = ref<TableDataProps[]>([])
 const d = new Date()
@@ -59,11 +95,8 @@ const paginationTable = ref({
   count: 0,
   rowsPerPage: 10
 })
-const paymentSelect = ref({
-  label: '资源选择',
-  value: ''
-})
-const query3: Ref = ref({
+
+const query3: Ref = ref<queryProps>({
   page: 1,
   page_size: 10,
   time_start: startDate,
@@ -76,38 +109,32 @@ const getDetailData = async () => {
   console.log('query3', query3)
   tablePaymentData.value = []
   const data = await api.stats.statement.getStatementStorage({
-    query: {
-      page: query3.value.page,
-      page_size: query3.value.page_size,
-      date_start: query3.value.time_start,
-      date_end: query3.value.time_end
-    }
-  })
+    query: query3.value
+  }
+  )
   console.log('data', data)
   console.log('tablePaymentData', tablePaymentData)
   const data2 = await api.stats.statement.getStatementServer({
-    query: {
-      page: query3.value.page,
-      page_size: query3.value.page_size,
-      date_start: query3.value.time_start,
-      date_end: query3.value.time_end
-    }
-  })
-  for (const elem of data.data.statements) {
-    tablePaymentData.value.push(elem)
+    query: query3.value
   }
-  for (const elem of data2.data.statements) {
-    tablePaymentData.value.push(elem)
+  )
+  if (targetSelect.value === 'evcloud') {
+    for (const elem of data2.data.statements) {
+      tablePaymentData.value.push(elem)
+    }
+  } else if (targetSelect.value === 'iharbor') {
+    for (const elem of data.data.statements) {
+      tablePaymentData.value.push(elem)
+    }
+  } else {
+    for (const elem of data.data.statements) {
+      tablePaymentData.value.push(elem)
+    }
+    for (const elem of data2.data.statements) {
+      tablePaymentData.value.push(elem)
+    }
   }
   paginationTable.value.count = data.data.page_size
-  console.log('tablePaymentData', tablePaymentData)
-  // tablePaymentData.value.forEach(function (item) {
-  //   tableOrderData.value.forEach(function (item2: itemProps) {
-  //     if (item.order_id === item2.id) {
-  //       item.resource_type = item2.resource_type
-  //     }
-  //   })
-  // })
 }
 const dateFrom = ref(startDate)
 const dateTo = ref(currentDate)
@@ -115,14 +142,27 @@ const selectDate = () => {
   query3.value.time_start = setDateFrom(dateFrom.value.replace(/(\/)/g, '-'))
   query3.value.time_end = setDateTO(dateTo.value.replace(/(\/)/g, '-'))
 }
-const selectService = (val: Record<string, string>) => {
-  if (val.value !== '') {
-    query3.value.id = val.value
-    query3.value.payment_method = val.label
+// 按日计量单的支付状态筛选
+const selectStatusService = (val:string) => {
+  if (val !== '') {
+    query3.value.payment_status = val
+    getDetailData()
   } else {
-    delete query3.value.id
+    delete query3.value.payment_status
   }
 }
+// 按日计量单的资源类型筛选
+const targetSelect = ref<string>()
+const selectResourceService = (val:string) => {
+  if (val !== '') {
+    targetSelect.value = val
+    getDetailData()
+  } else {
+    targetSelect.value = ''
+    getDetailData()
+  }
+}
+
 const changePagination = async (val: number) => {
   query3.value.page = val
   await getDetailData()
@@ -173,7 +213,8 @@ onMounted(async () => {
           </template>
         </q-input>
       </div>
-        <q-select outlined dense v-model="paymentSelect" :options="filterOptions1" @update:model-value="selectService" label="筛选资源类型" class="col-2 q-mr-lg" />
+        <q-select outlined dense v-model="paymentSelect" :options="PaymentOption" @update:model-value="selectStatusService(paymentSelect.value)" label="选择支付方式" class="col-2 q-mr-lg" />
+      <q-select outlined dense v-model="resourceTypeSelect" :options="resourceOption" @update:model-value="selectResourceService(resourceTypeSelect.value)" label="选择资源类型" class="col-2 q-mr-lg" />
       <q-btn outline label="搜索" class="q-px-lg" @click="search"/>
       </div>
     <server-pay-record :tableRow="tablePaymentData"/>
