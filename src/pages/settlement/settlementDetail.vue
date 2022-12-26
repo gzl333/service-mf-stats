@@ -27,9 +27,9 @@ interface statementServerProps {
 const store = useStore()
 const route = useRoute()
 const router = useRouter()
-
-// const query2 : Ref = ref({ id: route.query.id })
 const statementServerDetail = ref<statementServerProps>({ id: route.params.id as string })
+
+// 获得日计量单详情
 const getDetailData = async () => {
   const storageData = await api.stats.statement.getStatementStorageDetail({
     path: {
@@ -37,9 +37,8 @@ const getDetailData = async () => {
     }
   })
   Object.assign(statementServerDetail.value, storageData.data)
-  console.log('statementServerDetail', statementServerDetail)
 }
-console.log(1)
+
 onMounted(async () => {
   await getDetailData()
 })
