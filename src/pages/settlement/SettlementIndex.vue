@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { navigateToUrl } from 'single-spa'
-// import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
 const store = useStore()
 const activeItem = ref(store.items.currentPath[1])

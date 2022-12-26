@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, Ref, ref, computed } from 'vue'
+import { onMounted, Ref, ref } from 'vue'
 import { useStore } from 'stores/store'
 import ServerPayRecord from 'components/public/ServerStatement.vue'
 import { payRecordUtcToBeijing } from 'src/hooks/processTime'
@@ -72,13 +72,13 @@ const PaymentOption = [{
 ]
 const store = useStore()
 const tablePaymentData = ref<TableDataProps[]>([])
-const tableOrderData :Ref = ref<TableDataProps[]>([])
 const d = new Date()
+
 d.setHours(d.getHours(), d.getMinutes() - d.getTimezoneOffset())
 d.setMonth(d.getMonth())
+
 const currentDate1 = d.toISOString()
 const currentDate = payRecordUtcToBeijing(currentDate1) // 去掉小数点
-// const currentDate = currentDate1.toDateString()
 let dateTime = new Date()
 dateTime.setMonth(d.getMonth() - 1)
 dateTime = new Date(dateTime)
@@ -105,15 +105,13 @@ const query3: Ref = ref<queryProps>({
 const search = async () => {
   await getDetailData()
 }
+
 const getDetailData = async () => {
-  console.log('query3', query3)
   tablePaymentData.value = []
   const data = await api.stats.statement.getStatementStorage({
     query: query3.value
   }
   )
-  console.log('data', data)
-  console.log('tablePaymentData', tablePaymentData)
   const data2 = await api.stats.statement.getStatementServer({
     query: query3.value
   }
@@ -173,7 +171,7 @@ const changePageSize = async () => {
   paginationTable.value.page = 1
   await getDetailData()
 }
-
+const searchTicket = ref('')
 onMounted(async () => {
   await getDetailData()
 })
@@ -217,7 +215,23 @@ onMounted(async () => {
       <q-select outlined dense v-model="resourceTypeSelect" :options="resourceOption" @update:model-value="selectResourceService(resourceTypeSelect.value)" label="选择资源类型" class="col-2 q-mr-lg" />
       <q-btn outline label="搜索" class="q-px-lg" @click="search"/>
       </div>
-    <server-pay-record :tableRow="tablePaymentData"/>
+    <div class="row items-center justify-between q-mt-xl">
+    <div class="col-3">
+      <div class="row justify-start">
+        <div class="col">
+          <q-input dense outlined v-model="searchTicket">
+            <template v-slot:prepend>
+              <q-icon name="search"/>
+            </template>
+            <template v-slot:append v-if="searchTicket">
+              <q-icon name="close" @click="searchTicket = ''" class="cursor-pointer"/>
+            </template>
+          </q-input>
+        </div>
+      </div>
+    </div>
+    </div>`
+    <server-pay-record :tableRow="tablePaymentData" :search="searchTicket"/>
     <div class="row q-py-md text-grey justify-between items-center">
       <div class="row items-center">
         <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>

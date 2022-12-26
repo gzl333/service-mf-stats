@@ -1,14 +1,37 @@
 <script setup lang="ts">
 import { navigateToUrl } from 'single-spa'
-import { serverPayRecordUtcToBeijing } from 'src/hooks/processTime'
 
 const props = defineProps({
   tableRow: {
     type: Array,
     required: true
+  },
+  search: {
+    type: String,
+    required: false
   }
 })
-
+interface TableDataProps {
+  id: string,
+  original_amount: string,
+  payable_amount: string,
+  trade_amount: string,
+  payment_status: string,
+  payment_history_id: string,
+  date: string,
+  creation_time: string,
+  user_id: string,
+  username: string,
+  vo_id: string,
+  vo_name: string,
+  owner_type: string,
+  service: {
+    id:string,
+    name: string,
+    name_en: string,
+    service_type: string
+  }
+}
 const columns = [
   { name: 'id', align: 'center', label: '日计量单编号' },
   { name: 'username', label: '用户', align: 'center' },
@@ -21,9 +44,13 @@ const columns = [
   { name: 'payment_status', label: '状态', align: 'center' },
   { name: 'operate', label: '操作', align: 'center' }
 ]
+
 const goToDetail = (id: string) => {
   navigateToUrl(`/my/stats/settlement/detail/${id}`)
 }
+
+const searchFilter = (rows: TableDataProps[], content: string): TableDataProps[] => rows.filter(group =>
+  group.id.toLowerCase().includes(content) || group.service.id.toLowerCase().includes(content) || group.service.name.toLowerCase().includes(content) || group.service.service_type.toLowerCase().includes(content) || group.username.toLowerCase().includes(content))
 </script>
 
 <template>
@@ -41,6 +68,8 @@ const goToDetail = (id: string) => {
         no-data-label="暂无数据"
         hide-pagination
         :pagination="{ rowsPerPage: 0 }"
+        :filter="search"
+        :filter-method="searchFilter"
       >
         <template v-slot:body="props">
           <q-tr :props="props">
