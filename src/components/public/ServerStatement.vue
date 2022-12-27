@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { navigateToUrl } from 'single-spa'
+import { usePaymentStatusExpress } from 'src/hooks/statementKeyToRead'
+const PaymentStatusExpress = usePaymentStatusExpress()
 
 const props = defineProps({
   tableRow: {
@@ -13,23 +15,23 @@ const props = defineProps({
 })
 interface TableDataProps {
   id: string,
-  original_amount: string,
-  payable_amount: string,
-  trade_amount: string,
-  payment_status: string,
-  payment_history_id: string,
-  date: string,
-  creation_time: string,
-  user_id: string,
-  username: string,
-  vo_id: string,
-  vo_name: string,
-  owner_type: string,
-  service: {
-    id:string,
-    name: string,
-    name_en: string,
-    service_type: string
+  original_amount?: string,
+  payable_amount?: string,
+  trade_amount?: string,
+  payment_status?: string,
+  payment_history_id?: string,
+  date?: string,
+  creation_time?: string,
+  user_id?: string,
+  username?: string,
+  vo_id?: string,
+  vo_name?: string,
+  owner_type?: string,
+  service?: {
+    id?:string,
+    name?: string,
+    name_en?: string,
+    service_type?: string
   }
 }
 const columns = [
@@ -50,7 +52,7 @@ const goToDetail = (id: string) => {
 }
 
 const searchFilter = (rows: TableDataProps[], content: string): TableDataProps[] => rows.filter(group =>
-  group.id.toLowerCase().includes(content) || group.service.id.toLowerCase().includes(content) || group.service.name.toLowerCase().includes(content) || group.service.service_type.toLowerCase().includes(content) || group.username.toLowerCase().includes(content))
+  group?.id.toLowerCase().includes(content) || group.service?.id?.toLowerCase().includes(content) || group.service?.name?.toLowerCase().includes(content) || group.service?.service_type?.toLowerCase().includes(content) || group.username?.toLowerCase().includes(content) || group.vo_name?.toLowerCase().includes(content))
 </script>
 
 <template>
@@ -79,14 +81,15 @@ const searchFilter = (rows: TableDataProps[], content: string): TableDataProps[]
                      @click="goToDetail(props.row.id)"
                      flat dense unelevated></q-btn>
             </q-td>
-            <q-td key="username" :props="props">{{ props.row.username}}</q-td>
-            <q-td key="vo_name" :props="props">{{ props.row.service.name}}</q-td>
+            <q-td key="username" :props="props" v-if="props.row.username">{{ props.row.username}}</q-td>
+            <q-td key="vo_name" :props="props" v-else>{{ props.row.vo_name}}</q-td>
+            <q-td key="vo_name" :props="props" >{{ props.row.service.name}}</q-td>
             <q-td key="service_type" :props="props">{{ props.row.service.service_type}}</q-td>
             <q-td key="payment_period" :props="props">{{props.row.date + "  00:00 - 24:00"}}</q-td>
             <q-td key="creation_time" :props="props">{{new Date(props.row.creation_time).toLocaleString()}}</q-td>
             <q-td key="payable_amount" :props="props">{{props.row.payable_amount}} </q-td>
             <q-td key="trade_amount" :props="props">{{props.row.trade_amount}} </q-td>
-            <q-td key="payment_status" :props="props">{{props.row.payment_status}} </q-td>
+            <q-td key="payment_status" :props="props">{{PaymentStatusExpress(props.row.payment_status)}} </q-td>
             <q-td key="operate" :props="props" class="text-subtitle1 text-center wrapper" > <q-btn @click="goToDetail(props.row.id)" color="primary"> 详情 </q-btn></q-td>
           </q-tr>
         </template>
