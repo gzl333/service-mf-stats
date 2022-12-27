@@ -48,11 +48,14 @@ const resourceOption = [{
 }, {
   label: '对象存储',
   value: 'iharbor'
+}, {
+  label: 'openstack',
+  value: 'openstack'
 }
 ]
 
 const paymentSelect = ref({
-  label: '选择支付方式',
+  label: '选择支付状态',
   value: ''
 })
 // 按支付方式筛选选项组
@@ -105,7 +108,35 @@ const query3: Ref = ref<queryProps>({
 const search = async () => {
   await getDetailData()
 }
-
+// 得到项目组的日计量单
+interface IdProps {
+  id: string
+}
+const groupId = ref<IdProps[]>([])
+const getGroupList = async () => {
+  const grouplist = await api.stats.statement.getProjectGroupList({
+    query: {
+      member: true
+    }
+  })
+  for (const item of grouplist.data.results) {
+    groupId.value?.push({
+      id: item.id
+    })
+    query3.value.vo_id = item.id
+    const data = await api.stats.statement.getStatementServer({ query: query3.value }
+    )
+    for (const elem of data.data.statements) {
+      if (targetSelect.value === 'evcloud' && elem.service.service_type === 'evcloud') {
+        tablePaymentData.value.push(elem)
+      }
+    }
+  }
+  console.log('tablePaymentData.value', tablePaymentData.value)
+  console.log('grouplist', grouplist)
+  console.log('groupId', groupId)
+}
+//  获取个人日计量单列表
 const getDetailData = async () => {
   tablePaymentData.value = []
   const data = await api.stats.statement.getStatementStorage({
@@ -155,9 +186,11 @@ const selectResourceService = (val:string) => {
   if (val !== '') {
     targetSelect.value = val
     getDetailData()
+    getGroupList()
   } else {
     targetSelect.value = ''
     getDetailData()
+    getGroupList()
   }
 }
 
@@ -172,20 +205,22 @@ const changePageSize = async () => {
   await getDetailData()
 }
 const searchTicket = ref('')
+
 onMounted(async () => {
   await getDetailData()
+  await getGroupList()
 })
 </script>
 
 <template>
   <div class="CurrentMonthList">
-    <div class="row items-start ">
+    <div class="row items-center ">
       <div class="col-2">
         <q-input filled dense v-model="dateFrom" mask="date" >
           <template v-slot:append>
             <q-icon name="event" class="cursor-pointer">
               <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale" >
-                <q-date v-model="dateFrom" @update:model-value="selectDate" >
+                <q-date minimal v-model="dateFrom" @update:model-value="selectDate" >
                   <div class="row items-center justify-end">
                     <q-btn v-close-popup label="确定" color="primary" flat/>
                   </div>
@@ -195,13 +230,13 @@ onMounted(async () => {
           </template>
         </q-input>
       </div>
-      <div class="q-mx-md">至</div>
+      <div class="text-center q-mx-md">至</div>
       <div class="col-2 q-mr-md">
         <q-input filled dense v-model="dateTo" mask="date">
           <template v-slot:append>
             <q-icon name="event" class="cursor-pointer">
               <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
-                <q-date v-model="dateTo" @update:model-value="selectDate">
+                <q-date minimal v-model="dateTo" @update:model-value="selectDate">
                   <div class="row items-center justify-end">
                     <q-btn v-close-popup label="确定" color="primary" flat/>
                   </div>
@@ -211,7 +246,7 @@ onMounted(async () => {
           </template>
         </q-input>
       </div>
-        <q-select outlined dense v-model="paymentSelect" :options="PaymentOption" @update:model-value="selectStatusService(paymentSelect.value)" label="选择支付方式" class="col-2 q-mr-lg" />
+        <q-select outlined dense v-model="paymentSelect" :options="PaymentOption" @update:model-value="selectStatusService(paymentSelect.value)" label="选择支付状态" class="col-2 q-mr-lg" />
       <q-select outlined dense v-model="resourceTypeSelect" :options="resourceOption" @update:model-value="selectResourceService(resourceTypeSelect.value)" label="选择资源类型" class="col-2 q-mr-lg" />
       <q-btn outline label="搜索" class="q-px-lg" @click="search"/>
       </div>
@@ -230,7 +265,7 @@ onMounted(async () => {
         </div>
       </div>
     </div>
-    </div>`
+    </div>
     <server-pay-record :tableRow="tablePaymentData" :search="searchTicket"/>
     <div class="row q-py-md text-grey justify-between items-center">
       <div class="row items-center">

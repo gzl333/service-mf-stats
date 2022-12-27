@@ -279,6 +279,18 @@ export default {
       }
     }) {
       return axiosStats.get('/statement/server/' + payload.path.id)
+    },
+    getProjectGroupList (payload?: {
+      query?: {
+        page?: number;
+        page_size?: number;
+        member?: boolean;
+      }
+    }) {
+      const config = {
+        params: payload?.query
+      }
+      return axiosStats.get('/vo', config)
     }
   }
 }
