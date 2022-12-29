@@ -127,9 +127,9 @@ const getGroupList = async () => {
     const data = await api.stats.statement.getStatementServer({ query: query3.value }
     )
     for (const elem of data.data.statements) {
-      if (targetSelect.value === 'evcloud' && elem.service.service_type === 'evcloud') {
-        tablePaymentData.value.push(elem)
-      }
+      // if (targetSelect.value === 'evcloud' && elem.service.service_type === 'evcloud') {
+      tablePaymentData.value.push(elem)
+      // }
     }
   }
   console.log('tablePaymentData.value', tablePaymentData.value)
