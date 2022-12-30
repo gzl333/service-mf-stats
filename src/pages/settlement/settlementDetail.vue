@@ -95,8 +95,7 @@ const getDetailData = async () => {
     tableRow.value = storageData.meterings
     console.log('statementServerDetail.value', statementServerDetail.value)
     console.log('tableRow.value', tableRow.value)
-  }
-  if (isRight.value === 'storageFail') {
+  } else {
     console.log('serverData', serverData)
     Object.assign(statementServerDetail.value, serverData)
     Object.assign(tableRow.value, serverData.meterings)
@@ -119,7 +118,7 @@ const columnsStorage = [
 ]
 
 const columnsServer = [
-  { name: 'id', align: 'center', label: '计量单号' },
+  { name: 'id', label: '计量单号', align: 'center' },
   // { name: 'creation_time', label: '创建时间', align: 'center' },
   { name: 'public_ip_hours', label: '公网ip', align: 'center' },
   { name: 'cpu_hours', label: 'vCPU', align: 'center' },
@@ -132,12 +131,61 @@ const columnsServer = [
 ]
 // 展开数据详情
 const OpenDetail = ref<boolean>(false)
-const SetOperate = () => {
+const target = ref<boolean>(true)
+const targetId = ref<string>('')
+const SetOperate = (checkId: string) => {
+  targetId.value = checkId
   OpenDetail.value = true
+  target.value = false
+  console.log('OpenDetail.value', OpenDetail.value)
 }
+const cancelOperate = () => {
+  target.value = true
+  OpenDetail.value = false
+}
+
 onMounted(async () => {
   await getDetailData()
 })
+interface serverProps {
+  id?: string,
+  name?: string,
+  vcpus?: number,
+  ram?: number,
+  ipv4?: string,
+  public_ip?: false,
+  image?: string,
+  creation_time?: string,
+  remarks?: string,
+  endpoint_url?: string,
+  service?: {
+    id?: string,
+    name?: string,
+    name_en?: string,
+    service_type?: string
+  },
+  center_quota?: number,
+  classification?: string,
+  vo_id?: string,
+  user?: {
+    id?: string,
+    username?: string,
+  },
+  lock?: string
+}
+async function getServerInformation (serverId: string) {
+  const serverdata = ref<serverProps>({})
+  await api.stats.statement.getStatementServerInformation({
+    path: { id: serverId }
+  }).then((res) => {
+    serverdata.value = res.data.server.ipv4
+    console.log(res)
+    console.log(serverdata)
+  })
+  console.log("serverdata", serverdata.value.ipv4)
+  return serverdata
+}
+
 </script>
 
 <template>
@@ -208,13 +256,25 @@ onMounted(async () => {
         :pagination="{ rowsPerPage: 0 }"
         style="width: 973.75px;"
         v-if="isRight === 'storageFail'"
+        v-model:expanded="expanded"
+        virtual-scroll
       >
+        <template v-slot:header="props">
+          <q-tr :props="props">
+            <q-th
+              v-for="col in props.cols"
+              :key="col.name"
+              :props="props"
+            >
+              {{ col.label }}
+            </q-th>
+          </q-tr>
+        </template>
         <template v-slot:body="props" >
-          <q-tr :props="props" >
+          <q-tr :props="props" :key="`m_${props.row.name}`">
             <q-td key="id" :props="props" class="text-subtitle1 text-center wrapper"   style="width:250px;" >
              <span  style="width: 100%;white-space:normal;word-break:break-all;word-wrap:break-word;">{{props.row.id}}</span>
             </q-td>
-<!--            <q-td key="creation_time" :props="props">{{new Date(props.row.creation_time).toLocaleString()}}</q-td>-->
             <q-td key="public_ip_hours" :props="props">{{ props.row.public_ip_hours}}</q-td>
             <q-td key="cpu_hours" :props="props" >{{ props.row.cpu_hours}}</q-td>
             <q-td key="ram_hours" :props="props" >{{ props.row.ram_hours}}</q-td>
@@ -222,8 +282,23 @@ onMounted(async () => {
             <q-td key="snapshot_hours" :props="props">{{props.row.snapshot_hours}}</q-td>
             <q-td key="original_amount" :props="props">{{props.row.original_amount}} </q-td>
             <q-td key="trade_amount" :props="props">{{ props.row.trade_amount }} </q-td>
-            <q-td key="operate" :props="props" class="text-subtitle1 text-center wrapper" > <q-btn  color="primary" @click="SetOperate()"> 展开 </q-btn></q-td>
+            <q-td key="operate" :props="props" class="text-subtitle1 text-center wrapper" >
+              <q-btn  color="primary" @click="cancelOperate()" v-if=" !target &&   targetId === props.row.id" > 折叠 </q-btn>
+              <q-btn  color="primary" @click="SetOperate(props.row.id)" v-else> 展开 </q-btn>
+            </q-td>
           </q-tr>
+          <q-tr :props="props"  class="bg-grey-3 justify-start q-virtual-scroll--with-prev" v-show="OpenDetail &&   targetId === props.row.id" >
+            <q-td  colspan="100%" >
+              <div class="row justify-start">
+                <span class="col-2 q-pl-md"> 云主机详情</span>
+                <span class="col-3"> IP地址： {{getServerInformation(props.row.server_id)}}</span>
+                <span class="col-3"> 初始配置： {{new Date(props.row.creation_time).toLocaleString()}}</span>
+                <span class="col-4"> 创建时间： {{new Date(props.row.creation_time).toLocaleString()}}</span>
+              </div>
+            </q-td>
+          </q-tr>
+        <div>
+        </div>
         </template>
       </q-table>
           <q-table
@@ -254,7 +329,28 @@ onMounted(async () => {
                 <q-td key="replication" :props="props">{{props.row.replication}}</q-td>
                 <q-td key="original_amount" :props="props">{{props.row.original_amount}} </q-td>
                 <q-td key="trade_amount" :props="props">{{ props.row.trade_amount }} </q-td>
-                <q-td key="operate" :props="props" class="text-subtitle1 text-center wrapper" > <q-btn  color="primary"> 展开 </q-btn></q-td>
+                <q-td key="operate" :props="props" class="text-subtitle1 text-center wrapper" >
+                  <q-btn  color="primary" @click="cancelOperate()" v-if=" !target &&   targetId === props.row.id" > 折叠 </q-btn>
+                  <q-btn  color="primary" @click="SetOperate(props.row.id)" v-else> 展开 </q-btn>
+                </q-td>
+              </q-tr>
+              <q-tr :props="props"  class="bg-grey-3 justify-start q-virtual-scroll--with-prev" v-show="OpenDetail &&   targetId === props.row.id" >
+                <q-td  colspan="100%" >
+                  <div class="row justify-start">
+                    <span class="col-2 q-pl-md"> 对象存储桶详情</span>
+                   <span class="col-4">存储桶id:
+                     <span  style="width: 150px;white-space:normal;word-break:break-all;word-wrap:break-word;">
+                       {{props.row.storage_bucket_id}}
+                     </span>
+                   </span>
+                    <span class="col-3">
+                      存储桶名称： {{props.row.bucket_name}}
+                    </span>
+                    <span class="col-3">
+                      创建时间： {{new Date(props.row.creation_time).toLocaleString()}}
+                    </span>
+                  </div>
+                </q-td>
               </q-tr>
             </template>
           </q-table>
