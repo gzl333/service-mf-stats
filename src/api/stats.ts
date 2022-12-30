@@ -280,6 +280,13 @@ export default {
     }) {
       return axiosStats.get('/statement/server/' + payload.path.id)
     },
+    getStatementServerInformation (payload: {
+      path: {
+        id: string;
+      }
+    }) {
+      return axiosStats.get('/server/' + payload.path.id)
+    },
     getProjectGroupList (payload?: {
       query?: {
         page?: number;
