@@ -316,6 +316,17 @@ async function getServerInformation (serverId: string) {
             style="width: 973.75px;"
             v-if="isRight === 'storageSuccess'"
           >
+            <template v-slot:header="props">
+              <q-tr :props="props">
+                <q-th
+                  v-for="col in props.cols"
+                  :key="col.name"
+                  :props="props"
+                >
+                  {{ col.label }}
+                </q-th>
+              </q-tr>
+            </template>
             <template v-slot:body="props" >
               <q-tr :props="props" >
                 <q-td key="id" :props="props" class="text-subtitle1 text-center wrapper"   style="width: 250px;" >
@@ -354,6 +365,22 @@ async function getServerInformation (serverId: string) {
               </q-tr>
             </template>
           </q-table>
+        </div>
+      </div>
+      <div class="row justify-start content-fixed-width q-mt-lg q-mb-md">
+        <div class="col-6 row justify-start">
+          <div class="col-3 text-grey">支付记录编号</div>
+          <div class="col-8" v-if="statementServerDetail.payment_history_id">
+            {{statementServerDetail.payment_history_id}}
+          </div>
+          <div class="col-8" v-else>
+           该日计量单暂无支付记录编号
+          </div>
+        </div>
+        <div class="col-6 row justify-start">
+          <div class="col-3 text-grey"></div>
+          <div class="col-8">
+          </div>
         </div>
       </div>
     </div>

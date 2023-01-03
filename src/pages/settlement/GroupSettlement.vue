@@ -31,25 +31,9 @@ interface queryProps {
   page_size: number,
   time_start: string,
   time_end: string,
-  payment_status?: string
+  payment_status?: string,
+  member?: boolean
 }
-
-const resourceTypeSelect = ref({
-  label: '选择资源类型',
-  value: ''
-})
-// 按支付方式筛选选项组
-const resourceOption = [{
-  label: '全部',
-  value: ''
-}, {
-  label: '云主机',
-  value: 'evcloud'
-}, {
-  label: '对象存储',
-  value: 'iharbor'
-}
-]
 
 const paymentSelect = ref({
   label: '选择支付状态',
@@ -100,42 +84,34 @@ const query3: Ref = ref<queryProps>({
   page: 1,
   page_size: 5,
   time_start: startDate,
-  time_end: currentDate
+  time_end: currentDate,
+  member: true
 })
 const search = async () => {
-  await getDetailData()
+  await getGroupList()
 }
-//  获取个人日计量单列表
-const getDetailData = async () => {
+// 得到项目组的日计量单
+interface IdProps {
+  id: string
+}
+const groupId = ref<IdProps[]>([])
+const getGroupList = async () => {
   tablePaymentData.value = []
-  const Storagedata = await api.stats.statement.getStatementStorage({
-    query: query3.value
-  }
-  )
-  const Serverdata = await api.stats.statement.getStatementServer({
-    query: query3.value
-  }
-  )
-  if (targetSelect.value === 'evcloud' || targetSelect.value === 'openstack') {
-    for (const elem of Serverdata.data.statements) {
+  const grouplist = await api.stats.statement.getProjectGroupList({
+    query:
+      { member: true }
+  })
+  for (const item of grouplist.data.results) {
+    groupId.value?.push({
+      id: item.id
+    })
+    query3.value.vo_id = item.id
+    const data = await api.stats.statement.getStatementServer({ query: query3.value }
+    )
+    for (const elem of data.data.statements) {
       tablePaymentData.value.push(elem)
     }
-  } else if (targetSelect.value === 'iharbor') {
-    for (const elem of Storagedata.data.statements) {
-      tablePaymentData.value.push(elem)
-    }
-  } else {
-    if (Storagedata.data.count >= query3.value.page * query3.value.page_size) {
-      for (const elem of Storagedata.data.statements) {
-        tablePaymentData.value.push(elem)
-      }
-    }
-    if (Serverdata.data.count >= query3.value.page * query3.value.page_size) {
-      for (const elem of Serverdata.data.statements) {
-        tablePaymentData.value.push(elem)
-      }
-    }
-    paginationTable.value.count = Storagedata.data.count + Serverdata.data.count
+    paginationTable.value.count = data.data.count
   }
 }
 const dateFrom = ref(startDate)
@@ -148,37 +124,25 @@ const selectDate = () => {
 const selectStatusService = (val:string) => {
   if (val !== '') {
     query3.value.payment_status = val
-    getDetailData()
+    getGroupList()
   } else {
     delete query3.value.payment_status
-  }
-}
-// 按日计量单的资源类型筛选
-const targetSelect = ref<string>()
-const selectResourceService = (val:string) => {
-  if (val !== '') {
-    targetSelect.value = val
-    getDetailData()
-  } else {
-    targetSelect.value = ''
-    getDetailData()
   }
 }
 
 const changePagination = async (val: number) => {
   query3.value.page = val
-  await getDetailData()
+  await getGroupList()
 }
 const changePageSize = async () => {
   query3.value.page_size = paginationTable.value.rowsPerPage * 0.5
   query3.value.page = 1
   paginationTable.value.page = 1
-  await getDetailData()
+  await getGroupList()
 }
 const searchTicket = ref('')
-
 onMounted(async () => {
-  await getDetailData()
+  await getGroupList()
 })
 </script>
 
@@ -192,7 +156,7 @@ onMounted(async () => {
               <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale" >
                 <q-date minimal v-model="dateFrom" @update:model-value="selectDate" >
                   <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="确定" color="primary" flat/>
+                    <q-btn v-close-popup label="确定" color="primary" flat @click="search"/>
                   </div>
                 </q-date>
               </q-popup-proxy>
@@ -208,7 +172,7 @@ onMounted(async () => {
               <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
                 <q-date minimal v-model="dateTo" @update:model-value="selectDate">
                   <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="确定" color="primary" flat/>
+                    <q-btn v-close-popup label="确定" color="primary" flat />
                   </div>
                 </q-date>
               </q-popup-proxy>
@@ -217,11 +181,6 @@ onMounted(async () => {
         </q-input>
       </div>
         <q-select outlined dense v-model="paymentSelect" :options="PaymentOption" @update:model-value="selectStatusService(paymentSelect.value)" label="选择支付状态" class="col-2 q-mr-lg" />
-      <q-select outlined dense v-model="resourceTypeSelect" :options="resourceOption" @update:model-value="selectResourceService(resourceTypeSelect.value)" label="选择资源类型" class="col-2 q-mr-lg" />
-      <q-btn outline label="搜索" class="q-px-lg" @click="search"/>
-      </div>
-    <div class="row items-center justify-between q-mt-xl">
-    <div class="col-3">
       <div class="row justify-start">
         <div class="col">
           <q-input dense outlined v-model="searchTicket">
@@ -234,6 +193,10 @@ onMounted(async () => {
           </q-input>
         </div>
       </div>
+      <q-btn outline label="搜索" class="q-px-lg q-ml-lg" @click="search"/>
+      </div>
+    <div class="row items-center justify-between q-mt-xl">
+    <div class="col-3">
     </div>
     </div>
     <server-pay-record :tableRow="tablePaymentData" :search="searchTicket"/>

@@ -23,8 +23,11 @@ const changeTab = async (name: string) => {
             indicator-color="primary"
             active-color="primary"
           >
-            <q-tab no-caps name="history" class="q-px-none q-py-md q-mr-md" :ripple="false" label="日计量单列表"
+            <q-tab no-caps name="history" class="q-px-none q-py-md q-mr-md" :ripple="false" label="用户日计量单"
                    icon="las la-file-invoice-dollar" @click="changeTab('history')">
+            </q-tab>
+            <q-tab no-caps name="group" class="q-px-none q-py-md q-mr-md" :ripple="false" label="项目组日计量单"
+                   icon="las la-file-invoice-dollar" @click="changeTab('group')">
             </q-tab>
           </q-tabs>
         </div>
