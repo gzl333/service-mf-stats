@@ -33,18 +33,6 @@ console.log(store.tables)
               </q-item-section>
             </q-item>
 
-            <!--            <q-item-->
-            <!--              clickable-->
-            <!--              :active="activeItem === 'recharge'"-->
-            <!--              @click="activeItem = 'recharge'; navigateToUrl('/my/stats/recharge')"-->
-            <!--              active-class="active-item"-->
-            <!--            >-->
-            <!--              <q-item-section class="column items-center">-->
-            <!--                <q-icon name="las la-check-circle" size="lg"/>-->
-            <!--                <div class="active-text text-center">{{ tc('账户与充值') }}</div>-->
-            <!--              </q-item-section>-->
-            <!--            </q-item>-->
-
             <q-item
               clickable
               :active="activeItem === 'consumption'"
