@@ -61,8 +61,47 @@ const route = useRoute()
 const router = useRouter()
 const statementServerDetail = ref<statementServerProps>({ id: route.params.id as string })
 const tableRow = ref<[]>([])
-// 获得日计量单详情 对象存储 云主机分开获取
+// 获取云主机详情
+interface serverProps {
+  id?: string,
+  name?: string,
+  vcpus?: number,
+  ram?: number,
+  ipv4?: string,
+  public_ip?: false,
+  image?: string,
+  creation_time?: string,
+  remarks?: string,
+  endpoint_url?: string,
+  service?: {
+    id?: string,
+    name?: string,
+    name_en?: string,
+    service_type?: string
+  },
+  center_quota?: number,
+  classification?: string,
+  vo_id?: string,
+  user?: {
+    id?: string,
+    username?: string,
+  },
+  lock?: string
+}
+// 获得云主机配置
+const serverinformation = ref<serverProps>({})
+async function getServerInformation (serverId: string) {
+  const data4 = await api.stats.statement.getStatementServerInformation({
+    path: { id: serverId }
+  })
+  console.log("data4", data4)
+  return data4.data
+}
+// 获得日计量单详情 对象存储 云主机分开获取 todo 初始版较复杂 后续一定要简化
 const isRight = ref<string>('')
+const configIpArr = ref<object[]>([]) // todo 类型还未定义
+const configvcpusArr = ref<object[]>([]) // todo 类型还未定义
+const configramArr = ref<object[]>([]) // todo 类型还未定义
 const getDetailData = async () => {
   let serverData :any // todo 类型还未定义
   let storageData :any // todo 类型还未定义
@@ -73,8 +112,13 @@ const getDetailData = async () => {
   }).then((res) => {
     storageData = res.data
     isRight.value = 'storageSuccess'
-    console.log(res)
-    console.log(storageData)
+    for (const elem of res.data.meterings) {
+      getServerInformation(elem.server_id)
+      const ipArr2: object = { [elem.server_id]: serverinformation.value }
+      const idArr3: object = { [elem.server_id]: { } }
+      configIpArr.value.push(ipArr2)
+    }
+    console.log('idArr.value', configIpArr.value)
   }).catch((error) => {
     isRight.value = 'storageFail'
     console.log(error)
@@ -86,6 +130,19 @@ const getDetailData = async () => {
       }
     }).then((res) => {
       serverData = res.data
+      for (const elem of res.data.meterings) {
+        const dataServerConfig = ref<serverProps>({})
+        getServerInformation(elem.server_id).then((result) => {
+          Object.assign(dataServerConfig.value, result.server)
+          const idArrIp: object = { [elem.server_id]: dataServerConfig.value.ipv4 }
+          const idArrCpu: object = { [elem.server_id]: dataServerConfig.value.vcpus }
+          const idArrRam: object = { [elem.server_id]: dataServerConfig.value.ram }
+          configIpArr.value.push(idArrIp)
+          configvcpusArr.value.push(idArrCpu)
+          configramArr.value.push(idArrRam)
+        })
+      }
+      console.log('iPArr.value', configIpArr.value)
     }).catch((error) => {
       console.log('err', error)
     })
@@ -93,14 +150,9 @@ const getDetailData = async () => {
   if (isRight.value === 'storageSuccess') {
     Object.assign(statementServerDetail.value, storageData)
     tableRow.value = storageData.meterings
-    console.log('statementServerDetail.value', statementServerDetail.value)
-    console.log('tableRow.value', tableRow.value)
   } else {
-    console.log('serverData', serverData)
     Object.assign(statementServerDetail.value, serverData)
     Object.assign(tableRow.value, serverData.meterings)
-    console.log('statementServerDetail.value', statementServerDetail.value)
-    console.log('tableRow.value', tableRow.value)
   }
 }
 
@@ -147,44 +199,6 @@ const cancelOperate = () => {
 onMounted(async () => {
   await getDetailData()
 })
-interface serverProps {
-  id?: string,
-  name?: string,
-  vcpus?: number,
-  ram?: number,
-  ipv4?: string,
-  public_ip?: false,
-  image?: string,
-  creation_time?: string,
-  remarks?: string,
-  endpoint_url?: string,
-  service?: {
-    id?: string,
-    name?: string,
-    name_en?: string,
-    service_type?: string
-  },
-  center_quota?: number,
-  classification?: string,
-  vo_id?: string,
-  user?: {
-    id?: string,
-    username?: string,
-  },
-  lock?: string
-}
-async function getServerInformation (serverId: string) {
-  const serverdata = ref<serverProps>({})
-  await api.stats.statement.getStatementServerInformation({
-    path: { id: serverId }
-  }).then((res) => {
-    serverdata.value = res.data.server.ipv4
-    console.log(res)
-    console.log(serverdata)
-  })
-  console.log("serverdata", serverdata.value.ipv4)
-  return serverdata
-}
 
 </script>
 
@@ -291,8 +305,8 @@ async function getServerInformation (serverId: string) {
             <q-td  colspan="100%" >
               <div class="row justify-start">
                 <span class="col-2 q-pl-md"> 云主机详情</span>
-                <span class="col-3"> IP地址： {{getServerInformation(props.row.server_id)}}</span>
-                <span class="col-3"> 初始配置： {{new Date(props.row.creation_time).toLocaleString()}}</span>
+                <span class="col-3"> IP地址： {{ configIpArr[0][props.row.server_id] }}</span>
+                <span class="col-3"> 初始配置： {{configvcpusArr[0][props.row.server_id]}} 核  {{configramArr[0][props.row.server_id]}} GB 内存</span>
                 <span class="col-4"> 创建时间： {{new Date(props.row.creation_time).toLocaleString()}}</span>
               </div>
             </q-td>
