@@ -3,16 +3,27 @@ import { useStore } from 'stores/store'
 import { useRoute, useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import api from 'src/api'
+
+const props = defineProps({
+  id: {
+    type: String,
+    required: false
+  },
+  target: {
+    type: String,
+    required: false
+  }
+})
 // 获取的日计量单详情接口
-interface statementServerProps {
-  id?: string,
-  original_amount?: string,
-  payable_amount?: string,
-  trade_amount?: string,
-  payment_status?: string,
-  payment_history_id?: string,
-  date?: string,
-  creation_time?: string,
+interface StatementServerProps {
+  id: string,
+  original_amount: string
+  payable_amount: string
+  trade_amount: string
+  payment_status: string
+  payment_history_id: string
+  date: string,
+  creation_time: string,
   user_id?: string,
   username?: string,
   vo_id?: string,
@@ -55,21 +66,15 @@ interface statementServerProps {
       put_request?: number
     }]
 }
-
-const store = useStore()
-const route = useRoute()
-const router = useRouter()
-const statementServerDetail = ref<statementServerProps>({ id: route.params.id as string })
-const tableRow = ref<[]>([])
-// 获取云主机详情
-interface serverProps {
-  id?: string,
-  name?: string,
-  vcpus?: number,
-  ram?: number,
-  ipv4?: string,
-  public_ip?: false,
-  image?: string,
+// 获取云主机详情接口
+interface ServerProps {
+  id: string;
+  name?: string;
+  vcpus?: number;
+  ram?: number;
+  ipv4?: string
+  public_ip?: false
+  image?: string
   creation_time?: string,
   remarks?: string,
   endpoint_url?: string,
@@ -88,42 +93,38 @@ interface serverProps {
   },
   lock?: string
 }
+const store = useStore()
+const route = useRoute()
+const router = useRouter()
+const statementServerDetail = ref<StatementServerProps>({
+  id: props.id as string,
+  original_amount: '',
+  payable_amount: ' ',
+  trade_amount: '',
+  payment_status: '',
+  payment_history_id: '',
+  date: '',
+  creation_time: ''
+})
+const tableRow = ref<[]>([])
+console.log('props.id', props.id)
+console.log('props.target', props.target)
 // 获得云主机配置
-const serverinformation = ref<serverProps>({})
 async function getServerInformation (serverId: string) {
-  const data4 = await api.stats.statement.getStatementServerInformation({
+  const configData = await api.stats.statement.getStatementServerInformation({
     path: { id: serverId }
   })
-  console.log("data4", data4)
-  return data4.data
+  console.log('configData.data.server', configData.data.server)
+  return configData.data.server
 }
 // 获得日计量单详情 对象存储 云主机分开获取 todo 初始版较复杂 后续一定要简化
-const isRight = ref<string>('')
 const configIpArr = ref<object[]>([]) // todo 类型还未定义
-const configvcpusArr = ref<object[]>([]) // todo 类型还未定义
-const configramArr = ref<object[]>([]) // todo 类型还未定义
+const configCpuArr = ref<object[]>([]) // todo 类型还未定义
+const configRamArr = ref<object[]>([]) // todo 类型还未定义
 const getDetailData = async () => {
   let serverData :any // todo 类型还未定义
   let storageData :any // todo 类型还未定义
-  await api.stats.statement.getStatementStorageDetail({
-    path: {
-      id: route.params.id as string
-    }
-  }).then((res) => {
-    storageData = res.data
-    isRight.value = 'storageSuccess'
-    for (const elem of res.data.meterings) {
-      getServerInformation(elem.server_id)
-      const ipArr2: object = { [elem.server_id]: serverinformation.value }
-      const idArr3: object = { [elem.server_id]: { } }
-      configIpArr.value.push(ipArr2)
-    }
-    console.log('idArr.value', configIpArr.value)
-  }).catch((error) => {
-    isRight.value = 'storageFail'
-    console.log(error)
-  })
-  if (isRight.value === 'storageFail') {
+  if (props.target === 'server') {
     await api.stats.statement.getStatementServerDetail({
       path: {
         id: route.params.id as string
@@ -131,23 +132,30 @@ const getDetailData = async () => {
     }).then((res) => {
       serverData = res.data
       for (const elem of res.data.meterings) {
-        const dataServerConfig = ref<serverProps>({})
-        getServerInformation(elem.server_id).then((result) => {
-          Object.assign(dataServerConfig.value, result.server)
-          const idArrIp: object = { [elem.server_id]: dataServerConfig.value.ipv4 }
-          const idArrCpu: object = { [elem.server_id]: dataServerConfig.value.vcpus }
-          const idArrRam: object = { [elem.server_id]: dataServerConfig.value.ram }
-          configIpArr.value.push(idArrIp)
-          configvcpusArr.value.push(idArrCpu)
-          configramArr.value.push(idArrRam)
+        const dataServerConfig = ref<ServerProps>({ id: '' })
+        getServerInformation(elem.id).then((result) => {
+          Object.assign(dataServerConfig.value, result)
+          const idArrIp: object = { [elem.id]: dataServerConfig.value.ipv4 }
+          const idArrCpu: object = { [elem.id]: dataServerConfig.value.vcpus }
+          const idArrRam: object = { [elem.id]: dataServerConfig.value.ram }
+          Object.assign(configIpArr.value, idArrIp)
+          Object.assign(configCpuArr.value, idArrCpu)
+          Object.assign(configRamArr.value, idArrRam)
         })
       }
-      console.log('iPArr.value', configIpArr.value)
-    }).catch((error) => {
-      console.log('err', error)
+      console.log('configIpArr', configIpArr.value)
     })
   }
-  if (isRight.value === 'storageSuccess') {
+  if (props.target === 'storage') {
+    await api.stats.statement.getStatementStorageDetail({
+      path: {
+        id: props.id as string
+      }
+    }).then((res) => {
+      storageData = res.data
+    }).catch((error) => {
+      console.log(error)
+    })
     Object.assign(statementServerDetail.value, storageData)
     tableRow.value = storageData.meterings
   } else {
@@ -158,7 +166,6 @@ const getDetailData = async () => {
 
 const columnsStorage = [
   { name: 'id', align: 'center', label: '计量单号' },
-  // { name: 'creation_time', label: '创建时间', align: 'center' },
   { name: 'storage', label: '数据存储量', align: 'center' },
   { name: 'downstream', label: '下行流量', align: 'center' },
   { name: 'get_request', label: 'get查询量', align: 'center' },
@@ -171,7 +178,6 @@ const columnsStorage = [
 
 const columnsServer = [
   { name: 'id', label: '计量单号', align: 'center' },
-  // { name: 'creation_time', label: '创建时间', align: 'center' },
   { name: 'public_ip_hours', label: '公网ip', align: 'center' },
   { name: 'cpu_hours', label: 'vCPU', align: 'center' },
   { name: 'ram_hours', label: '内存', align: 'center' },
@@ -185,12 +191,13 @@ const columnsServer = [
 const OpenDetail = ref<boolean>(false)
 const target = ref<boolean>(true)
 const targetId = ref<string>('')
-const SetOperate = (checkId: string) => {
+
+const setOperate = (checkId: string) => {
   targetId.value = checkId
   OpenDetail.value = true
   target.value = false
-  console.log('OpenDetail.value', OpenDetail.value)
 }
+
 const cancelOperate = () => {
   target.value = true
   OpenDetail.value = false
@@ -207,7 +214,7 @@ onMounted(async () => {
    <div class="row col-6 text-h6 text-primary text-weight-bold" >
      <q-btn icon="arrow_back_ios" flat unelevated dense
             @click="router.back()"/>
-     <span>日计量单详情 </span> <span class="q-ml-lg text-primary"> {{route.params.id}} </span>
+     <span>日计量单详情</span> <span class="q-ml-lg text-primary"> {{route.params.id}} </span>
    </div>
     <div class="column items-start content-fixed-width q-mt-lg text-subtitle1">
       <div class="row justify-start content-fixed-width q-mb-md">
@@ -269,8 +276,7 @@ onMounted(async () => {
         hide-pagination
         :pagination="{ rowsPerPage: 0 }"
         style="width: 973.75px;"
-        v-if="isRight === 'storageFail'"
-        v-model:expanded="expanded"
+        v-if="props.target === 'server'"
         virtual-scroll
       >
         <template v-slot:header="props">
@@ -298,15 +304,15 @@ onMounted(async () => {
             <q-td key="trade_amount" :props="props">{{ props.row.trade_amount }} </q-td>
             <q-td key="operate" :props="props" class="text-subtitle1 text-center wrapper" >
               <q-btn  color="primary" @click="cancelOperate()" v-if=" !target &&   targetId === props.row.id" > 折叠 </q-btn>
-              <q-btn  color="primary" @click="SetOperate(props.row.id)" v-else> 展开 </q-btn>
+              <q-btn color="primary" @click="setOperate(props.row.id)" v-else> 展开 </q-btn>
             </q-td>
           </q-tr>
           <q-tr :props="props"  class="bg-grey-3 justify-start q-virtual-scroll--with-prev" v-show="OpenDetail &&   targetId === props.row.id" >
             <q-td  colspan="100%" >
               <div class="row justify-start">
                 <span class="col-2 q-pl-md"> 云主机详情</span>
-                <span class="col-3"> IP地址： {{ configIpArr[0][props.row.server_id] }}</span>
-                <span class="col-3"> 初始配置： {{configvcpusArr[0][props.row.server_id]}} 核  {{configramArr[0][props.row.server_id]}} GB 内存</span>
+                <span class="col-3"> IP地址： {{ configIpArr[props?.row?.id] }}</span>
+                <span class="col-3"> 初始配置： {{configCpuArr[props.row.id] }} 核  {{ configRamArr[props.row.id] }} GB 内存</span>
                 <span class="col-4"> 创建时间： {{new Date(props.row.creation_time).toLocaleString()}}</span>
               </div>
             </q-td>
@@ -328,7 +334,7 @@ onMounted(async () => {
             hide-pagination
             :pagination="{ rowsPerPage: 0 }"
             style="width: 973.75px;"
-            v-if="isRight === 'storageSuccess'"
+            v-if="props.target === 'storage'"
           >
             <template v-slot:header="props">
               <q-tr :props="props">
@@ -356,7 +362,7 @@ onMounted(async () => {
                 <q-td key="trade_amount" :props="props">{{ props.row.trade_amount }} </q-td>
                 <q-td key="operate" :props="props" class="text-subtitle1 text-center wrapper" >
                   <q-btn  color="primary" @click="cancelOperate()" v-if=" !target &&   targetId === props.row.id" > 折叠 </q-btn>
-                  <q-btn  color="primary" @click="SetOperate(props.row.id)" v-else> 展开 </q-btn>
+                  <q-btn color="primary" @click="setOperate(props.row.id)" v-else> 展开 </q-btn>
                 </q-td>
               </q-tr>
               <q-tr :props="props"  class="bg-grey-3 justify-start q-virtual-scroll--with-prev" v-show="OpenDetail &&   targetId === props.row.id" >

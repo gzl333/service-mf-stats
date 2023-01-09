@@ -285,7 +285,7 @@ export default {
         id: string;
       }
     }) {
-      return axiosStats.get('/server/' + payload.path.id)
+      return axiosStats.get('/metering/server/' + payload.path.id)
     },
     getProjectGroupList (payload?: {
       query?: {
