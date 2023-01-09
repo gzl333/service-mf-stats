@@ -6,8 +6,6 @@ import { useStore } from 'stores/store'
 import { i18n } from 'boot/i18n'
 
 const store = useStore()
-// const router = useRouter()
-// const route = useRoute()
 const { tc } = i18n.global
 const activeItem = computed(() => store.items.currentPath[0])
 const releaseTime = process.env.releaseTime

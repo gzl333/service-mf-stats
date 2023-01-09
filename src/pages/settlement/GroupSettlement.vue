@@ -1,37 +1,36 @@
 <script setup lang="ts">
 import { onMounted, Ref, ref } from 'vue'
-import { useStore } from 'stores/store'
 import ServerPayRecord from 'components/public/ServerStatement.vue'
 import { payRecordUtcToBeijing } from 'src/hooks/processTime'
 
 import api from 'src/api'
 interface TableDataProps {
-  id: string,
-  original_amount: string,
-  payable_amount: string,
-  trade_amount: string,
-  payment_status: string,
-  payment_history_id: string,
-  date: string,
-  creation_time: string,
-  user_id: string,
-  username: string,
-  vo_id: string,
-  vo_name: string,
-  owner_type: string,
+  id: string
+  original_amount: string
+  payable_amount: string
+  trade_amount: string
+  payment_status: string
+  payment_history_id: string
+  date: string
+  creation_time: string
+  user_id: string
+  username: string
+  vo_id: string
+  vo_name: string
+  owner_type: string
   service: {
-    id:string,
-    name: string,
-    name_en: string,
+    id:string
+    name: string
+    name_en: string
     service_type: string
   }
 }
-interface queryProps {
-  page: number,
-  page_size: number,
-  time_start: string,
-  time_end: string,
-  payment_status?: string,
+interface QueryProps {
+  page: number
+  page_size: number
+  time_start: string
+  time_end: string
+  payment_status?: string
   member?: boolean
 }
 
@@ -40,7 +39,7 @@ const paymentSelect = ref({
   value: ''
 })
 // 按支付方式筛选选项组
-const PaymentOption = [{
+const paymentOption = [{
   label: '全部',
   value: ''
 }, {
@@ -54,7 +53,6 @@ const PaymentOption = [{
   value: 'cancelled'
 }
 ]
-const store = useStore()
 const tablePaymentData = ref<TableDataProps[]>([])
 const d = new Date()
 
@@ -80,7 +78,7 @@ const paginationTable = ref({
   rowsPerPage: 10
 })
 
-const query3: Ref = ref<queryProps>({
+const query3: Ref = ref<QueryProps>({
   page: 1,
   page_size: 5,
   time_start: startDate,
@@ -97,11 +95,11 @@ interface IdProps {
 const groupId = ref<IdProps[]>([])
 const getGroupList = async () => {
   tablePaymentData.value = []
-  const grouplist = await api.stats.statement.getProjectGroupList({
+  const groupList = await api.stats.statement.getProjectGroupList({
     query:
       { member: true }
   })
-  for (const item of grouplist.data.results) {
+  for (const item of groupList.data.results) {
     groupId.value?.push({
       id: item.id
     })
@@ -180,7 +178,7 @@ onMounted(async () => {
           </template>
         </q-input>
       </div>
-        <q-select outlined dense v-model="paymentSelect" :options="PaymentOption" @update:model-value="selectStatusService(paymentSelect.value)" label="选择支付状态" class="col-2 q-mr-lg" />
+        <q-select outlined dense v-model="paymentSelect" :options="paymentOption" @update:model-value="selectStatusService(paymentSelect.value)" label="选择支付状态" class="col-2 q-mr-lg" />
       <div class="row justify-start">
         <div class="col">
           <q-input dense outlined v-model="searchTicket">

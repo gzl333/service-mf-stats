@@ -19,35 +19,6 @@ export const getNowFormatDate = (type: number) => {
     return year + seperator1 + month + seperator1 + strDate
   }
 }
-export const getLastFormatDate = (type: number) => {
-  month = myDate.getMonth()
-  strDate = myDate.getDate()
-  const day = new Date(year, month, 0).getDate()
-  const seperator1 = '-'
-  if (month >= 1 && month <= 9) {
-    month = '0' + month
-  }
-  if (strDate >= 0 && strDate <= 9) {
-    strDate = '0' + strDate
-  }
-  if (type === 0) {
-    return year + seperator1 + month + seperator1 + '01'
-  } else {
-    return year + seperator1 + month + seperator1 + day
-  }
-}
-export const getFormatDate = () => {
-  let currentMonth: number | string = myDate.getMonth() + 1
-  let strDate: number | string = myDate.getDate()
-  const seperator1 = '-'
-  if (currentMonth >= 1 && currentMonth <= 9) {
-    currentMonth = '0' + currentMonth
-  }
-  if (strDate >= 0 && strDate <= 9) {
-    strDate = '0' + strDate
-  }
-  return year + seperator1 + currentMonth + seperator1 + strDate
-}
 export const getHistoryStartFormatDate = () => {
   month = myDate.getMonth() + 1
   strDate = myDate.getDate()
@@ -100,48 +71,5 @@ export function payRecordUtcToBeijing (utcDatetime: string) {
   const YY = dateTime.getFullYear() + '-'
   const MM = (dateTime.getMonth() + 1 < 10 ? '0' + (dateTime.getMonth() + 1) : dateTime.getMonth() + 1) + '-'
   const DD = (dateTime.getDate() < 10 ? '0' + (dateTime.getDate()) : dateTime.getDate())
-  const hh = (dateTime.getHours() < 10 ? '0' + dateTime.getHours() : dateTime.getHours()) + ':'
-  const mm = (dateTime.getMinutes() < 10 ? '0' + dateTime.getMinutes() : dateTime.getMinutes()) + ':'
-  const ss = (dateTime.getSeconds() < 10 ? '0' + dateTime.getSeconds() : dateTime.getSeconds())
   return YY + MM + DD
-}
-
-export function serverPayRecordUtcToBeijing (utcDateTime: string) {
-  // 转为正常的时间格式 年-月-日 时:分:秒
-  const newDateTime = utcDateTime.split('T')[0] + ' ' + utcDateTime.split('T')[1].split('.')[0]
-  // 处理成为时间戳
-  let timestamp = new Date(newDateTime.replace(/-/g, '/')).getTime()
-  timestamp = timestamp / 1000
-  // 增加8个小时，北京时间比utc时间多八个时区
-  timestamp = timestamp + 8 * 60 * 60
-  const Timestamp = timestamp.toString()
-  // 时间戳转为时间
-  const date = new Date(parseInt(Timestamp) * 1000)
-  const YY = date.getFullYear() + '-'
-  const MM = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-'
-  const DD = (date.getDate() < 10 ? '0' + (date.getDate()) : date.getDate())
-  const hh = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':'
-  const mm = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':'
-  const ss = (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds())
-  return YY + MM + DD + ' ' + hh + mm + ss
-}
-
-export function numberPayRecordUtcToBeijing (utcDateTime: string) {
-  // 转为正常的时间格式 年-月-日 时:分:秒
-  const newDateTime = utcDateTime.split('T')[0] + ' ' + utcDateTime.split('T')[1].split('.')[0]
-  // 处理成为时间戳
-  let timestamp = new Date(newDateTime.replace(/-/g, '/')).getTime()
-  timestamp = timestamp / 1000
-  // 增加8个小时，北京时间比utc时间多八个时区
-  timestamp = timestamp + 8 * 60 * 60
-  const Timestamp = timestamp.toString()
-  // 时间戳转为时间
-  const date = new Date(parseInt(Timestamp) * 1000)
-  const YY = date.getFullYear()
-  const MM = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + ''
-  const DD = (date.getDate() < 10 ? '0' + (date.getDate()) : date.getDate())
-  const hh = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours())
-  const mm = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes())
-  const ss = (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds())
-  return YY + MM + DD + hh + mm + ss
 }

@@ -2,7 +2,7 @@
 import { navigateToUrl } from 'single-spa'
 import { usePaymentStatusExpress } from 'src/hooks/statementKeyToRead'
 const PaymentStatusExpress = usePaymentStatusExpress()
-
+import { ref } from 'vue'
 const props = defineProps({
   tableRow: {
     type: Array,
@@ -15,13 +15,13 @@ const props = defineProps({
 })
 interface TableDataProps {
   id: string,
-  original_amount?: string,
-  payable_amount?: string,
-  trade_amount?: string,
-  payment_status?: string,
-  payment_history_id?: string,
+  original_amount: string,
+  payable_amount: string,
+  trade_amount: string,
+  payment_status: string,
+  payment_history_id: string,
   date?: string,
-  creation_time?: string,
+  creation_time: string,
   user_id?: string,
   username?: string,
   vo_id?: string,
@@ -47,8 +47,15 @@ const columns = [
   { name: 'operate', label: '操作', align: 'center' }
 ]
 
-const goToDetail = (id: string) => {
-  navigateToUrl(`/my/stats/settlement/detail/${id}`)
+const goToDetail = (id: string, targetType: string) => {
+  const target = ref<string>('')
+  if (targetType === 'evcloud' || targetType === 'openstack') {
+    target.value = 'server'
+  }
+  if (targetType === 'iharbor') {
+    target.value = 'storage'
+  }
+  navigateToUrl(`/my/stats/settlement/detail/${id}/${target.value}/`)
 }
 
 const searchFilter = (rows: TableDataProps[], content: string): TableDataProps[] => rows.filter(group =>
@@ -78,7 +85,7 @@ const searchFilter = (rows: TableDataProps[], content: string): TableDataProps[]
             <q-td key="id" :props="props" class="text-subtitle1 text-center wrapper"   style="width: 250px;">
               <q-btn class="q-ma-none " :label="props.row.id" color="primary" padding="xs"
                      style="width: 100%;white-space:normal;word-break:break-all;word-wrap:break-word;"
-                     @click="goToDetail(props.row.id)"
+                     @click="goToDetail(props.row.id, props.row.service.service_type)"
                      flat dense unelevated></q-btn>
             </q-td>
             <q-td key="username" :props="props" v-if="props.row.username">{{ props.row.username}}</q-td>
@@ -90,7 +97,7 @@ const searchFilter = (rows: TableDataProps[], content: string): TableDataProps[]
             <q-td key="payable_amount" :props="props">{{props.row.payable_amount}} </q-td>
             <q-td key="trade_amount" :props="props">{{props.row.trade_amount}} </q-td>
             <q-td key="payment_status" :props="props">{{PaymentStatusExpress(props.row.payment_status)}} </q-td>
-            <q-td key="operate" :props="props" class="text-subtitle1 text-center wrapper" > <q-btn @click="goToDetail(props.row.id)" color="primary"> 详情 </q-btn></q-td>
+            <q-td key="operate" :props="props" class="text-subtitle1 text-center wrapper" > <q-btn @click="goToDetail(props.row.id, props.row.service.service_type)" color="primary" > 详情 </q-btn></q-td>
           </q-tr>
         </template>
       </q-table>
