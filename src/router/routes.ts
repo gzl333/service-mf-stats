@@ -80,9 +80,11 @@ const routes: RouteRecordRaw[] = [
             component: () => import('pages/settlement/GroupSettlement.vue')
           },
           {
-            path: 'detail/:id',
-            component: () => import('pages/settlement/settlementDetail.vue')
-          }]
+            path: 'detail/:id/:target',
+            component: () => import('pages/settlement/PersonalSettlementDetail.vue'),
+            props: true
+          }
+        ]
       },
       {
         path: 'statistic',
