@@ -26,7 +26,7 @@ interface TableDataProps {
     service_type: string
   }
 }
-interface queryProps {
+interface QueryProps {
   page: number,
   page_size: number,
   time_start: string,
@@ -72,18 +72,13 @@ const PaymentOption = [{
 ]
 const store = useStore()
 const tablePaymentData = ref<TableDataProps[]>([])
-const d = new Date()
-
-d.setHours(d.getHours(), d.getMinutes() - d.getTimezoneOffset())
-d.setMonth(d.getMonth())
-
-const currentDate1 = d.toISOString()
-const currentDate = payRecordUtcToBeijing(currentDate1) // 去掉小数点
-let dateTime = new Date()
-dateTime.setMonth(d.getMonth() - 1)
-dateTime = new Date(dateTime)
-const startDate1 = dateTime.toISOString()
-const startDate = payRecordUtcToBeijing(startDate1)
+const date = new Date()
+date.setHours(date.getHours(), date.getMinutes() - date.getTimezoneOffset())
+date.setMonth(date.getMonth())
+const currentDate = payRecordUtcToBeijing(date.toISOString()) // 去掉小数点
+const date2 = new Date()
+date2.setMonth(date2.getMonth() - 1)
+const startDate = payRecordUtcToBeijing(date2.toISOString())
 function setDateFrom (setTime:string) {
   return setTime.split('T')[0]
 }
@@ -96,7 +91,7 @@ const paginationTable = ref({
   rowsPerPage: 10
 })
 
-const query3: Ref = ref<queryProps>({
+const query3: Ref = ref<QueryProps>({
   page: 1,
   page_size: 5,
   time_start: startDate,
@@ -108,34 +103,32 @@ const search = async () => {
 //  获取个人日计量单列表
 const getDetailData = async () => {
   tablePaymentData.value = []
-  const Storagedata = await api.stats.statement.getStatementStorage({
+  const storageData = await api.stats.statement.getStatementStorage({
     query: query3.value
   }
   )
-  const Serverdata = await api.stats.statement.getStatementServer({
+  const serverData = await api.stats.statement.getStatementServer({
     query: query3.value
   }
   )
   if (targetSelect.value === 'evcloud' || targetSelect.value === 'openstack') {
-    for (const elem of Serverdata.data.statements) {
+    for (const elem of serverData.data.statements) {
       tablePaymentData.value.push(elem)
     }
+    paginationTable.value.count = serverData.data.count
   } else if (targetSelect.value === 'iharbor') {
-    for (const elem of Storagedata.data.statements) {
+    for (const elem of storageData.data.statements) {
       tablePaymentData.value.push(elem)
     }
+    paginationTable.value.count = storageData.data.count
   } else {
-    if (Storagedata.data.count >= query3.value.page * query3.value.page_size) {
-      for (const elem of Storagedata.data.statements) {
-        tablePaymentData.value.push(elem)
-      }
+    for (const elem of storageData.data.statements) {
+      tablePaymentData.value.push(elem)
     }
-    if (Serverdata.data.count >= query3.value.page * query3.value.page_size) {
-      for (const elem of Serverdata.data.statements) {
-        tablePaymentData.value.push(elem)
-      }
+    for (const elem of serverData.data.statements) {
+      tablePaymentData.value.push(elem)
     }
-    paginationTable.value.count = Storagedata.data.count + Serverdata.data.count
+    paginationTable.value.count = storageData.data.count + serverData.data.count
   }
 }
 const dateFrom = ref(startDate)
@@ -157,6 +150,7 @@ const selectStatusService = (val:string) => {
 const targetSelect = ref<string>()
 const selectResourceService = (val:string) => {
   if (val !== '') {
+    query3.value.page_size = paginationTable.value.rowsPerPage
     targetSelect.value = val
     getDetailData()
   } else {
