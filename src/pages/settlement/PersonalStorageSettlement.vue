@@ -1,46 +1,62 @@
 <script setup lang="ts">
 import { onMounted, Ref, ref } from 'vue'
+import { useStore } from 'stores/store'
 import ServerPayRecord from 'components/public/ServerStatement.vue'
 import { payRecordUtcToBeijing } from 'src/hooks/processTime'
 
 import api from 'src/api'
 interface TableDataProps {
-  id: string
-  original_amount: string
-  payable_amount: string
-  trade_amount: string
-  payment_status: string
-  payment_history_id: string
-  date: string
-  creation_time: string
-  user_id: string
-  username: string
-  vo_id: string
-  vo_name: string
-  owner_type: string
+  id: string,
+  original_amount: string,
+  payable_amount: string,
+  trade_amount: string,
+  payment_status: string,
+  payment_history_id: string,
+  date: string,
+  creation_time: string,
+  user_id: string,
+  username: string,
+  vo_id: string,
+  vo_name: string,
+  owner_type: string,
   service: {
-    id:string
-    name: string
-    name_en: string
+    id:string,
+    name: string,
+    name_en: string,
     service_type: string
   }
 }
 interface QueryProps {
-  page: number
-  page_size: number
-  date_start: string
-  date_end: string
+  page: number,
+  page_size: number,
+  date_start: string,
+  date_end: string,
   payment_status?: string
-  member?: boolean
-  vo_id?: string
 }
+
+const resourceTypeSelect = ref({
+  label: '选择资源类型',
+  value: ''
+})
+// 按支付方式筛选选项组
+const resourceOption = [{
+  label: '全部',
+  value: ''
+}, {
+  label: '云主机',
+  value: 'evcloud'
+}, {
+  label: '对象存储',
+  value: 'iharbor'
+}
+]
 
 const paymentSelect = ref({
   label: '选择支付状态',
   value: ''
 })
 // 按支付方式筛选选项组
-const paymentOption = [{
+const PaymentOption = [{
   label: '全部',
   value: ''
 }, {
@@ -54,19 +70,15 @@ const paymentOption = [{
   value: 'cancelled'
 }
 ]
+const store = useStore()
 const tablePaymentData = ref<TableDataProps[]>([])
-const d = new Date()
-
-d.setHours(d.getHours(), d.getMinutes() - d.getTimezoneOffset())
-d.setMonth(d.getMonth())
-
-const currentDate1 = d.toISOString()
-const currentDate = payRecordUtcToBeijing(currentDate1) // 去掉小数点
-let dateTime = new Date()
-dateTime.setMonth(d.getMonth() - 1)
-dateTime = new Date(dateTime)
-const startDate1 = dateTime.toISOString()
-const startDate = payRecordUtcToBeijing(startDate1)
+const date = new Date()
+date.setHours(date.getHours(), date.getMinutes() - date.getTimezoneOffset())
+date.setMonth(date.getMonth())
+const currentDate = payRecordUtcToBeijing(date.toISOString()) // 去掉小数点
+const date2 = new Date()
+date2.setMonth(date2.getMonth() - 1)
+const startDate = payRecordUtcToBeijing(date2.toISOString())
 function setDateFrom (setTime:string) {
   return setTime.split('T')[0]
 }
@@ -86,31 +98,26 @@ const query3: Ref = ref<QueryProps>({
   date_end: currentDate
 })
 const search = async () => {
-  await getGroupList()
+  await getDetailData()
 }
-// 得到项目组的日计量单
-interface IdProps {
-  id: string
-}
-const groupId = ref<IdProps[]>([])
-const getGroupList = async () => {
-  console.log('query3.value group', query3.value)
+//  获取个人日计量单列表
+const getDetailData = async () => {
   tablePaymentData.value = []
-  const groupList = await api.stats.statement.getProjectGroupList({
-    query:
-      { member: true }
-  })
-  for (const item of groupList.data.results) {
-    groupId.value?.push({
-      id: item.id
-    })
-    query3.value.vo_id = item.id
-    const data = await api.stats.statement.getStatementServer({ query: query3.value }
-    )
-    for (const elem of data.data.statements) {
+  const storageData = await api.stats.statement.getStatementStorage({
+    query: query3.value
+  }
+  )
+  console.log('query3.value', query3.value)
+  if (targetSelect.value === 'iharbor') {
+    for (const elem of storageData.data.statements) {
       tablePaymentData.value.push(elem)
     }
-    paginationTable.value.count = data.data.count
+    paginationTable.value.count = storageData.data.count
+  } else {
+    for (const elem of storageData.data.statements) {
+      tablePaymentData.value.push(elem)
+    }
+    paginationTable.value.count = storageData.data.count
   }
 }
 const dateFrom = ref(startDate)
@@ -123,26 +130,38 @@ const selectDate = () => {
 const selectStatusService = (val:string) => {
   if (val !== '') {
     query3.value.payment_status = val
-    getGroupList()
+    getDetailData()
   } else {
     delete query3.value.payment_status
   }
 }
+// 按日计量单的资源类型筛选
+const targetSelect = ref<string>()
+const selectResourceService = (val:string) => {
+  if (val !== '') {
+    query3.value.page_size = paginationTable.value.rowsPerPage
+    targetSelect.value = val
+    getDetailData()
+  } else {
+    targetSelect.value = ''
+    getDetailData()
+  }
+}
 
 const changePagination = async (val: number) => {
-  console.log('query3.value log  chage', query3.value)
   query3.value.page = val
-  await getGroupList()
+  await getDetailData()
 }
 const changePageSize = async () => {
   query3.value.page_size = paginationTable.value.rowsPerPage * 0.5
   query3.value.page = 1
   paginationTable.value.page = 1
-  await getGroupList()
+  await getDetailData()
 }
 const searchTicket = ref('')
+
 onMounted(async () => {
-  await getGroupList()
+  await getDetailData()
 })
 </script>
 
@@ -156,7 +175,7 @@ onMounted(async () => {
               <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale" >
                 <q-date minimal v-model="dateFrom" @update:model-value="selectDate" >
                   <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="确定" color="primary" flat @click="search"/>
+                    <q-btn v-close-popup label="确定" color="primary" flat/>
                   </div>
                 </q-date>
               </q-popup-proxy>
@@ -172,7 +191,7 @@ onMounted(async () => {
               <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
                 <q-date minimal v-model="dateTo" @update:model-value="selectDate">
                   <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="确定" color="primary" flat />
+                    <q-btn v-close-popup label="确定" color="primary" flat/>
                   </div>
                 </q-date>
               </q-popup-proxy>
@@ -180,7 +199,12 @@ onMounted(async () => {
           </template>
         </q-input>
       </div>
-        <q-select outlined dense v-model="paymentSelect" :options="paymentOption" @update:model-value="selectStatusService(paymentSelect.value)" label="选择支付状态" class="col-2 q-mr-lg" />
+        <q-select outlined dense v-model="paymentSelect" :options="PaymentOption" @update:model-value="selectStatusService(paymentSelect.value)" label="选择支付状态" class="col-2 q-mr-lg" />
+      <q-select outlined dense v-model="resourceTypeSelect" :options="resourceOption" @update:model-value="selectResourceService(resourceTypeSelect.value)" label="选择资源类型" class="col-2 q-mr-lg" />
+      <q-btn outline label="搜索" class="q-px-lg" @click="search"/>
+      </div>
+    <div class="row items-center justify-between q-mt-xl">
+    <div class="col-3">
       <div class="row justify-start">
         <div class="col">
           <q-input dense outlined v-model="searchTicket">
@@ -193,10 +217,6 @@ onMounted(async () => {
           </q-input>
         </div>
       </div>
-      <q-btn outline label="搜索" class="q-px-lg q-ml-lg" @click="search"/>
-      </div>
-    <div class="row items-center justify-between q-mt-xl">
-    <div class="col-3">
     </div>
     </div>
     <server-pay-record :tableRow="tablePaymentData" :search="searchTicket"/>

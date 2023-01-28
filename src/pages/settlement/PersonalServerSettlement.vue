@@ -29,8 +29,8 @@ interface TableDataProps {
 interface QueryProps {
   page: number,
   page_size: number,
-  time_start: string,
-  time_end: string,
+  date_start: string,
+  date_end: string,
   payment_status?: string
 }
 
@@ -93,9 +93,9 @@ const paginationTable = ref({
 
 const query3: Ref = ref<QueryProps>({
   page: 1,
-  page_size: 5,
-  time_start: startDate,
-  time_end: currentDate
+  page_size: 10,
+  date_start: startDate,
+  date_end: currentDate
 })
 const search = async () => {
   await getDetailData()
@@ -103,39 +103,28 @@ const search = async () => {
 //  获取个人日计量单列表
 const getDetailData = async () => {
   tablePaymentData.value = []
-  const storageData = await api.stats.statement.getStatementStorage({
-    query: query3.value
-  }
-  )
   const serverData = await api.stats.statement.getStatementServer({
     query: query3.value
   }
   )
+  console.log('query3.value', query3.value)
   if (targetSelect.value === 'evcloud' || targetSelect.value === 'openstack') {
     for (const elem of serverData.data.statements) {
       tablePaymentData.value.push(elem)
     }
     paginationTable.value.count = serverData.data.count
-  } else if (targetSelect.value === 'iharbor') {
-    for (const elem of storageData.data.statements) {
-      tablePaymentData.value.push(elem)
-    }
-    paginationTable.value.count = storageData.data.count
   } else {
-    for (const elem of storageData.data.statements) {
-      tablePaymentData.value.push(elem)
-    }
     for (const elem of serverData.data.statements) {
       tablePaymentData.value.push(elem)
     }
-    paginationTable.value.count = storageData.data.count + serverData.data.count
+    paginationTable.value.count = serverData.data.count
   }
 }
 const dateFrom = ref(startDate)
 const dateTo = ref(currentDate)
 const selectDate = () => {
-  query3.value.time_start = setDateFrom(dateFrom.value.replace(/(\/)/g, '-'))
-  query3.value.time_end = setDateTO(dateTo.value.replace(/(\/)/g, '-'))
+  query3.value.date_start = setDateFrom(dateFrom.value.replace(/(\/)/g, '-'))
+  query3.value.date_end = setDateTO(dateTo.value.replace(/(\/)/g, '-'))
 }
 // 按日计量单的支付状态筛选
 const selectStatusService = (val:string) => {
@@ -234,7 +223,7 @@ onMounted(async () => {
     <div class="row q-py-md text-grey justify-between items-center">
       <div class="row items-center">
         <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>
-        <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,16,20,26,30]" dense options-dense
+        <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense
                   borderless @update:model-value="changePageSize">
         </q-select>
         <span>/页</span>

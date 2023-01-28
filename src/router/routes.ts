@@ -73,7 +73,11 @@ const routes: RouteRecordRaw[] = [
         children: [
           {
             path: 'history',
-            component: () => import('pages/settlement/Settlement.vue')
+            component: () => import('pages/settlement/PersonalServerSettlement.vue')
+          },
+          {
+            path: 'storage',
+            component: () => import('pages/settlement/PersonalStorageSettlement.vue')
           },
           {
             path: 'group',
