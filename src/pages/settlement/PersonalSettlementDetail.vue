@@ -3,7 +3,9 @@ import { useStore } from 'stores/store'
 import { useRoute, useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import api from 'src/api'
+import { usePaymentStatusExpress } from 'src/hooks/statementKeyToRead'
 
+const PaymentStatusExpress = usePaymentStatusExpress()
 const props = defineProps({
   id: {
     type: String,
@@ -70,7 +72,7 @@ interface StatementServerProps {
 interface ServerProps {
   id: string;
   name?: string;
-  vcpus?: number;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             vcpus?: number;
   ram?: number;
   ipv4?: string
   public_ip?: false
@@ -107,14 +109,11 @@ const statementServerDetail = ref<StatementServerProps>({
   creation_time: ''
 })
 const tableRow = ref<[]>([])
-console.log('props.id', props.id)
-console.log('props.target', props.target)
 // 获得云主机配置
 async function getServerInformation (serverId: string) {
   const configData = await api.stats.statement.getStatementServerInformation({
     path: { id: serverId }
   })
-  console.log('configData.data.server', configData.data.server)
   return configData.data.server
 }
 // 获得日计量单详情 对象存储 云主机分开获取 todo 初始版较复杂 后续一定要简化
@@ -124,7 +123,7 @@ const configRamArr = ref<object[]>([]) // todo 类型还未定义
 const getDetailData = async () => {
   let serverData :any // todo 类型还未定义
   let storageData :any // todo 类型还未定义
-  if (props.target === 'server') {
+  if (props.target?.toString() === 'server') {
     await api.stats.statement.getStatementServerDetail({
       path: {
         id: route.params.id as string
@@ -143,10 +142,9 @@ const getDetailData = async () => {
           Object.assign(configRamArr.value, idArrRam)
         })
       }
-      console.log('configIpArr', configIpArr.value)
     })
   }
-  if (props.target === 'storage') {
+  if (props.target?.toString() === 'storage') {
     await api.stats.statement.getStatementStorageDetail({
       path: {
         id: props.id as string
@@ -222,9 +220,13 @@ onMounted(async () => {
           <div class="col-3 text-grey">服务单元</div>
           <div class="col-8">{{ statementServerDetail?.service?.name}}</div>
         </div>
-        <div class="col-6 row justify-start">
+        <div class="col-6 row justify-start" v-if="statementServerDetail?.vo_name">
+          <div class="col-3 text-grey">项目组</div>
+          <div class="col-8" >{{statementServerDetail?.vo_name}}</div>
+        </div>
+        <div class="col-6 row justify-start" v-else>
           <div class="col-3 text-grey">用户</div>
-          <div class="col-8">{{statementServerDetail?.username}}</div>
+          <div class="col-8" >{{statementServerDetail?.username}}</div>
         </div>
       </div>
       <div class="row justify-start content-fixed-width  q-mb-md">
@@ -244,7 +246,7 @@ onMounted(async () => {
         </div>
         <div class="col-6 row justify-start">
           <div class="col-3 text-grey">支付状态</div>
-          <div class="col-8">{{statementServerDetail?.payment_status}}</div>
+          <div class="col-8">{{PaymentStatusExpress(statementServerDetail?.payment_status)}}</div>
         </div>
       </div>
       <div class="row justify-start content-fixed-width  q-mb-md">
