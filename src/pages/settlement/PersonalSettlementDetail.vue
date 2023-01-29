@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useStore } from 'stores/store'
 import { useRoute, useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import api from 'src/api'
@@ -95,7 +94,6 @@ interface ServerProps {
   },
   lock?: string
 }
-const store = useStore()
 const route = useRoute()
 const router = useRouter()
 const statementServerDetail = ref<StatementServerProps>({

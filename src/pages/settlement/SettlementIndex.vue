@@ -24,10 +24,10 @@ const changeTab = async (name: string) => {
             active-color="primary"
           >
             <q-tab no-caps name="history" class="q-px-none q-py-md q-mr-md" :ripple="false" label="个人云主机日计量单"
-                   icon="las la-user-alt" @click="changeTab('history')">
+                   icon="las la-server" @click="changeTab('history')">
             </q-tab>
             <q-tab no-caps name="storage" class="q-px-none q-py-md q-mr-md" :ripple="false" label="个人对象存储日计量单"
-                   icon="las la-user-alt" @click="changeTab('storage')">
+                   icon="lab la-bitbucket" @click="changeTab('storage')">
             </q-tab>
             <q-tab no-caps name="group" class="q-px-none q-py-md q-mr-md" :ripple="false" label="项目组云主机日计量单"
                    icon="las la-users" @click="changeTab('group')">
