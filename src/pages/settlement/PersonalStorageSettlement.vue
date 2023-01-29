@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onMounted, Ref, ref } from 'vue'
-import { useStore } from 'stores/store'
 import ServerPayRecord from 'components/public/ServerStatement.vue'
 import { payRecordUtcToBeijing } from 'src/hooks/processTime'
 
@@ -34,23 +33,6 @@ interface QueryProps {
   payment_status?: string
 }
 
-const resourceTypeSelect = ref({
-  label: '选择资源类型',
-  value: ''
-})
-// 按支付方式筛选选项组
-const resourceOption = [{
-  label: '全部',
-  value: ''
-}, {
-  label: '云主机',
-  value: 'evcloud'
-}, {
-  label: '对象存储',
-  value: 'iharbor'
-}
-]
-
 const paymentSelect = ref({
   label: '选择支付状态',
   value: ''
@@ -70,7 +52,6 @@ const PaymentOption = [{
   value: 'cancelled'
 }
 ]
-const store = useStore()
 const tablePaymentData = ref<TableDataProps[]>([])
 const date = new Date()
 date.setHours(date.getHours(), date.getMinutes() - date.getTimezoneOffset())
@@ -107,18 +88,10 @@ const getDetailData = async () => {
     query: query3.value
   }
   )
-  console.log('query3.value', query3.value)
-  if (targetSelect.value === 'iharbor') {
-    for (const elem of storageData.data.statements) {
-      tablePaymentData.value.push(elem)
-    }
-    paginationTable.value.count = storageData.data.count
-  } else {
-    for (const elem of storageData.data.statements) {
-      tablePaymentData.value.push(elem)
-    }
-    paginationTable.value.count = storageData.data.count
+  for (const elem of storageData.data.statements) {
+    tablePaymentData.value.push(elem)
   }
+  paginationTable.value.count = storageData.data.count
 }
 const dateFrom = ref(startDate)
 const dateTo = ref(currentDate)
@@ -133,18 +106,6 @@ const selectStatusService = (val:string) => {
     getDetailData()
   } else {
     delete query3.value.payment_status
-  }
-}
-// 按日计量单的资源类型筛选
-const targetSelect = ref<string>()
-const selectResourceService = (val:string) => {
-  if (val !== '') {
-    query3.value.page_size = paginationTable.value.rowsPerPage
-    targetSelect.value = val
-    getDetailData()
-  } else {
-    targetSelect.value = ''
-    getDetailData()
   }
 }
 
@@ -200,11 +161,6 @@ onMounted(async () => {
         </q-input>
       </div>
         <q-select outlined dense v-model="paymentSelect" :options="PaymentOption" @update:model-value="selectStatusService(paymentSelect.value)" label="选择支付状态" class="col-2 q-mr-lg" />
-      <q-select outlined dense v-model="resourceTypeSelect" :options="resourceOption" @update:model-value="selectResourceService(resourceTypeSelect.value)" label="选择资源类型" class="col-2 q-mr-lg" />
-      <q-btn outline label="搜索" class="q-px-lg" @click="search"/>
-      </div>
-    <div class="row items-center justify-between q-mt-xl">
-    <div class="col-3">
       <div class="row justify-start">
         <div class="col">
           <q-input dense outlined v-model="searchTicket">
@@ -217,8 +173,8 @@ onMounted(async () => {
           </q-input>
         </div>
       </div>
-    </div>
-    </div>
+      <q-btn outline label="搜索" class="q-px-lg q-ml-lg" @click="search"/>
+      </div>
     <server-pay-record :tableRow="tablePaymentData" :search="searchTicket"/>
     <div class="row q-py-md text-grey justify-between items-center">
       <div class="row items-center">

@@ -94,7 +94,6 @@ interface IdProps {
 }
 const groupId = ref<IdProps[]>([])
 const getGroupList = async () => {
-  console.log('query3.value group', query3.value)
   tablePaymentData.value = []
   const groupList = await api.stats.statement.getProjectGroupList({
     query:
@@ -130,7 +129,6 @@ const selectStatusService = (val:string) => {
 }
 
 const changePagination = async (val: number) => {
-  console.log('query3.value log  chage', query3.value)
   query3.value.page = val
   await getGroupList()
 }
