@@ -2,20 +2,9 @@
 import { computed } from 'vue'
 import { navigateToUrl } from 'single-spa'
 import { useStore } from 'stores/store'
-// import { useRoute, useRouter } from 'vue-router'
 import { i18n } from 'boot/i18n'
-// const props = defineProps({
-//   foo: {
-//     type: String,
-//     required: false,
-//     default: ''
-//   }
-// })
-// const emits = defineEmits(['change', 'delete'])
 
 const store = useStore()
-// const router = useRouter()
-// const route = useRoute()
 const { tc } = i18n.global
 const activeItem = computed(() => store.items.currentPath[0])
 const releaseTime = process.env.releaseTime
@@ -40,18 +29,6 @@ console.log(store.tables)
                 {{ tc('usageBilling') }}
               </q-item-section>
             </q-item>
-
-            <!--            <q-item-->
-            <!--              clickable-->
-            <!--              :active="activeItem === 'recharge'"-->
-            <!--              @click="activeItem = 'recharge'; navigateToUrl('/my/stats/recharge')"-->
-            <!--              active-class="active-item"-->
-            <!--            >-->
-            <!--              <q-item-section class="column items-center">-->
-            <!--                <q-icon name="las la-check-circle" size="lg"/>-->
-            <!--                <div class="active-text text-center">{{ tc('账户与充值') }}</div>-->
-            <!--              </q-item-section>-->
-            <!--            </q-item>-->
 
             <q-item
               clickable

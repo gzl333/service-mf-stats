@@ -4,7 +4,7 @@ export default {
   goBack: '返回',
   usageBilling: '用量账单',
   consumption: '云主机用量',
-  dailySettlement: '日结算单',
+  dailySettlement: '日计量单',
   usageManagementStatistics: '用量管理',
   releaseTime: '发布时间',
   myRole: '我的角色',

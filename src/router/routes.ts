@@ -68,7 +68,27 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: 'settlement',
-        component: () => import('pages/settlement/SettlementIndex.vue')
+        redirect: '/my/stats/settlement/history',
+        component: () => import('pages/settlement/SettlementIndex.vue'),
+        children: [
+          {
+            path: 'history',
+            component: () => import('pages/settlement/PersonalServerSettlement.vue')
+          },
+          {
+            path: 'storage',
+            component: () => import('pages/settlement/PersonalStorageSettlement.vue')
+          },
+          {
+            path: 'group',
+            component: () => import('pages/settlement/GroupSettlement.vue')
+          },
+          {
+            path: 'detail/:id/:target',
+            component: () => import('pages/settlement/PersonalSettlementDetail.vue'),
+            props: true
+          }
+        ]
       },
       {
         path: 'statistic',

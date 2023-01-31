@@ -237,5 +237,67 @@ export default {
       const config = { params: payload?.query }
       return axiosStats.get('/storage/service', config)
     }
+  },
+  statement: {
+    getStatementStorage (payload?: {
+      query?: {
+        page?: number;
+        page_size?: number;
+        payment_status?: string;
+        date_start?: string;
+        date_end?: string;
+      }
+    }) {
+      const config = {
+        params: payload?.query
+      }
+      return axiosStats.get('/statement/storage', config)
+    },
+    getStatementStorageDetail (payload: {
+      path: { id: string }
+    }) {
+      return axiosStats.get('/statement/storage/' + payload.path.id)
+    },
+    getStatementServer (payload?: {
+      query?: {
+        page?: number;
+        page_size?: number;
+        payment_status?: string;
+        date_start?: string;
+        date_end?: string;
+        vo_id?: string;
+      }
+    }) {
+      const config = {
+        params: payload?.query
+      }
+      return axiosStats.get('/statement/server', config)
+    },
+    getStatementServerDetail (payload: {
+      path: {
+        id: string;
+      }
+    }) {
+      return axiosStats.get('/statement/server/' + payload.path.id)
+    },
+    getStatementServerInformation (payload: {
+      path: {
+        id: string;
+      }
+    }) {
+      return axiosStats.get('/metering/server/' + payload.path.id)
+    },
+    getProjectGroupList (payload?: {
+      query?: {
+        page?: number;
+        page_size?: number;
+        member?: boolean;
+      }
+    }) {
+      const config = {
+        params: payload?.query
+      }
+      return axiosStats.get('/vo', config)
+    }
   }
 }
