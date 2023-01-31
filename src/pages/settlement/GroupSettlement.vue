@@ -125,6 +125,7 @@ const selectStatusService = (val:string) => {
     getGroupList()
   } else {
     delete query3.value.payment_status
+    getGroupList()
   }
 }
 
@@ -132,6 +133,7 @@ const changePagination = async (val: number) => {
   query3.value.page = val
   await getGroupList()
 }
+// 改变每页数据量
 const changePageSize = async () => {
   query3.value.page_size = paginationTable.value.rowsPerPage * 0.5
   query3.value.page = 1
@@ -201,7 +203,7 @@ onMounted(async () => {
     <div class="row q-py-md text-grey justify-between items-center">
       <div class="row items-center">
         <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>
-        <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,16,20,26,30]" dense options-dense
+        <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense
                   borderless @update:model-value="changePageSize">
         </q-select>
         <span>/页</span>

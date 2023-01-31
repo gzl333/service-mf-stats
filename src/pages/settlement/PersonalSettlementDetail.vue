@@ -139,6 +139,7 @@ const getDetailData = async () => {
           Object.assign(configCpuArr.value, idArrCpu)
           Object.assign(configRamArr.value, idArrRam)
         })
+        console.log('configIpArr:', configIpArr)
       }
     })
   }

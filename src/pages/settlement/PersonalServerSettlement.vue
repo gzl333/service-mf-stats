@@ -107,6 +107,7 @@ const selectStatusService = (val:string) => {
     getDetailData()
   } else {
     delete query3.value.payment_status
+    getDetailData()
   }
 }
 
