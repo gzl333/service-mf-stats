@@ -106,6 +106,7 @@ const selectStatusService = (val:string) => {
     getDetailData()
   } else {
     delete query3.value.payment_status
+    getDetailData()
   }
 }
 
@@ -179,7 +180,7 @@ onMounted(async () => {
     <div class="row q-py-md text-grey justify-between items-center">
       <div class="row items-center">
         <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>
-        <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,16,20,26,30]" dense options-dense
+        <q-select color="grey" v-model="paginationTable.rowsPerPage" :options="[10,15,20,25,30]" dense options-dense
                   borderless @update:model-value="changePageSize">
         </q-select>
         <span>/页</span>
