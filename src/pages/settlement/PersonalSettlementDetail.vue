@@ -185,21 +185,15 @@ const columnsServer = [
   { name: 'operate', label: '操作', align: 'center' }
 ]
 // 展开数据详情
-const OpenDetail = ref<boolean>(false)
-const target = ref<boolean>(true)
-const targetId = ref<string>('')
-
+const OpenDetail = ref<object[]>([])
 const setOperate = (checkId: string) => {
-  targetId.value = checkId
-  OpenDetail.value = true
-  target.value = false
+  const idArr: object = { [checkId]: true }
+  Object.assign(OpenDetail.value, idArr)
 }
-
-const cancelOperate = () => {
-  target.value = true
-  OpenDetail.value = false
+const cancelOperate = (checkId: string) => {
+  const idArr: object = { [checkId]: false }
+  Object.assign(OpenDetail.value, idArr)
 }
-
 onMounted(async () => {
   await getDetailData()
 })
@@ -304,11 +298,11 @@ onMounted(async () => {
             <q-td key="original_amount" :props="props">{{props.row.original_amount}} </q-td>
             <q-td key="trade_amount" :props="props">{{ props.row.trade_amount }} </q-td>
             <q-td key="operate" :props="props" class="text-subtitle1 text-center wrapper" >
-              <q-btn  color="primary" @click="cancelOperate()" v-if=" !target &&   targetId === props.row.id" > 折叠 </q-btn>
+              <q-btn  color="primary" @click="cancelOperate(props.row.id)" v-if="OpenDetail[props.row.id] " > 折叠 </q-btn>
               <q-btn color="primary" @click="setOperate(props.row.id)" v-else> 展开 </q-btn>
             </q-td>
           </q-tr>
-          <q-tr :props="props"  class="bg-grey-3 justify-start q-virtual-scroll--with-prev" v-show="OpenDetail &&   targetId === props.row.id" >
+          <q-tr :props="props"  class="bg-grey-3 justify-start q-virtual-scroll--with-prev" v-show="OpenDetail[props.row.id] " >
             <q-td  colspan="100%" >
               <div class="row justify-start">
                 <span class="col-2 q-pl-md"> 云主机详情</span>
@@ -362,11 +356,11 @@ onMounted(async () => {
                 <q-td key="original_amount" :props="props">{{props.row.original_amount}} </q-td>
                 <q-td key="trade_amount" :props="props">{{ props.row.trade_amount }} </q-td>
                 <q-td key="operate" :props="props" class="text-subtitle1 text-center wrapper" >
-                  <q-btn  color="primary" @click="cancelOperate()" v-if=" !target &&   targetId === props.row.id" > 折叠 </q-btn>
+                  <q-btn  color="primary" @click="cancelOperate(props.row.id)" v-if="OpenDetail[props.row.id]" > 折叠 </q-btn>
                   <q-btn color="primary" @click="setOperate(props.row.id)" v-else> 展开 </q-btn>
                 </q-td>
               </q-tr>
-              <q-tr :props="props"  class="bg-grey-3 justify-start q-virtual-scroll--with-prev" v-show="OpenDetail &&   targetId === props.row.id" >
+              <q-tr :props="props"  class="bg-grey-3 justify-start q-virtual-scroll--with-prev" v-show="OpenDetail[props.row.id]" >
                 <q-td  colspan="100%" >
                   <div class="row justify-start">
                     <span class="col-2 q-pl-md"> 对象存储桶详情</span>
