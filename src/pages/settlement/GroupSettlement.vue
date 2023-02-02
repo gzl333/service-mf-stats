@@ -2,7 +2,7 @@
 import { onMounted, Ref, ref } from 'vue'
 import ServerPayRecord from 'components/public/ServerStatement.vue'
 import { payRecordUtcToBeijing } from 'src/hooks/processTime'
-
+import { useRoute, useRouter } from 'vue-router'
 import api from 'src/api'
 interface TableDataProps {
   id: string
@@ -92,25 +92,23 @@ const search = async () => {
 interface IdProps {
   id: string
 }
+
+
+const route = useRoute()
+const router = useRouter()
+console.log('props.GroupIddetail', route.params.id)
 const groupId = ref<IdProps[]>([])
 const getGroupList = async () => {
   tablePaymentData.value = []
-  const groupList = await api.stats.statement.getProjectGroupList({
-    query:
-      { member: true }
-  })
-  for (const item of groupList.data.results) {
-    groupId.value?.push({
-      id: item.id
-    })
-    query3.value.vo_id = item.id
-    const data = await api.stats.statement.getStatementServer({ query: query3.value }
-    )
-    for (const elem of data.data.statements) {
-      tablePaymentData.value.push(elem)
-    }
-    paginationTable.value.count = data.data.count
+  query3.value.vo_id = route.params.id
+  console.log('query3.value.vo_id1', query3.value.vo_id)
+  const data = await api.stats.statement.getStatementServer({ query: query3.value }
+  )
+  for (const elem of data.data.statements) {
+    tablePaymentData.value.push(elem)
   }
+  paginationTable.value.count = data.data.count
+  // }
 }
 const dateFrom = ref(startDate)
 const dateTo = ref(currentDate)
@@ -135,7 +133,7 @@ const changePagination = async (val: number) => {
 }
 // 改变每页数据量
 const changePageSize = async () => {
-  query3.value.page_size = paginationTable.value.rowsPerPage * 0.5
+  query3.value.page_size = paginationTable.value.rowsPerPage
   query3.value.page = 1
   paginationTable.value.page = 1
   await getGroupList()

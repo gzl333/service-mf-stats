@@ -116,7 +116,7 @@ const changePagination = async (val: number) => {
   await getDetailData()
 }
 const changePageSize = async () => {
-  query3.value.page_size = paginationTable.value.rowsPerPage * 0.5
+  query3.value.page_size = paginationTable.value.rowsPerPage
   query3.value.page = 1
   paginationTable.value.page = 1
   await getDetailData()

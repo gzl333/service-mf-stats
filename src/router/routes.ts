@@ -81,6 +81,10 @@ const routes: RouteRecordRaw[] = [
           },
           {
             path: 'group',
+            component: () => import('pages/settlement/GroupList.vue')
+          },
+          {
+            path: 'groupdetail/:id/',
             component: () => import('pages/settlement/GroupSettlement.vue')
           },
           {
