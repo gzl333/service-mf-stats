@@ -16,14 +16,8 @@ const props = defineProps({
     required: false
   }
 })
-// const emits = defineEmits(['change', 'delete'])
-console.log(' props.groups', props.groups)
 const { tc } = i18n.global
 const store = useStore()
-// const route = useRoute()
-// const router = useRouter()
-
-// group分栏定义
 const columns = computed(() => [
   {
     name: 'role',
@@ -134,7 +128,7 @@ const searchMethod = (rows: GroupInterface[], terms: string): GroupInterface[] =
           </q-td>
 
           <q-td key="operation" :props="props">
-            <q-btn icon="info" flat no-caps dense padding="none" color="primary" @click="navigateToUrl(`/my/stats/settlement/groupdetail/${props.row.id}`)">
+            <q-btn icon="info" flat no-caps dense padding="none" color="primary" @click="navigateToUrl(`/my/stats/settlement/groupdetail/${props.row.id}/${props.row.name}/`)">
               {{ tc('checkDetail') }}
             </q-btn>
           </q-td>

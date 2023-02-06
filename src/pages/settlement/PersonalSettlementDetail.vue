@@ -114,6 +114,7 @@ async function getServerInformation (serverId: string) {
   })
   return configData.data.server
 }
+
 // 获得日计量单详情 对象存储 云主机分开获取 todo 初始版较复杂 后续一定要简化
 const configIpArr = ref<object[]>([]) // todo 类型还未定义
 const configCpuArr = ref<object[]>([]) // todo 类型还未定义
@@ -155,6 +156,7 @@ const getDetailData = async () => {
     })
     Object.assign(statementServerDetail.value, storageData)
     tableRow.value = storageData.meterings
+    console.log(' ', storageData)
   } else {
     Object.assign(statementServerDetail.value, serverData)
     Object.assign(tableRow.value, serverData.meterings)

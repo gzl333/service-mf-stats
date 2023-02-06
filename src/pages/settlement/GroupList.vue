@@ -8,7 +8,6 @@ import GroupTable from 'components/settlement/SettlementGroupTable.vue'
 const store = useStore()
 const { tc } = i18n.global
 
-// role filter
 const roleSelection = ref('all')
 
 const roleOptions = [

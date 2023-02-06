@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, Ref, ref } from 'vue'
-import ServerPayRecord from 'components/public/ServerStatement.vue'
+import ServerPayRecord from 'components/settlement/ServerStatement.vue'
 import { payRecordUtcToBeijing } from 'src/hooks/processTime'
 
 import api from 'src/api'
