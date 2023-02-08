@@ -137,7 +137,6 @@ const searchMethod = (rows: GroupInterface[], terms: string): GroupInterface[] =
       </template>
 
       <template v-slot:bottom>
-        <!--            todo 批量操作-->
       </template>
 
     </q-table>

@@ -13,7 +13,7 @@ const props = defineProps({
     required: false
   }
 })
-interface TableDataProps {
+interface TableDataInterface {
   id: string,
   original_amount: string,
   payable_amount: string,
@@ -58,7 +58,7 @@ const goToDetail = (id: string, targetType: string) => {
   navigateToUrl(`/my/stats/settlement/detail/${id}/${target.value}/`)
 }
 
-const searchFilter = (rows: TableDataProps[], content: string): TableDataProps[] => rows.filter(group =>
+const searchFilter = (rows: TableDataInterface[], content: string): TableDataInterface[] => rows.filter(group =>
   group?.id.toLowerCase().includes(content) || group.service?.id?.toLowerCase().includes(content) || group.service?.name?.toLowerCase().includes(content) || group.service?.service_type?.toLowerCase().includes(content) || group.username?.toLowerCase().includes(content) || group.vo_name?.toLowerCase().includes(content))
 </script>
 

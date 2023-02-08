@@ -4,7 +4,7 @@ import ServerPayRecord from 'components/settlement/ServerStatement.vue'
 import { payRecordUtcToBeijing } from 'src/hooks/processTime'
 import { useRoute, useRouter } from 'vue-router'
 import api from 'src/api'
-interface TableDataProps {
+interface TableDataInterface {
   id: string
   original_amount: string
   payable_amount: string
@@ -54,7 +54,7 @@ const paymentOption = [{
   value: 'cancelled'
 }
 ]
-const tablePaymentData = ref<TableDataProps[]>([])
+const tablePaymentData = ref<TableDataInterface[]>([])
 
 // 时间处理方式
 const d = new Date()

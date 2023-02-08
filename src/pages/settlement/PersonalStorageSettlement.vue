@@ -4,7 +4,7 @@ import ServerPayRecord from 'components/settlement/ServerStatement.vue'
 import { payRecordUtcToBeijing } from 'src/hooks/processTime'
 
 import api from 'src/api'
-interface TableDataProps {
+interface TableDataInterface {
   id: string,
   original_amount: string,
   payable_amount: string,
@@ -25,7 +25,7 @@ interface TableDataProps {
     service_type: string
   }
 }
-interface QueryProps {
+interface QueryInterface {
   page: number,
   page_size: number,
   date_start: string,
@@ -52,7 +52,7 @@ const PaymentOption = [{
   value: 'cancelled'
 }
 ]
-const tablePaymentData = ref<TableDataProps[]>([])
+const tablePaymentData = ref<TableDataInterface[]>([])
 const date = new Date()
 date.setHours(date.getHours(), date.getMinutes() - date.getTimezoneOffset())
 date.setMonth(date.getMonth())
@@ -72,17 +72,17 @@ const paginationTable = ref({
   rowsPerPage: 10
 })
 
-const query3: Ref = ref<QueryProps>({
+const query3: Ref = ref<QueryInterface>({
   page: 1,
   page_size: 10,
   date_start: startDate,
   date_end: currentDate
 })
 const search = async () => {
-  await getDetailData()
+  await getPersonalStorageDetail()
 }
 //  获取个人日计量单列表
-const getDetailData = async () => {
+const getPersonalStorageDetail = async () => {
   tablePaymentData.value = []
   const storageData = await api.stats.statement.getStatementStorage({
     query: query3.value
@@ -103,27 +103,27 @@ const selectDate = () => {
 const selectStatusService = (val:string) => {
   if (val !== '') {
     query3.value.payment_status = val
-    getDetailData()
+    getPersonalStorageDetail()
   } else {
     delete query3.value.payment_status
-    getDetailData()
+    getPersonalStorageDetail()
   }
 }
 
 const changePagination = async (val: number) => {
   query3.value.page = val
-  await getDetailData()
+  await getPersonalStorageDetail()
 }
 const changePageSize = async () => {
   query3.value.page_size = paginationTable.value.rowsPerPage
   query3.value.page = 1
   paginationTable.value.page = 1
-  await getDetailData()
+  await getPersonalStorageDetail()
 }
 const searchTicket = ref('')
 
 onMounted(async () => {
-  await getDetailData()
+  await getPersonalStorageDetail()
 })
 </script>
 
