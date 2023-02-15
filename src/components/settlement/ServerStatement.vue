@@ -38,8 +38,8 @@ const columns = [
   {
     // label: 'Dessert (100g serving)',
     // align: 'left',
-    field: row => row.name,
-    format: val => `${val}`
+    field: row => row.name, // todo
+    format: val => `${val}` // todo
   },
   { name: 'id', align: 'center', label: '日计量单编号', field: 'id' },
   { name: 'username', label: '用户', field: 'username', align: 'center' },
