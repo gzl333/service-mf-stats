@@ -97,48 +97,38 @@ const searchMethod = (rows: GroupInterface[], terms: string): GroupInterface[] =
       :filter-method="searchMethod"
       :no-results-label="tc('notifyNoResult')"
     >
-
       <template v-slot:body="props">
         <q-tr :props="props">
-
           <q-td key="role" :props="props">
             <GroupRoleChip class="non-selectable" :role="props.row.myRole"/>
           </q-td>
-
           <q-td key="name" :props="props">
             {{ props.row.name }}
           </q-td>
-
           <q-td key="company" :props="props">
             {{ props.row.company }}
           </q-td>
-
           <q-td key="desc" :props="props">
             {{ props.row.description }}
             <q-tooltip>
               {{ props.row.description }}
             </q-tooltip>
           </q-td>
-
           <q-td key="server" :props="props">
             <div flat padding="none" dense no-caps>
               {{ store.getGroupServersByGroupId(props.row.id).length }}
               {{ tc('servers') }}
             </div>
           </q-td>
-
           <q-td key="operation" :props="props">
             <q-btn icon="info" flat no-caps dense padding="none" color="primary" @click="navigateToUrl(`/my/stats/settlement/groupdetail/${props.row.id}/${props.row.name}/`)">
               {{ tc('checkDetail') }}
             </q-btn>
           </q-td>
-
         </q-tr>
       </template>
-
       <template v-slot:bottom>
       </template>
-
     </q-table>
 
   </div>

@@ -9,7 +9,7 @@ const store = useStore()
 const { tc } = i18n.global
 
 const roleSelection = ref('all')
-
+// 项目组
 const roleOptions = [
   {
     value: 'all',
@@ -32,7 +32,6 @@ const roleOptions = [
     labelEn: 'As Group Member'
   }
 ]
-
 // consumption data
 const groups = computed(() => store.getGroupsByFilter(roleSelection.value))
 // 搜索框

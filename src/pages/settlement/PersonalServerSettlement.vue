@@ -126,6 +126,7 @@ const searchTicket = ref('')
 onMounted(async () => {
   await getPersonalServerDetail()
 })
+
 </script>
 
 <template>
