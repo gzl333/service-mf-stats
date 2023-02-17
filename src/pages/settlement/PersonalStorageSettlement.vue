@@ -89,6 +89,9 @@ const getPersonalStorageDetail = async () => {
   }
   )
   for (const elem of storageData.data.statements) {
+    elem.service_name = elem.service.name
+    elem.service_type = elem.service.service_type
+    elem.calculate_date = elem.date + ' 00:00-24:00'
     tablePaymentData.value.push(elem)
   }
   paginationTable.value.count = storageData.data.count
