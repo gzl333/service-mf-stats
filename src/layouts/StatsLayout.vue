@@ -62,8 +62,8 @@ console.log(store.tables)
               active-class="active-item"
             >
               <q-item-section class="column items-center">
-                <q-icon name="las la-server" size="lg"/>
-                <div class="active-text text-center">{{ tc('usageManagementStatistics') }}</div>
+                <q-icon name="manage_accounts" size="lg"/>
+                <div class="active-text text-center">{{ tc('manager') }}</div>
               </q-item-section>
             </q-item>
 

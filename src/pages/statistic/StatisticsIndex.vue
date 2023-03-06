@@ -30,7 +30,7 @@ const changeTab = async (name: string) => {
     <div class="column">
       <div class="row justify-center">
         <div class="content-fixed-width">
-          <div class="text-h6 q-pt-lg q-px-none">{{ tc('usageManagementStatistics') }}</div>
+          <div class="text-h6 q-pt-lg q-px-none">{{ tc('manager') }}</div>
           <q-tabs
             v-model="activeItem"
             inline-label

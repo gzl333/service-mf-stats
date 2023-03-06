@@ -5,7 +5,7 @@ export default {
   usageBilling: 'Usage & Billing',
   consumption: 'Server Consumption',
   dailySettlement: 'Daily Settlement',
-  usageManagementStatistics: 'Usage Management',
+  manager: 'Manager',
   releaseTime: 'Release Time',
   myRole: 'My Role', // '我的角色',
   group: 'Group', // '所属组',
