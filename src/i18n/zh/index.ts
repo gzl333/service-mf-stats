@@ -1,5 +1,6 @@
 // zh
 export default {
+  manager: '管理员',
   error: '出错了',
   goBack: '返回',
   usageBilling: '用量账单',

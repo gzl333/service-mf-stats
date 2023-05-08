@@ -3,7 +3,7 @@ export default {
   error: 'Error',
   goBack: 'Go Back',
   usageBilling: 'Usage & Billing',
-  consumption: 'Server Consumption',
+  consumption: 'Cloud Resource Consumption',
   dailySettlement: 'Daily Settlement',
   manager: 'Manager',
   releaseTime: 'Release Time',

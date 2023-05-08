@@ -74,7 +74,7 @@ console.log(store.tables)
               <q-tooltip class="bg-grey-3">
                 <div class="text-grey text-caption text-center">{{ tc('releaseTime') }}</div>
                 <div class="text-grey text-caption text-center">
-                  {{ new Date(releaseTime).toLocaleString(i18n.global.locale) }}
+                  {{ new Date(releaseTime).toLocaleString(i18n.global.locale as string) }}
                 </div>
               </q-tooltip>
             </q-icon>
