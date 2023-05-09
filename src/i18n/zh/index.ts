@@ -5,6 +5,7 @@ export default {
   goBack: '返回',
   usageBilling: '用量账单',
   consumption: '云资源用量',
+  manager: '管理员',
   dailySettlement: '日结算单',
   usageManagementStatistics: '用量管理',
   releaseTime: '发布时间',

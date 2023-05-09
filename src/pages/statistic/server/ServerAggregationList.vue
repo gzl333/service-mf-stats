@@ -131,7 +131,7 @@ onBeforeUnmount(() => {
             </q-td>
             <q-td class="no-padding" key="ipv4" :props="props">{{ props.row.server !== null ? props.row.server.ipv4 : tc('no_yet') }}</q-td>
             <q-td class="no-padding" key="service_name" :props="props">{{props.row.service_name === null ? tc('no_yet') : props.row.service_name }}</q-td>
-            <q-td class="no-padding" key="configuration" :props="props">{{props.row.server !== null ? props.row.server.vcpus + ' ' + tc('core') + ' ' + Math.round(props.row.server.ram / 1024) + ' GB' : tc('no_yet') }}</q-td>
+            <q-td class="no-padding" key="configuration" :props="props">{{props.row.server !== null ? props.row.server.vcpus + ' ' + tc('core') + ' ' + Math.round(props.row.server.ram) + ' GB' : tc('no_yet') }}</q-td>
             <q-td class="no-padding" key="total_public_ip_hours" :props="props">{{Math.round(props.row.total_public_ip_hours / 24) + ' ' + tc('pieceDays') }}</q-td>
             <q-td class="no-padding" key="total_cpu_hours" :props="props">{{ Math.round(props.row.total_cpu_hours / 24) + ' ' + tc('coreDay') }}</q-td>
             <q-td class="no-padding" key="total_ram_hours" :props="props">{{ Math.round(props.row.total_ram_hours / 24) + ' ' + tc('gbDays') }}</q-td>

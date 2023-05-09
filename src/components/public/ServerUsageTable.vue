@@ -105,7 +105,7 @@ const goToDetail = (serverId: string, ipv4: string, vcpus: string, ram: string) 
                    flat dense unelevated></q-btn>
           </q-td>
           <q-td key="service_name" :props="props">{{ props.row.service_name }}</q-td>
-          <q-td class="no-padding" key="configuration" :props="props">{{props.row.server.vcpus + ' ' + tc('core') + ' ' + Math.round(props.row.server.ram / 1024) + ' GB' }}</q-td>
+          <q-td class="no-padding" key="configuration" :props="props">{{props.row.server.vcpus + ' ' + tc('core') + ' ' + Math.round(props.row.server.ram) + ' GB' }}</q-td>
           <q-td key="total_public_ip_hours" :props="props">{{ Math.round(props.row.total_public_ip_hours / 24) + ' ' + tc('pieceDays') }}</q-td>
           <q-td key="total_cpu_hours" :props="props">{{ Math.round(props.row.total_cpu_hours / 24) + ' ' + tc('coreDay') }}</q-td>
           <q-td key="total_ram_hours" :props="props">{{ Math.round(props.row.total_ram_hours / 24) + ' ' + tc('gbDays') }}</q-td>
