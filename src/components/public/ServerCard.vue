@@ -36,7 +36,7 @@ const { tc } = i18n.global
           <div class="col-2 text-center">
             <div>{{ tc('initialConfiguration') }}</div>
             <div class="text-subtitle1 q-mt-lg">
-              {{ props.cardObj.vcpus + ' ' + tc('core') + ' ' + props.cardObj.ram / 1024 + ' GB' }}
+              {{ props.cardObj.vcpus + ' ' + tc('core') + ' ' + props.cardObj.ram + ' GB' }}
             </div>
           </div>
           <div class="col-2 text-center">
