@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onMounted, Ref, ref } from 'vue'
-import ServerPayRecord from 'components/public/ServerStatement.vue'
+import ServerPayRecord from 'components/settlement/ServerStatement.vue'
 import { payRecordUtcToBeijing } from 'src/hooks/processTime'
-
+import { useRoute, useRouter } from 'vue-router'
 import api from 'src/api'
-interface TableDataProps {
+interface TableDataInterface {
   id: string
   original_amount: string
   payable_amount: string
@@ -54,12 +54,12 @@ const paymentOption = [{
   value: 'cancelled'
 }
 ]
-const tablePaymentData = ref<TableDataProps[]>([])
-const d = new Date()
+const tablePaymentData = ref<TableDataInterface[]>([])
 
+// 时间处理方式
+const d = new Date()
 d.setHours(d.getHours(), d.getMinutes() - d.getTimezoneOffset())
 d.setMonth(d.getMonth())
-
 const currentDate1 = d.toISOString()
 const currentDate = payRecordUtcToBeijing(currentDate1) // 去掉小数点
 let dateTime = new Date()
@@ -73,12 +73,13 @@ function setDateFrom (setTime:string) {
 function setDateTO (setTime:string) {
   return setTime.split('T')[0]
 }
+// 分页数据对象
 const paginationTable = ref({
   page: 1,
   count: 0,
   rowsPerPage: 10
 })
-
+// 数据接口query
 const query3: Ref = ref<QueryProps>({
   page: 1,
   page_size: 10,
@@ -86,68 +87,69 @@ const query3: Ref = ref<QueryProps>({
   date_end: currentDate
 })
 const search = async () => {
-  await getGroupList()
+  await getGroupSettlementList()
 }
-// 得到项目组的日计量单
-interface IdProps {
-  id: string
-}
-const groupId = ref<IdProps[]>([])
-const getGroupList = async () => {
+
+// 得到所属项目组的日计量单
+const route = useRoute()
+const router = useRouter()
+const getGroupSettlementList = async () => {
   tablePaymentData.value = []
-  const groupList = await api.stats.statement.getProjectGroupList({
-    query:
-      { member: true }
-  })
-  for (const item of groupList.data.results) {
-    groupId.value?.push({
-      id: item.id
-    })
-    query3.value.vo_id = item.id
-    const data = await api.stats.statement.getStatementServer({ query: query3.value }
-    )
-    for (const elem of data.data.statements) {
-      tablePaymentData.value.push(elem)
-    }
-    paginationTable.value.count = data.data.count
+  query3.value.vo_id = route.params.id
+  const data = await api.stats.statement.getStatementServer({ query: query3.value }
+  )
+  for (const elem of data.data.statements) {
+    tablePaymentData.value.push(elem)
   }
+  paginationTable.value.count = data.data.count
 }
+
+// 筛选特定时间段的日计量单
 const dateFrom = ref(startDate)
 const dateTo = ref(currentDate)
 const selectDate = () => {
   query3.value.date_start = setDateFrom(dateFrom.value.replace(/(\/)/g, '-'))
   query3.value.date_end = setDateTO(dateTo.value.replace(/(\/)/g, '-'))
 }
+
 // 按日计量单的支付状态筛选
 const selectStatusService = (val:string) => {
   if (val !== '') {
     query3.value.payment_status = val
-    getGroupList()
+    getGroupSettlementList()
   } else {
     delete query3.value.payment_status
-    getGroupList()
+    getGroupSettlementList()
   }
 }
 
+// 选择数据列表页码
 const changePagination = async (val: number) => {
   query3.value.page = val
-  await getGroupList()
+  await getGroupSettlementList()
 }
+
 // 改变每页数据量
 const changePageSize = async () => {
-  query3.value.page_size = paginationTable.value.rowsPerPage * 0.5
+  query3.value.page_size = paginationTable.value.rowsPerPage
   query3.value.page = 1
   paginationTable.value.page = 1
-  await getGroupList()
+  await getGroupSettlementList()
 }
-const searchTicket = ref('')
+
+const searchSettlement = ref('')
+
 onMounted(async () => {
-  await getGroupList()
+  await getGroupSettlementList()
 })
 </script>
 
 <template>
   <div class="CurrentMonthList">
+    <div class="row col-6 text-h6 text-primary text-weight-bold q-mt-lg q-mb-lg">
+      <q-btn icon="arrow_back_ios" flat unelevated dense @click="router.back()"/>
+      <span> {{route.params.name}}</span>
+    </div>
     <div class="row items-center ">
       <div class="col-2">
         <q-input filled dense v-model="dateFrom" mask="date" >
@@ -183,12 +185,12 @@ onMounted(async () => {
         <q-select outlined dense v-model="paymentSelect" :options="paymentOption" @update:model-value="selectStatusService(paymentSelect.value)" label="选择支付状态" class="col-2 q-mr-lg" />
       <div class="row justify-start">
         <div class="col">
-          <q-input dense outlined v-model="searchTicket">
+          <q-input dense outlined v-model="searchSettlement">
             <template v-slot:prepend>
               <q-icon name="search"/>
             </template>
-            <template v-slot:append v-if="searchTicket">
-              <q-icon name="close" @click="searchTicket = ''" class="cursor-pointer"/>
+            <template v-slot:append v-if="searchSettlement">
+              <q-icon name="close" @click="searchSettlement = ''" class="cursor-pointer"/>
             </template>
           </q-input>
         </div>
@@ -199,7 +201,7 @@ onMounted(async () => {
     <div class="col-3">
     </div>
     </div>
-    <server-pay-record :tableRow="tablePaymentData" :search="searchTicket"/>
+    <server-pay-record :tableRow="tablePaymentData" :search="searchSettlement"/>
     <div class="row q-py-md text-grey justify-between items-center">
       <div class="row items-center">
         <span class="q-pr-md">共{{ paginationTable.count }}条数据</span>

@@ -67,11 +67,95 @@ interface StatementServerProps {
       put_request?: number
     }]
 }
+//  获取云主机详情接口
+interface meteringServerInterface {
+  id: string,
+  original_amount: string,
+  trade_amount: string,
+  daily_statement_id: string,
+  service_id: string,
+  server_id: string,
+  date: string,
+  creation_time: string,
+  user_id: string,
+  username: string,
+  vo_id: string,
+  vo_name: string,
+  owner_type: string,
+  cpu_hours: number,
+  ram_hours: number,
+  disk_hours: number,
+  public_ip_hours: number,
+  snapshot_hours: number,
+  upstream: number,
+  downstream: number,
+  pay_type: string
+}
+interface ServerDetailInterface {
+  id: string,
+  original_amount: string,
+  payable_amount: string,
+  trade_amount: string,
+  payment_status: string,
+  payment_history_id: string,
+  date: string,
+  creation_time: string,
+  user_id: string,
+  username: string,
+  vo_id: string,
+  vo_name: string,
+  owner_type: string,
+  service: {
+    id: string,
+    name: string,
+    name_en: string,
+    service_type: string
+  },
+  meterings?: meteringServerInterface[] | undefined
+}
+// 获取对象存储日计量单详情接口
+interface meteringStorageInterface {
+  id: string,
+  original_amount: string,
+  trade_amount: string,
+  daily_statement_id: string,
+  service_id: string,
+  bucket_name: string,
+  storage_bucket_id: string,
+  date: string,
+  creation_time: string,
+  user_id: string,
+  username: string,
+  storage: number,
+  downstream: number,
+  replication: number,
+  get_request: number,
+  put_request: number
+}
+interface StorageDetailInterface {
+  id: string,
+  original_amount: string,
+  payable_amount: string,
+  trade_amount: string,
+  payment_status: string,
+  payment_history_id: string,
+  date: string,
+  creation_time: string,
+  user_id: string,
+  username: string,
+  service: {
+    id: string,
+    name: string,
+    name_en: string,
+    service_type: string
+  },
+  meterings?: meteringStorageInterface[]
+}
 // 获取云主机详情接口
-interface ServerProps {
+interface ServerInterface {
   id: string;
   name?: string;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             vcpus?: number;
+  vcpus?: number;
   ram?: number;
   ipv4?: string
   public_ip?: false
@@ -106,21 +190,24 @@ const statementServerDetail = ref<StatementServerProps>({
   date: '',
   creation_time: ''
 })
-const tableRow = ref<[]>([])
+
+const tableRow = ref<object[] | undefined>([])
+
 // 获得云主机配置
-async function getServerInformation (serverId: string) {
+async function getServerConfig (serverId: string) {
   const configData = await api.stats.statement.getStatementServerInformation({
     path: { id: serverId }
   })
   return configData.data.server
 }
-// 获得日计量单详情 对象存储 云主机分开获取 todo 初始版较复杂 后续一定要简化
-const configIpArr = ref<object[]>([]) // todo 类型还未定义
-const configCpuArr = ref<object[]>([]) // todo 类型还未定义
-const configRamArr = ref<object[]>([]) // todo 类型还未定义
-const getDetailData = async () => {
-  let serverData :any // todo 类型还未定义
-  let storageData :any // todo 类型还未定义
+
+// 获得日计量单详情 对象存储 云主机分开获取
+const configIpArr = ref<Record<string, string>[]>([])
+const configCpuArr = ref<Record<string, string>[]>([])
+const configRamArr = ref<Record<string, string>[]>([])
+let serverData :ServerDetailInterface
+let storageData :StorageDetailInterface
+const getResourceDetail = async () => {
   if (props.target?.toString() === 'server') {
     await api.stats.statement.getStatementServerDetail({
       path: {
@@ -129,8 +216,8 @@ const getDetailData = async () => {
     }).then((res) => {
       serverData = res.data
       for (const elem of res.data.meterings) {
-        const dataServerConfig = ref<ServerProps>({ id: '' })
-        getServerInformation(elem.id).then((result) => {
+        const dataServerConfig = ref<ServerInterface>({ id: '' })
+        getServerConfig(elem.id).then((result) => {
           Object.assign(dataServerConfig.value, result)
           const idArrIp: object = { [elem.id]: dataServerConfig.value.ipv4 }
           const idArrCpu: object = { [elem.id]: dataServerConfig.value.vcpus }
@@ -139,7 +226,6 @@ const getDetailData = async () => {
           Object.assign(configCpuArr.value, idArrCpu)
           Object.assign(configRamArr.value, idArrRam)
         })
-        console.log('configIpArr:', configIpArr)
       }
     })
   }
@@ -154,10 +240,11 @@ const getDetailData = async () => {
       console.log(error)
     })
     Object.assign(statementServerDetail.value, storageData)
-    tableRow.value = storageData.meterings
+    tableRow.value = storageData?.meterings
+    console.log(' ', storageData)
   } else {
     Object.assign(statementServerDetail.value, serverData)
-    Object.assign(tableRow.value, serverData.meterings)
+    tableRow.value = serverData.meterings
   }
 }
 
@@ -184,24 +271,19 @@ const columnsServer = [
   { name: 'trade_amount', label: '实际扣费金额', align: 'center' },
   { name: 'operate', label: '操作', align: 'center' }
 ]
+
 // 展开数据详情
-const OpenDetail = ref<boolean>(false)
-const target = ref<boolean>(true)
-const targetId = ref<string>('')
-
-const setOperate = (checkId: string) => {
-  targetId.value = checkId
-  OpenDetail.value = true
-  target.value = false
+const OpenDetail = ref<object[]>([])
+const setOpenDetail = (checkId: string) => {
+  const idArr: object = { [checkId]: true }
+  Object.assign(OpenDetail.value, idArr)
 }
-
-const cancelOperate = () => {
-  target.value = true
-  OpenDetail.value = false
+const cancelOpenDetail = (checkId: string) => {
+  const idArr: object = { [checkId]: false }
+  Object.assign(OpenDetail.value, idArr)
 }
-
 onMounted(async () => {
-  await getDetailData()
+  await getResourceDetail()
 })
 
 </script>
@@ -304,11 +386,11 @@ onMounted(async () => {
             <q-td key="original_amount" :props="props">{{props.row.original_amount}} </q-td>
             <q-td key="trade_amount" :props="props">{{ props.row.trade_amount }} </q-td>
             <q-td key="operate" :props="props" class="text-subtitle1 text-center wrapper" >
-              <q-btn  color="primary" @click="cancelOperate()" v-if=" !target &&   targetId === props.row.id" > 折叠 </q-btn>
-              <q-btn color="primary" @click="setOperate(props.row.id)" v-else> 展开 </q-btn>
+              <q-btn color="primary" @click="cancelOpenDetail(props.row.id)" v-if="OpenDetail[props.row.id] " > 折叠 </q-btn>
+              <q-btn color="primary" @click="setOpenDetail(props.row.id)" v-else> 展开 </q-btn>
             </q-td>
           </q-tr>
-          <q-tr :props="props"  class="bg-grey-3 justify-start q-virtual-scroll--with-prev" v-show="OpenDetail &&   targetId === props.row.id" >
+          <q-tr :props="props"  class="bg-grey-3 justify-start q-virtual-scroll--with-prev" v-show="OpenDetail[props.row.id] " >
             <q-td  colspan="100%" >
               <div class="row justify-start">
                 <span class="col-2 q-pl-md"> 云主机详情</span>
@@ -362,11 +444,11 @@ onMounted(async () => {
                 <q-td key="original_amount" :props="props">{{props.row.original_amount}} </q-td>
                 <q-td key="trade_amount" :props="props">{{ props.row.trade_amount }} </q-td>
                 <q-td key="operate" :props="props" class="text-subtitle1 text-center wrapper" >
-                  <q-btn  color="primary" @click="cancelOperate()" v-if=" !target &&   targetId === props.row.id" > 折叠 </q-btn>
-                  <q-btn color="primary" @click="setOperate(props.row.id)" v-else> 展开 </q-btn>
+                  <q-btn color="primary" @click="cancelOpenDetail(props.row.id)" v-if="OpenDetail[props.row.id]" > 折叠 </q-btn>
+                  <q-btn color="primary" @click="setOpenDetail(props.row.id)" v-else> 展开 </q-btn>
                 </q-td>
               </q-tr>
-              <q-tr :props="props"  class="bg-grey-3 justify-start q-virtual-scroll--with-prev" v-show="OpenDetail &&   targetId === props.row.id" >
+              <q-tr :props="props"  class="bg-grey-3 justify-start q-virtual-scroll--with-prev" v-show="OpenDetail[props.row.id]" >
                 <q-td  colspan="100%" >
                   <div class="row justify-start">
                     <span class="col-2 q-pl-md"> 对象存储桶详情</span>
