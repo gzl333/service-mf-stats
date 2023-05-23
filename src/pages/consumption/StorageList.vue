@@ -172,9 +172,9 @@ onBeforeMount(() => {
                 @update:model-value="selectService"
                 :label="tc('filterService')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
       <q-input class="col-2" outlined dense clearable v-model="bucketId" :label="tc('bucketId')"/>
-      <q-btn color="primary" no-caps :label="tc('search')" @click="search"/>
-      <q-btn color="primary" no-caps :label="tc('exportCurrentPageData')" @click="exportFile"/>
-      <q-btn color="primary" no-caps :label="tc('exportAllData')" @click="exportAll"/>
+      <q-btn color="primary" no-caps unelevated :label="tc('search')" @click="search"/>
+      <q-btn color="primary" no-caps unelevated :label="tc('exportCurrentPageData')" @click="exportFile"/>
+      <q-btn color="primary" no-caps unelevated :label="tc('exportAllData')" @click="exportAll"/>
     </div>
 <!--    <div class="q-mt-xl row items-center justify-between">-->
 <!--      <div class="col-8">-->

@@ -254,12 +254,12 @@ onMounted(async () => {
                     :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
         </div>
         <div class="q-ml-sm">
-          <q-btn class="q-py-sm q-px-lg" color="primary" no-caps :label="tc('search')" @click="search"/>
+          <q-btn class="q-py-sm q-px-lg" color="primary" no-caps unelevated :label="tc('search')" @click="search"/>
         </div>
       </div>
       <div>
-        <q-btn class="q-py-sm" color="primary" no-caps :label="tc('exportCurrentPageData')" @click="exportFile"/>
-        <q-btn class="q-py-sm q-ml-sm" color="primary" no-caps :label="tc('exportAllData')" @click="exportAll"/>
+        <q-btn class="q-py-sm" color="primary" no-caps unelevated :label="tc('exportCurrentPageData')" @click="exportFile"/>
+        <q-btn class="q-py-sm q-ml-sm" color="primary" no-caps unelevated :label="tc('exportAllData')" @click="exportAll"/>
       </div>
     </div>
     <div class="q-mt-md">

@@ -243,11 +243,11 @@ onBeforeMount(async () => {
           <q-select style="width: 200px" class="q-ml-sm" outlined dense v-model="serviceId" :options="serviceOptions" :label="tc('filterService')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
           <q-input style="width: 200px" class="q-ml-sm" outlined dense clearable v-model="bucketId" :label="tc('bucketId')" />
           <q-input style="width: 200px" class="q-ml-sm" outlined dense clearable v-model="userId" :label="tc('userId')" />
-          <q-btn color="primary" class="q-ml-sm q-py-sm" no-caps :label="tc('search')" @click="search"/>
+          <q-btn color="primary" class="q-ml-sm q-py-sm" no-caps unelevated :label="tc('search')" @click="search"/>
       </div>
       <div class="row justify-end">
-        <q-btn class="q-py-sm" color="primary" no-caps :label="tc('exportCurrentPageData')" @click="exportFile()"/>
-        <q-btn class="q-ml-xs" color="primary" no-caps :label="tc('exportAllData')" @click="exportAll"/>
+        <q-btn class="q-py-sm" color="primary" no-caps unelevated :label="tc('exportCurrentPageData')" @click="exportFile()"/>
+        <q-btn class="q-ml-xs" color="primary" no-caps unelevated :label="tc('exportAllData')" @click="exportAll"/>
       </div>
     </div>
     <div class="q-mt-md">

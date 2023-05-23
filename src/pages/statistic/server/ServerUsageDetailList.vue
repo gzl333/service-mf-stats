@@ -242,12 +242,12 @@ onMounted(() => {
           <q-select outlined dense v-model="dateQuery.month" :options="monthOptions" :label="tc('pleaseSelect')" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
         </div>
         <div class="q-ml-sm">
-          <q-btn class="q-px-lg q-py-sm" color="primary" no-caps :label="tc('search')" @click="search"/>
+          <q-btn class="q-px-lg q-py-sm" color="primary" no-caps unelevated :label="tc('search')" @click="search"/>
         </div>
       </div>
       <div>
-        <q-btn class="q-py-sm" color="primary" no-caps :label="tc('exportCurrentPageData')" @click="exportFile"/>
-        <q-btn class="q-ml-sm q-py-sm" color="primary" no-caps :label="tc('exportAllData')" @click="exportAll"/>
+        <q-btn class="q-py-sm" color="primary" no-cap unelevateds :label="tc('exportCurrentPageData')" @click="exportFile"/>
+        <q-btn class="q-ml-sm q-py-sm" color="primary" no-caps unelevated :label="tc('exportAllData')" @click="exportAll"/>
       </div>
     </div>
     <div class="row q-mt-md text-subtitle1 text-bold">

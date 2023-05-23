@@ -7,21 +7,6 @@ const routes: RouteRecordRaw[] = [
     redirect: '/my/stats/consumption',
     children: [
       {
-        path: 'recharge',
-        redirect: '/my/stats/recharge/consumption',
-        component: () => import('pages/recharge/RechargeIndex.vue'),
-        children: [
-          {
-            path: 'personal',
-            component: () => import('pages/recharge/personal/PersonalIndex.vue')
-          },
-          {
-            path: 'group',
-            component: () => import('pages/recharge/group/GroupIndex.vue')
-          }
-        ]
-      },
-      {
         path: 'billing',
         component: () => import('pages/billing/BillingIndex.vue'),
         children: [

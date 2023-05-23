@@ -273,12 +273,12 @@ onBeforeMount(async () => {
                     :label="tc('filterService')" class="col-8" :option-label="i18n.global.locale ==='zh'? 'label':'labelEn'"/>
         </div>
         <div class="col-2 q-ml-md">
-          <q-btn class="q-px-lg q-py-sm" color="primary" no-caps :label="tc('search')" @click="search"/>
+          <q-btn class="q-px-lg q-py-sm" color="primary" no-caps unelevated :label="tc('search')" @click="search"/>
         </div>
       </div>
       <div class="col-4 row justify-end">
-        <q-btn class="q-py-sm" color="primary" no-caps :label="tc('exportCurrentPageData')" @click="exportFile()"/>
-        <q-btn color="primary" class="q-ml-sm"  no-caps :label="tc('exportAllData')" @click="exportAll"/>
+        <q-btn class="q-py-sm" color="primary" no-caps unelevated :label="tc('exportCurrentPageData')" @click="exportFile()"/>
+        <q-btn color="primary" class="q-ml-sm"  no-caps unelevated :label="tc('exportAllData')" @click="exportAll"/>
       </div>
     </div>
     <div class="row q-mt-md">
