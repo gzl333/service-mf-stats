@@ -10,8 +10,7 @@ const activeItem = computed(() => store.items.currentPath[0])
 const releaseTime = process.env.releaseTime
 store.loadAllItems()
 store.loadAllTables()
-console.log(store.items)
-console.log(store.tables)
+console.log(store)
 </script>
 
 <template>
@@ -33,19 +32,31 @@ console.log(store.tables)
             <q-item
               clickable
               :active="activeItem === 'consumption'"
-              @click="activeItem = 'consumption'; navigateToUrl('/my/stats/consumption')"
+              @click="navigateToUrl('/my/stats/consumption')"
               active-class="active-item"
             >
               <q-item-section class="column items-center">
-                <q-icon name="las la-columns" size="lg"/>
-                <div class="active-text text-center">{{ tc('consumption') }}</div>
+                <q-icon name="computer" size="lg"/>
+                <div class="active-text text-center">{{ tc('云主机用量') }}</div>
+              </q-item-section>
+            </q-item>
+
+            <q-item
+              clickable
+              :active="activeItem === 'storage'"
+              @click="navigateToUrl('/my/stats/storage')"
+              active-class="active-item"
+            >
+              <q-item-section class="column items-center">
+                <q-icon name="mdi-database" size="lg"/>
+                <div class="active-text text-center">{{ tc('对象存储用量') }}</div>
               </q-item-section>
             </q-item>
 
             <q-item
               clickable
               :active="activeItem === 'settlement'"
-              @click="activeItem = 'settlement'; navigateToUrl('/my/stats/settlement')"
+              @click="navigateToUrl('/my/stats/settlement')"
               active-class="active-item"
             >
               <q-item-section class="column items-center">
@@ -58,7 +69,7 @@ console.log(store.tables)
               clickable
               v-if="store.items.fedRole === 'federal-admin' || store.items.vmsAdmin.length > 0"
               :active="activeItem === 'statistic'"
-              @click="activeItem = 'statistic'; navigateToUrl('/my/stats/statistic')"
+              @click="navigateToUrl('/my/stats/statistic')"
               active-class="active-item"
             >
               <q-item-section class="column items-center">

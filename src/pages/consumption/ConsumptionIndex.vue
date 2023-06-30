@@ -30,7 +30,7 @@ const changeTab = (name: string) => {
     <div class="column">
       <div class="row justify-center">
         <div class="content-fixed-width">
-          <div class="text-h6 q-pt-lg q-px-none">{{ tc('consumption') }}</div>
+          <div class="text-h6 q-pt-lg q-px-none">{{ tc('云主机用量') }}</div>
           <q-tabs
             v-model="activeItem"
             inline-label
@@ -44,9 +44,9 @@ const changeTab = (name: string) => {
             <q-tab no-caps name="group" class="q-px-none q-py-md q-mr-md" :ripple="false" :label="tc('groupServers')"
                    icon="las la-users" @click="changeTab('group')">
             </q-tab>
-            <q-tab no-caps name="storage" class="q-px-none q-py-md q-mr-md" :ripple="false" :label="tc('storage')"
-                   icon="las la-database" @click="changeTab('storage')">
-            </q-tab>
+<!--            <q-tab no-caps name="storage" class="q-px-none q-py-md q-mr-md" :ripple="false" :label="tc('storage')"-->
+<!--                   icon="las la-database" @click="changeTab('storage')">-->
+<!--            </q-tab>-->
           </q-tabs>
         </div>
       </div>

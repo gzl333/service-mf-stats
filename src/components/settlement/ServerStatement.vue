@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { navigateToUrl } from 'single-spa'
 import { usePaymentStatusExpress } from 'src/hooks/statementKeyToRead'
+
 const PaymentStatusExpress = usePaymentStatusExpress()
 import { ref } from 'vue'
+
 const props = defineProps({
   tableRow: {
     type: Array,
@@ -13,6 +15,7 @@ const props = defineProps({
     required: false
   }
 })
+
 interface TableDataInterface {
   id: string,
   original_amount: string,
@@ -31,23 +34,74 @@ interface TableDataInterface {
   vo_name?: string,
   owner_type?: string,
   service?: {
-    id?:string,
+    id?: string,
     name?: string,
     name_en?: string,
     service_type?: string
   }
 }
+
 const columns = [
-  { name: 'id', align: 'center', label: '日计量单编号', field: 'id', format: (val: string) => `${val}` },
-  { name: 'username', label: '用户', field: 'username', align: 'center' },
-  { name: 'service_name', label: '服务单元', field: 'service_name', align: 'center' },
-  { name: 'service_type', label: '资源类型', field: 'service_type', align: 'center' },
-  { name: 'calculate_date', label: '结算周期', field: 'calculate_date', align: 'center' },
-  { name: 'creation_time', label: '下单时间', field: 'creation_time', align: 'center' },
-  { name: 'payable_amount', label: '计费金额', field: 'payable_amount', align: 'center' },
-  { name: 'trade_amount', label: '日结单金额', field: 'trade_amount', align: 'center' },
-  { name: 'payment_status', label: '状态', field: 'payment_status', align: 'center' },
-  { name: 'operate', label: '操作', field: 'operate', align: 'center' }
+  {
+    name: 'id',
+    align: 'center',
+    label: 'ID',
+    field: 'id'
+  },
+  // {
+  //   name: 'username',
+  //   label: '用户',
+  //   field: 'username',
+  //   align: 'center'
+  // },
+  {
+    name: 'service_name',
+    label: '服务单元',
+    field: 'service_name',
+    align: 'center'
+  },
+  {
+    name: 'service_type',
+    label: '资源类型',
+    field: 'service_type',
+    align: 'center'
+  },
+  {
+    name: 'calculate_date',
+    label: '结算周期',
+    field: 'calculate_date',
+    align: 'center'
+  },
+  {
+    name: 'creation_time',
+    label: '下单时间',
+    field: 'creation_time',
+    align: 'center'
+  },
+  {
+    name: 'payable_amount',
+    label: '计费金额',
+    field: 'payable_amount',
+    align: 'center'
+  },
+  {
+    name: 'trade_amount',
+    label: '日结单金额',
+    field: 'trade_amount',
+    align: 'center'
+  },
+  {
+    name: 'payment_status',
+    label: '状态',
+    field: 'payment_status',
+    align: 'center'
+  },
+  {
+    name: 'operate',
+    label: '操作',
+    field: 'operate',
+    align: 'center'
+  }
 ]
 
 const goToDetail = (id: string, targetType: string) => {
@@ -65,6 +119,7 @@ const searchFilter = (rows: TableDataInterface[], content: string): TableDataInt
   group?.id.toLowerCase().includes(content) || group.service?.id?.toLowerCase().includes(content) || group.service?.name?.toLowerCase().includes(content) || group.service?.service_type?.toLowerCase().includes(content) || group.username?.toLowerCase().includes(content) || group.vo_name?.toLowerCase().includes(content))
 // 导出数据
 import { exportFile, useQuasar } from 'quasar'
+
 const $q = useQuasar()
 
 function wrapCsvValue (val: string, formatFn?: any, row?: any) { // todo
@@ -83,13 +138,14 @@ function wrapCsvValue (val: string, formatFn?: any, row?: any) { // todo
    */
   return `"${formatted}"`
 }
+
 function exportTable () {
   // todo 导出数据有两列失败需要处理
   // naive encoding to csv format
-  console.log('props.tableRow', props.tableRow)
-  console.log('columns', columns)
-  props.tableRow.map((row : any) => console.log('row', row))
-  const content = [columns.map(col => wrapCsvValue(col.label))].concat(props.tableRow.map((row : any) => columns.map(col => wrapCsvValue( // todo row的接口还未完成
+  // console.log('props.tableRow', props.tableRow)
+  // console.log('columns', columns)
+  props.tableRow.map((row: any) => console.log('row', row))
+  const content = [columns.map(col => wrapCsvValue(col.label))].concat(props.tableRow.map((row: any) => columns.map(col => wrapCsvValue( // todo row的接口还未完成
     row[col.field === void 0 ? col.name : col.field], col.format,
     row)).join(','))
   ).join('\r\n')
@@ -139,21 +195,24 @@ function exportTable () {
         </template>
         <template v-slot:body="props">
           <q-tr :props="props">
-            <q-td key="id" :props="props" class="text-subtitle1 text-center wrapper"   style="width: 250px;">
-              <q-btn class="q-ma-none " :label="props.row.id" color="primary" padding="xs"
+
+            <q-td key="id" :props="props" class="text-subtitle1 text-center wrapper" style="width: 250px;">
+              <q-btn class="q-ma-none " :label="props.row.id" color="primary" padding="xs" no-caps
                      style="width: 100%;white-space:normal;word-break:break-all;word-wrap:break-word;"
                      @click="goToDetail(props.row.id, props.row.service.service_type)"
                      flat dense unelevated></q-btn>
             </q-td>
-            <q-td key="username" :props="props" v-if="props.row.username">{{ props.row.username}}</q-td>
-            <q-td key="service_name" :props="props" >{{ props.row.service_name}}</q-td>
-            <q-td key="service_type" :props="props">{{ props.row.service_type}}</q-td>
-            <q-td key="calculate_date" :props="props">{{props.row.calculate_date}}</q-td>
-            <q-td key="creation_time" :props="props">{{new Date(props.row.creation_time).toLocaleString()}}</q-td>
-            <q-td key="payable_amount" :props="props">{{props.row.payable_amount}} </q-td>
-            <q-td key="trade_amount" :props="props">{{props.row.trade_amount}} </q-td>
-            <q-td key="payment_status" :props="props">{{PaymentStatusExpress(props.row.payment_status)}} </q-td>
-            <q-td key="operate" :props="props" class="text-subtitle1 text-center wrapper" > <q-btn @click="goToDetail(props.row.id, props.row.service.service_type)" color="primary" > 详情 </q-btn></q-td>
+            <!--            <q-td key="username" :props="props">{{ props.row.username }}</q-td>-->
+            <q-td key="service_name" :props="props">{{ props.row.service.name }}</q-td>
+            <q-td key="service_type" :props="props">{{ props.row.service.service_type }}</q-td>
+            <q-td key="calculate_date" :props="props">{{ props.row.date }}</q-td>
+            <q-td key="creation_time" :props="props">{{ new Date(props.row.creation_time).toLocaleString() }}</q-td>
+            <q-td key="payable_amount" :props="props">{{ props.row.payable_amount }}</q-td>
+            <q-td key="trade_amount" :props="props">{{ props.row.trade_amount }}</q-td>
+            <q-td key="payment_status" :props="props">{{ PaymentStatusExpress(props.row.payment_status) }}</q-td>
+            <q-td key="operate" :props="props" class="text-subtitle1 text-center wrapper">
+              <q-btn @click="goToDetail(props.row.id, props.row.service.service_type)" color="primary"> 详情</q-btn>
+            </q-td>
           </q-tr>
         </template>
       </q-table>

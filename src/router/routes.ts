@@ -52,6 +52,10 @@ const routes: RouteRecordRaw[] = [
         ]
       },
       {
+        path: 'storage',
+        component: () => import('pages/storage/StorageUsage.vue')
+      },
+      {
         path: 'settlement',
         redirect: '/my/stats/settlement/history',
         component: () => import('pages/settlement/SettlementIndex.vue'),

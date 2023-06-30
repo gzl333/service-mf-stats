@@ -293,7 +293,7 @@ onMounted(async () => {
    <div class="row col-6 text-h6 text-primary text-weight-bold" >
      <q-btn icon="arrow_back_ios" flat unelevated dense
             @click="router.back()"/>
-     <span>日计量单详情</span> <span class="q-ml-lg text-primary"> {{route.params.id}} </span>
+     <span>日结算单详情</span> <span class="q-ml-lg text-primary"> {{route.params.id}} </span>
    </div>
     <div class="column items-start content-fixed-width q-mt-lg text-subtitle1">
       <div class="row justify-start content-fixed-width q-mb-md">

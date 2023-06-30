@@ -35,7 +35,7 @@ interface TableDataProps {
   }
 }
 const columns = [
-  { name: 'id', align: 'center', label: '日计量单编号' },
+  { name: 'id', align: 'center', label: 'ID' },
   { name: 'username', label: '用户', align: 'center' },
   { name: 'vo_name', label: '服务单元', align: 'center' },
   { name: 'service_type', label: '资源类型', align: 'center' },
