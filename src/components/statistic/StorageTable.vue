@@ -23,16 +23,52 @@ const props = defineProps({
 const { tc } = i18n.global
 
 const serverColumns = computed(() => [
-  { name: 'date', label: (() => tc('billingDate'))(), align: 'center' },
-  { name: 'username', label: (() => tc('user'))(), align: 'center' },
-  { name: 'storage_bucket_id', label: (() => tc('storageBucketId'))(), align: 'center' },
-  { name: 'bucket_name', label: (() => tc('bucketName'))(), align: 'center' },
-  { name: 'service_id', label: (() => tc('service'))(), align: 'center' },
+  {
+    name: 'date',
+    label: (() => tc('billingDate'))(),
+    align: 'center'
+  },
+  {
+    name: 'username',
+    label: (() => tc('user'))(),
+    align: 'center'
+  },
+  {
+    name: 'storage_bucket_id',
+    label: (() => tc('storageBucketId'))(),
+    align: 'center'
+  },
+  {
+    name: 'bucket_name',
+    label: (() => tc('bucketName'))(),
+    align: 'center'
+  },
+  {
+    name: 'service_id',
+    label: (() => tc('service'))(),
+    align: 'center'
+  },
   // { name: 'daily_statement_id', label: (() => tc('daily_statement_id'))(), align: 'center' },
-  { name: 'storage', label: (() => tc('存储用量(GB*小时)'))(), align: 'center' },
-  { name: 'traffic', label: (() => tc('计费流量(GB)'))(), align: 'center' },
-  { name: 'original_amount', label: (() => tc('totalBillingAmount'))(), align: 'center' },
-  { name: 'trade_amount', label: (() => tc('actualDeductionAmount'))(), align: 'center' }
+  {
+    name: 'storage',
+    label: (() => tc('存储用量(GB*小时)'))(),
+    align: 'center'
+  },
+  {
+    name: 'traffic',
+    label: (() => tc('计费流量(GB)'))(),
+    align: 'center'
+  },
+  {
+    name: 'original_amount',
+    label: (() => tc('totalBillingAmount'))(),
+    align: 'center'
+  },
+  {
+    name: 'trade_amount',
+    label: (() => tc('actualDeductionAmount'))(),
+    align: 'center'
+  }
 
 ])
 </script>
@@ -62,10 +98,9 @@ const serverColumns = computed(() => [
           <q-td class="no-padding" key="bucket_name" :props="props">{{ props.row.bucket_name }}</q-td>
           <q-td class="no-padding" key="service_id" :props="props">{{ props.row.service.name }}</q-td>
           <q-td class="no-padding" key="storage" :props="props">{{ props.row.storage.toFixed(2) }}</q-td>
-          <q-td class="no-padding" key="traffic" :props="props">{{ props.row.downstream }}</q-td>
+          <q-td class="no-padding" key="traffic" :props="props">{{ props.row.billed_network_flow }}</q-td>
           <q-td class="no-padding" key="original_amount" :props="props">{{ props.row.original_amount }}</q-td>
           <q-td class="no-padding" key="trade_amount" :props="props">{{ props.row.trade_amount }}</q-td>
-          <!--          <q-td class="no-padding" key="daily_statement_id" :props="props">{{ props.row.daily_statement_id }}</q-td>-->
         </q-tr>
       </template>
     </q-table>
